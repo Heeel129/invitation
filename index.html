@@ -831,7 +831,14 @@ opacity: 0;
             z-index: 3;
             width: 100%;
             max-width: 650px;
-        }
+
+/* 자식 요소들의 기준 글자 크기를 15~20% 일괄 확대 */
+    font-size: 1.18em; 
+    
+    /* 글자가 커지면서 줄간격이 겹치지 않게 부드럽게 조정 */
+    line-height: 1.6; 
+}
+
 
         .header-sub {
             font-family: 'Great Vibes', cursive;
@@ -977,6 +984,12 @@ pointer-events: none;
             letter-spacing: 3px;
             font-weight: 700;
         }
+
+.date-big {
+    font-size: 24px !important;
+    font-weight: 900 !important;
+    color: #3B2018 !important; /* 테스트용 검은색 */
+}
 
         .dday-timer {
             position: relative;
@@ -2190,7 +2203,7 @@ box-shadow: 0 0 12px rgba(225, 198, 153, 0.4);
     color: #555555;
     padding: 10px 14px;
     border-radius: 14px;
-    font-size: 0.72rem; /* 작은 글씨 크기 */
+    font-size: 0.92rem;
     line-height: 1.5;
     text-align: center;
     white-space: nowrap;
@@ -2237,6 +2250,25 @@ box-shadow: 0 0 12px rgba(225, 198, 153, 0.4);
     color: #0d47a1;
     font-weight: 600;
 }
+
+
+#typewriterText {
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    
+    /* 인라인 블록으로 만들어 수직 여백/줄높이를 정상 인식하도록 전환 */
+    display: inline-block !important;
+    
+    /* 빽빽했던 줄높이를 1.6배로 넉넉히 열어 g 꼬리가 들어갈 공간 확보 */
+    line-height: 1.6 !important;
+    
+    /* 글자 바닥선 수직 정렬 기준을 텍스트 상단으로 맞춰 꼬리가 아래로 쳐져도 보이게 함 */
+    vertical-align: top !important;
+    
+    padding-bottom: 12px !important;
+}
+
 
     </style>
 </head>
@@ -2375,10 +2407,18 @@ box-shadow: 0 0 12px rgba(225, 198, 153, 0.4);
                     <span class="big-first">우</span>리, 계절을 닮아<br>
 서로에게 물<span class="grow-1">드</span><span class="grow-2">는</span> <span class="grow-3">날</span> ..<span class="title-leaf">🍂</span>
 </h1><br>
-                <div class="header-date-wrapper">
-                    <div class="header-date-watercolor"></div>
-                    <div class="header-date">2026년 10월 31일 토요일</div>
-                </div>
+
+
+<div class="header-date-wrapper">
+    <div class="header-date-watercolor"></div>
+    <div class="header-date">
+        <!-- span 뒤에 클래스 대신 직접 inline 스타일을 넣거나 전용 클래스로 변경 -->
+        <span class="date-big">2026</span>. 
+        <span class="date-big">10</span>. 
+        <span class="date-big">31</span>. 
+        <span class="date-big">토</span>. 3시
+    </div>
+</div>
 
                 <div class="dday-timer" id="ddayTimer">D-DAY 계산 중...</div>
 
