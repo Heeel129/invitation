@@ -276,7 +276,16 @@ position: absolute;
 /* 첫 번째 자식 요소 여백 제거 */
 .card-container > section:first-child,
 .card-container > div:first-child {
-    margin-top: 0 !important;
+margin-top: 0 !important;
+    padding-top: 50px !important; /* 👈 위 여백 넉넉하게
+    padding-bottom: 50px !important;
+    background: linear-gradient(
+        180deg, 
+        #D8927A 0%,    /* 상단: 진한 오텀 로즈 브라운 */
+        #E4A891 35%,   /* 중간: 따뜻한 딥 핑크 코랄 */
+        #F1C7B5 70%,   /* 하단: 부드러운 로즈 베이지 */
+        #F8F6F0 100%   /* 최하단: 본문 배경색으로 자연스럽게 전환 */
+    ) !important;
 }
 
 @keyframes mainCardFadeIn {
@@ -807,6 +816,8 @@ opacity: 0;
 .stardust:nth-child(16) { top: 80%; left: 82%; animation-duration: 2.1s; animation-delay: 1.6s; }
 .stardust:nth-child(17) { top: 12%; left: 62%; animation-duration: 2.2s; animation-delay: 1.0s; }
 .stardust:nth-child(18) { top: 40%; left: 52%; animation-duration: 1.9s; animation-delay: 0.8s; }
+.stardust:nth-child(19) { top: 3%;  left: 78%; animation-duration: 2.0s; animation-delay: 0.4s; } /* 상단 우측 빈 공간 */
+.stardust:nth-child(20) { top: 8%;  left: 8%;  animation-duration: 2.4s; animation-delay: 1.3s; } /* 상단 좌측 빈 공간 */
 
 /* 👇 반짝이는 속도감을 빠르게(2s 내외) 조절하여 자글자글한 효과 연출 */
 @keyframes sparkleDust {
@@ -902,11 +913,11 @@ pointer-events: none;
             position: relative;
             z-index: 2;
             text-shadow: 
-                0 0 5px rgba(255, 255, 255, 0.9),
-                0 0 12px rgba(255, 255, 255, 0.8),
-                0 0 22px rgba(255, 255, 255, 0.6),
-                0 0 35px rgba(255, 255, 255, 0.4);
-            filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.85));
+                0 0 5px rgba(255, 240, 185, 0.85),
+                0 0 12px rgba(255, 230, 150, 0.9),
+                0 0 22px rgba(255, 230, 150, 0.9),
+                0 0 35px rgba(255, 230, 150, 0.9);
+            filter: drop-shadow(0 0 8px rgba(255, 230, 150, 0.9));
         }
 
         .header-date-wrapper {
@@ -924,11 +935,11 @@ pointer-events: none;
     width: 100%;
     
     background: linear-gradient(90deg, 
-        rgba(255, 248, 220, 0.0) 0%,   /* 은은한 레몬 틴트 투명 */
-        rgba(255, 240, 185, 0.85) 20%,  /* 부드러운 파스텔 레몬 */
-        rgba(255, 230, 150, 0.9) 50%,   /* 따뜻하고 화사한 소프트 레몬 포인트 */
-        rgba(255, 240, 185, 0.85) 80%, 
-        rgba(255, 248, 220, 0.0) 100%
+        rgba(255, 248, 240, 0.0) 0%, 
+        rgba(255, 230, 210, 0.85) 20%,  /* 부드러운 샴페인 피치 */
+        rgba(255, 218, 195, 0.9) 50%,   /* 화사한 크림 피치 */
+        rgba(255, 230, 210, 0.85) 80%, 
+        rgba(255, 248, 240, 0.0) 100%
     );
     box-shadow: 0 0 12px rgba(255, 218, 195, 0.6);
 
@@ -961,7 +972,7 @@ pointer-events: none;
         .header-date {
             position: relative;
             z-index: 2;
-            font-size: 16px;
+            font-size: 17.3px;
             color: #3B2018;
             letter-spacing: 3px;
             font-weight: 700;
@@ -970,7 +981,7 @@ pointer-events: none;
         .dday-timer {
             position: relative;
             z-index: 2;
-            font-size: 11.2px;
+            font-size: 12.9px;
             color: #5C3D31;
             letter-spacing: 1.5px;
             font-weight: 700;
@@ -986,9 +997,9 @@ pointer-events: none;
         }
 
         .header-main-image {
-            width: 92%;
-            max-width: 520px;
-            margin: -15px auto 0 auto;
+            width: 100%; !important;
+            max-width: none !important;
+            margin: 50px auto 0 auto !important;
             border: none;
             position: relative;
             z-index: 4;
@@ -1007,11 +1018,11 @@ pointer-events: none;
             filter: contrast(102%) brightness(101%);
         }
 
-        @keyframes slowExpandAndFadeIn {
-            0% { opacity: 0; transform: scale(0.82); filter: blur(6px); }
-            35% { opacity: 0.6; filter: blur(2px); }
-            100% { opacity: 1; transform: scale(1); filter: blur(0); }
-        }
+@keyframes slowExpandAndFadeIn {
+    0% { opacity: 0; transform: scale(1.1); filter: blur(6px); }
+    35% { opacity: 0.6; filter: blur(2px); }
+    100% { opacity: 1; transform: scale(1.3); filter: blur(0); } /* 1.0 -> 1.3으로 확대 */
+}
 
         .content-body {
             width: 100%;
@@ -2172,7 +2183,7 @@ box-shadow: 0 0 12px rgba(225, 198, 153, 0.4);
 /* 🎈 말풍선 전체 스타일 */
 .speech-bubble {
     position: absolute;
-    top: -120px; /* 봉투 위쪽에 오도록 위치 조절 */
+    top: -200px; /* 봉투 위쪽에 오도록 위치 조절 */
     left: 50%;
     transform: translateX(-50%);
     background: rgba(255, 255, 255, 0.95);
@@ -2363,7 +2374,7 @@ box-shadow: 0 0 12px rgba(225, 198, 153, 0.4);
                 <h1 class="header-title">
                     <span class="big-first">우</span>리, 계절을 닮아<br>
 서로에게 물<span class="grow-1">드</span><span class="grow-2">는</span> <span class="grow-3">날</span> ..<span class="title-leaf">🍂</span>
-</h1>
+</h1><br>
                 <div class="header-date-wrapper">
                     <div class="header-date-watercolor"></div>
                     <div class="header-date">2026년 10월 31일 토요일</div>
