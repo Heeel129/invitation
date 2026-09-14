@@ -1,0 +1,3126 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>부부의 연</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+
+    <style>
+* {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            margin: 0 !important;
+            padding: 0 !important;
+            width: 100%;
+            min-height: 100vh;
+            background-color: #F8F6F0;
+            font-family: 'Gowun Batang', serif;
+            overflow-x: hidden;
+        }
+
+/* 오프닝 봉투 오버레이 */
+#envelopeOverlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background-color: #E6E0D8;
+    z-index: 99999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    perspective: 1200px;
+    opacity: 1;
+    visibility: visible; /* 👈 페이드아웃 적용 */
+    transition: opacity 2.3s cubic-bezier(0.33, 1, 0.68, 1), visibility 1.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+#envelopeOverlay.is-hidden {
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+}
+
+/* JS에서 클릭 성공 시 오버레이 전체가 사라지는 클래스 */
+#envelopeOverlay.fade-out {
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+    transition: opacity 1.5s ease, visibility 1.2s ease;
+}
+
+.envelope-box {
+    position: relative;
+    width: 90%;          /* 💡 화면 폭에 맞춰 가변 적용 */
+    max-width: 380px;     /* 💡 최대 380px까지만 늘어나도록 제한 */
+    height: 250px;
+    margin: 0 auto;       /* 💡 중앙 정렬 */
+    background-color: #D6C7B8;
+    border-radius: 8px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+    pointer-events: auto !important;
+    cursor: pointer !important;
+}
+
+.envelope-inside {
+position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background-color: #C2B09F;
+    border-radius: 8px;
+z-index: 1;
+}
+
+/* ✉️ 초대장 열기 버튼 */
+.open-envelope-btn {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 999;
+    background: linear-gradient(135deg, #E8C1A0 0%, #F4E4D4 100%);
+    border: 1px solid rgba(255, 255, 255, 0.9);
+    border-radius: 25px;
+    padding: 12px 28px;
+    box-shadow: 0 4px 15px rgba(92, 74, 66, 0.25);
+    cursor: pointer;
+    display: flex; flex-direction: column; align-items: center; gap: 3px;
+    transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.open-envelope-btn .btn-text {
+    font-size: 15px;
+    font-weight: 600;
+    color: #5C4A42;
+    letter-spacing: 2px;
+}
+
+.open-envelope-btn .btn-subtext {
+    font-size: 9px;
+    color: #8C756B;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+/* 버튼 클릭 시 투명하게 사라짐 */
+.open-envelope-btn.fade-out {
+    opacity: 0;
+    pointer-events: none;
+    transform: translate(-50%, -50%) scale(0.8);
+}
+
+.envelope-flap {
+position: absolute;
+    top: 0; left: 0;
+    width: 0; height: 0;
+    border-left: 190px solid transparent;
+    border-right: 190px solid transparent;
+    border-top: 135px solid #C9B8A8;
+    transform-origin: top center;
+    z-index: 3;
+    transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.envelope-card-wrapper {
+    position: absolute !important; /* 💡 absolute로 변경하여 봉투 안쪽 바닥에 고정 */
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    height: 100%;
+    z-index: 2 !important; /* 포켓(z-index: 3)보다 낮게 설정하여 봉투 안으로 들어가게 함 */
+    overflow: visible !important; /* 보케/별빛 효과가 잘리지 않도록 허용 */
+    pointer-events: auto !important;
+    cursor: pointer !important;
+}
+
+/* 2. 카드 본체 (수정됨) */
+.envelope-card {
+    position: relative;
+    top: 30px; /* 👈 15px에서 30px로 변경 (위로 올려 하단 삐짐 방지) */
+    left: 50%;
+    transform: translateX(-50%) translateY(0) scale(0.95);
+    width: 280px; 
+    height: 190px; /* 👈 210px에서 190px로 변경 (봉투 바닥 안쪽에 쏙 들어감) */
+    background: linear-gradient(180deg, #DDA888 0%, #E8C1A0 40%, #F4E4D4 75%, #F8F6F0 100%);
+    border-radius: 8px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+    display: flex; 
+    flex-direction: column; 
+    justify-content: center; 
+    align-items: center;
+    text-align: center; 오전 4:56 2026-09-14
+    padding: 20px; 
+    box-sizing: border-box;
+    pointer-events: auto;
+    z-index: 2 !important;
+    transition: transform 1.2s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+/* 3. 봉투 하단 포켓 (복구 및 수정됨) */
+.envelope-pocket {
+position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 60%;
+    z-index: 3;
+    pointer-events: none; /* 클릭 방해 안 받도록 */
+}
+
+/* 카드 내부 텍스트 스타일 */
+.mini-card-sub {
+    font-family: 'Great Vibes', cursive;
+    font-size: 26px;
+    color: rgba(255, 255, 255, 0.85);
+    margin-bottom: 4px;
+}
+
+.mini-card-names {
+    font-size: 16px;
+    color: #4A3B32;
+    font-weight: 700;
+    margin-bottom: 6px;
+    letter-spacing: 1px;
+}
+
+.mini-card-date {
+    font-size: 12px;
+    color: #826958;
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+    font-weight: 700;
+}
+
+.mini-card-title {
+    font-size: 13px;
+    color: #6E5A4C;
+    font-weight: 700;
+    line-height: 1.1;
+    font-style: italic;
+}
+
+@keyframes openFlap {
+    0% { transform: rotateX(0deg); z-index: 4; }
+    100% { transform: rotateX(180deg); z-index: 1; }
+}
+
+@keyframes liftAndExpand {
+    0% { 
+        transform: translateX(-50%) translateY(0) scale(0.95); 
+        opacity: 0.95; 
+    }
+    /* -150px -> -175px로 수정하여 카드가 봉투 포켓 밖으로 완전히 빠져나옵니다 */
+    55% { 
+        transform: translateX(-50%) translateY(-160px) scale(1.1); 
+        opacity: 1; 
+    }
+    /* 올라온 상태에서 흔들림 없이 정지 */
+    80% { 
+        transform: translateX(-50%) translateY(-160px) scale(1.1); 
+        opacity: 1; 
+    }
+    /* 제자리에서 부드럽게 투명해지며 전환 */
+    100% { 
+        transform: translateX(-50%) translateY(-165px) scale(1.1); 
+        opacity: 0;
+    }
+}
+
+@keyframes fadeOverlayOut {
+    0% { opacity: 1; visibility: visible; }
+    100% { opacity: 0; visibility: hidden; pointer-events: none; }
+}
+
+
+.card-container > header:first-child,
+        .card-container > section:first-child,
+        .card-container > div:first-child,
+        .head-section {
+            margin-top: 0 !important;
+            padding-top: 0 !important;
+            position: relative;
+            top: 0;
+        }
+
+        /* 4. 헤드 영역 내부 첫 번째 요소 마진 튀어나옴 방지 */
+        .card-container > header:first-child > *:first-child,
+        .card-container > section:first-child > *:first-child,
+        .card-container > div:first-child > *:first-child {
+            margin-top: 0 !important;
+        }
+
+
+
+/* 메인 컨테이너 */
+.card-container {
+    width: 100vw;
+    min-height: 100vh;
+    background-color: #F8F6F0;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    margin: 0 !important;
+    padding-top: 1px;
+    opacity: 0;
+    transition: opacity 1.2s ease;
+}
+
+/* 첫 번째 자식 요소 여백 제거 */
+.card-container > section:first-child,
+.card-container > div:first-child {
+    margin-top: 0 !important;
+}
+
+@keyframes mainCardFadeIn {
+    0% { opacity: 0; transform: scale(0.99); }
+    100% { opacity: 1; transform: scale(1); }
+}
+
+* { box-sizing: border-box; }
+        html, body {
+            margin: 0; padding: 0;
+            width: 100%; min-height: 100vh;
+            background-color: #F8F6F0;
+            font-family: 'Gowun Batang', serif;
+            overflow-x: hidden;
+        }
+
+        #envelopeOverlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background-color: #E6E0D8;
+            z-index: 99999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            perspective: 1200px;
+opacity: 1;
+    visibility: visible;
+    transition: opacity 1.2s ease, visibility 1.2s ease;
+        }
+
+        .envelope-box {
+            position: relative;
+            width: 380px; height: 250px;
+            background-color: #D6C7B8;
+            border-radius: 8px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+        }
+
+        .envelope-inside {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background-color: #C2B09F;
+            border-radius: 8px;
+z-index: 1;
+        }
+
+
+/* 1. 봉투 덮개 (버튼 클릭 시 상단으로 뒤집혀 열림) */
+.envelope-flap {
+    position: absolute;
+    top: 0; left: 0;
+    width: 0; height: 0;
+    border-left: 190px solid transparent;
+    border-right: 190px solid transparent;
+    border-top: 135px solid #C9B8A8;
+    transform-origin: top center;
+    z-index: 4;
+    /* 💡 기존 animation 대신 transition 적용 */
+    transition: transform 1.5s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+/* 💡 클릭 시 덮개 오픈 (약 0.2초 후 자연스럽게 뒤집힘) */
+#envelopeOverlay.is-open .envelope-flap {
+    transform: rotateX(180deg);
+z-index: 1;
+transform-style: flat;
+}
+
+/* 2. 카드 래퍼 영역 */
+position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 800px;
+    overflow: visible;
+    z-index: 10; /* ★ 포켓(5)보다 높은 10으로 설정하여 미니카드가 주머니 앞으로 솟구치게 함 */
+    pointer-events: none;
+opacity: 1;
+    transform: none;
+}
+
+/* 미니카드 기본 상태 (봉투 안에 들어가 대기 중인 상태) */
+.envelope-card {
+    position: absolute;
+    top: 15px;
+    left: 50%;
+    transform: translateX(-50%) translateY(0) scale(0.95);
+    width: 280px; 
+    height: 210px;
+    background: linear-gradient(180deg, #DDA888 0%, #E8C1A0 40%, #F4E4D4 75%, #F8F6F0 100%);
+    border-radius: 8px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+    display: flex; 
+    flex-direction: column; 
+    justify-content: center; 
+    align-items: center;
+    text-align: center;
+    padding: 20px; 
+    box-sizing: border-box;
+    pointer-events: auto;
+    z-index: 2;
+    transition: transform 1.2s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+/* 💡 [핵심] 클릭 시(is-open) 덮개가 열리고 0.3초 뒤 카드가 위로 솟구침! */
+#envelopeOverlay.is-open .envelope-card {
+transform: translateX(-50%) translateY(-100px) scale(1.05);
+    transition-delay: 0.5s;
+    opacity: 1;
+    z-index: 10;
+}
+
+/* 4. 봉투 포켓 */
+.envelope-pocket {
+    position: absolute;
+    bottom: 0; left: 0;
+    width: 0; height: 0;
+    border-left: 190px solid #D1C0B0;
+    border-right: 190px solid #D1C0B0;
+    border-bottom: 135px solid #C0AF9F;
+    border-top: 115px solid transparent;
+    border-radius: 0 0 8px 8px;
+    z-index: 3;
+}
+
+/* 🎉 콘페티(꽃가루) 설정 - 클릭할 때만 실행되도록 수정 */
+.envelope-flowers {
+    position: absolute;
+    bottom: 120px; left: 50%;
+    transform: translateX(-50%);
+    width: 0; height: 0;
+    z-index: 10;
+    pointer-events: none;
+}
+
+.sparkle {
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0;
+}
+
+#envelopeOverlay.is-open .sparkle {
+    animation: burstConfetti 1.8s cubic-bezier(0.1, 0.9, 0.2, 1) forwards;
+    animation-delay: 0;
+}
+
+.sparkle.heart {
+    clip-path: polygon(50% 15%, 65% 0%, 85% 0%, 100% 20%, 100% 45%, 50% 95%, 0% 45%, 0% 20%, 15% 0%, 35% 0%);
+    filter: drop-shadow(0 0 5px rgba(255, 192, 203, 0.8));
+}
+
+.sparkle.star {
+    clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+    filter: drop-shadow(0 0 6px rgba(255, 235, 170, 0.9));
+}
+
+.sparkle.twinkle {
+    clip-path: polygon(50% 0%, 60% 40%, 100% 50%, 60% 60%, 50% 100%, 40% 60%, 0% 50%, 40% 40%);
+    background: #FFFFFF !important;
+    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 1)) drop-shadow(0 0 12px rgba(255, 220, 180, 0.9));
+}
+
+.sparkle.dot {
+    border-radius: 50%;
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.9);
+}
+
+.sparkle.rect {
+    border-radius: 2px;
+}
+
+/* 입자별 풍성한 발사 좌표 (사방 대각선, 넓은 분사각, 렌덤 회전) */
+.sparkle:nth-child(1)  { width: 16px; height: 16px; background: #FFC0CB; --tx: -170px; --ty: -220px; --rot: 240deg; }
+.sparkle:nth-child(2)  { width: 14px; height: 14px; background: #FFD1DC; --tx: 180px;  --ty: -200px; --rot: -180deg; }
+.sparkle:nth-child(3)  { width: 22px; height: 22px; --tx: 0px;     --ty: -340px; --rot: 420deg; } /* 중앙 높이 치솟는 반짝이 */
+.sparkle:nth-child(4)  { width: 18px; height: 18px; background: #FFF0F5; --tx: -90px;  --ty: -300px; --rot: 320deg; }
+.sparkle:nth-child(5)  { width: 15px; height: 15px; background: #F5E6CC; --tx: 100px;   --ty: -280px; --rot: -290deg; }
+.sparkle:nth-child(6)  { width: 26px; height: 26px; --tx: -130px; --ty: -310px; --rot: -360deg; } /* 대각선 반짝이 */
+.sparkle:nth-child(7)  { width: 10px; height: 10px; background: #E6E6FA; --tx: -210px; --ty: -140px; --rot: 150deg; }
+.sparkle:nth-child(8)  { width: 9px;  height: 9px;  background: #D8BFD8; --tx: 220px;  --ty: -150px; --rot: -210deg; }
+.sparkle:nth-child(9)  { width: 20px; height: 20px; background: #FFE4E1; --tx: -40px;  --ty: -330px; --rot: 180deg; }
+.sparkle:nth-child(10) { width: 12px; height: 12px; background: #F0E68C; --tx: 50px;   --ty: -350px; --rot: -360deg; }
+.sparkle:nth-child(11) { width: 24px; height: 24px; --tx: 140px;  --ty: -320px; --rot: 500deg; } /* 대각선 반짝이 */
+.sparkle:nth-child(12) { width: 9px;  height: 9px;  background: #FFC0CB; --tx: -240px; --ty: -190px; --rot: 270deg; }
+.sparkle:nth-child(13) { width: 14px; height: 14px; background: #FFF0F5; --tx: 230px;  --ty: -240px; --rot: -150deg; }
+.sparkle:nth-child(14) { width: 8px;  height: 18px; background: #FFE4E1; --tx: -110px; --ty: -270px; --rot: 190deg; }
+.sparkle:nth-child(15) { width: 18px; height: 18px; background: #FFD1DC; --tx: 130px;  --ty: -300px; --rot: -240deg; }
+.sparkle:nth-child(16) { width: 10px; height: 10px; background: #E6E6FA; --tx: -70px;  --ty: -250px; --rot: 190deg; }
+.sparkle:nth-child(17) { width: 16px; height: 16px; background: #FFE4E1; --tx: 80px;   --ty: -260px; --rot: -300deg; }
+.sparkle:nth-child(18) { width: 8px;  height: 8px;  background: #F0E68C; --tx: -180px; --ty: -260px; --rot: 220deg; }
+.sparkle:nth-child(19) { width: 12px; height: 12px; background: #D8BFD8; --tx: 190px;  --ty: -280px; --rot: -190deg; }
+.sparkle:nth-child(20) { width: 20px; height: 20px; --tx: -50px;  --ty: -290px; --rot: 300deg; } /* 중앙 반짝이 */
+.sparkle:nth-child(21) { width: 10px; height: 18px; background: #F5E6CC; --tx: 110px;  --ty: -220px; --rot: 140deg; }
+.sparkle:nth-child(22) { width: 14px; height: 14px; background: #FFC0CB; --tx: -150px; --ty: -200px; --rot: -200deg; }
+
+/* 팡 터지며 번쩍이는 폭발 애니메이션 */
+@keyframes burstConfetti {
+    0% {
+        opacity: 0;
+        transform: translate(0, 0) scale(0.1) rotate(0deg);
+    }
+    15% {
+        opacity: 1; /* 순간적으로 선명하고 환하게 반짝임 */
+    }
+    100% {
+        opacity: 0;
+        transform: translate(var(--tx), var(--ty)) scale(0.7) rotate(var(--rot));
+    }
+}
+
+
+
+
+        .mini-card-sub { font-family: 'Great Vibes', cursive; font-size: 26px; color: rgba(255, 255, 255, 0.85); margin-bottom: 4px; }
+        .mini-card-names { font-size: 16px; color: #4A3B32; font-weight: 700; margin-bottom: 6px; letter-spacing: 1px; }
+        .mini-card-date { font-size: 12px; color: #826958; letter-spacing: 2px; margin-bottom: 8px; font-weight: 700; }
+        .mini-card-title { font-size: 13px; color: #6E5A4C; font-weight: 700; line-height: 1.1; font-style: italic; }
+
+        @keyframes openFlap {
+            0% { transform: rotateX(0deg); z-index: 4; }
+            100% { transform: rotateX(180deg); z-index: 1; }
+        }
+
+        @keyframes liftAndExpand {
+            0% { transform: translateX(-50%) translateY(0) scale(0.95); opacity: 0.95; }
+            55% { transform: translateX(-50%) translateY(-160px) scale(1.1); opacity: 1; }
+            80% { transform: translateX(-50%) translateY(-160px) scale(1.1); opacity: 1; }
+            100% { transform: translateX(-50%) translateY(-165px) scale(1.1); opacity: 0; }
+        }
+
+
+
+
+/* --------------------------------------------------
+   [트렌디 & 하이엔드] 샴페인 골드 오로라 & 웜 보케 레이어
+   -------------------------------------------------- */
+.card-ambient-layer {
+    position: absolute;
+    top: -60px; /* 👈 상단으로 위치를 올려주어야 카드 위쪽으로 빛이 퍼집니다 */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 360px;
+    height: 320px;
+    pointer-events: none;
+    z-index: 10 !important;
+    opacity: 0;
+display: none;
+}
+
+#envelopeOverlay.is-open .card-ambient-layer {
+    display: block !important;
+    opacity: 1 !important;
+    animation: ambientFadeIn 0.2s ease forwards !important;
+    animation-delay: 0.25s !important;
+}
+
+.ambient-bokeh,
+.ambient-star,
+.ambient-glitter {
+    animation-play-state: paused; /* 봉투 열리기 전엔 애니메이션 멈춤 */
+}
+
+#envelopeOverlay.is-open .ambient-bokeh,
+#envelopeOverlay.is-open .ambient-star,
+#envelopeOverlay.is-open .ambient-glitter {
+    animation-play-state: running;
+    animation-delay: 0.3s !important; /* 👈 카드가 정점에 도달할 때까지 입자 애니메이션 시작을 강제로 지연 */
+}
+
+/* 1. 고급스러운 크림 & 로즈골드 몽글 보케 */
+.ambient-bokeh {
+    position: absolute;
+    border-radius: 50%;
+opacity: 0;
+}
+
+.ambient-bokeh.b1 { 
+    top: 5%; right: 10%; width: 65px; height: 65px; 
+    background: radial-gradient(circle, rgba(255, 220, 190, 0.85) 0%, rgba(255, 235, 210, 0.2) 60%, transparent 100%);
+    filter: blur(6px);
+}
+.ambient-bokeh.b2 { 
+    top: 40%; left: -2%; width: 75px; height: 75px; 
+    background: radial-gradient(circle, rgba(255, 205, 180, 0.75) 0%, rgba(255, 225, 200, 0.2) 60%, transparent 100%);
+    filter: blur(8px);
+}
+.ambient-bokeh.b3 { 
+    top: 55%; right: 2%; width: 55px; height: 55px; 
+    background: radial-gradient(circle, rgba(255, 230, 200, 0.8) 0%, rgba(255, 240, 220, 0.2) 60%, transparent 100%);
+    filter: blur(5px);
+}
+.ambient-bokeh.b4 { 
+    top: 10%; left: 8%; width: 50px; height: 50px; 
+    background: radial-gradient(circle, rgba(255, 245, 230, 0.9) 0%, rgba(255, 220, 190, 0.25) 60%, transparent 100%);
+    filter: blur(4px);
+}
+
+/* 2. 도톰하고 밀도 있는 4구 별빛 */
+.ambient-star {
+    position: absolute;
+    background: #FFFFFF;
+    clip-path: polygon(50% 0%, 63% 37%, 100% 50%, 63% 63%, 50% 100%, 37% 63%, 0% 50%, 37% 37%);
+    filter: drop-shadow(0 0 8px rgba(255, 225, 180, 0.95));
+opacity: 0;
+}
+
+.ambient-star.s1 { top: 12%; left: 12%; width: 18px; height: 18px; }
+.ambient-star.s2 { top: 18%; right: 10%; width: 22px; height: 22px; }
+.ambient-star.s3 { top: 62%; left: 6%;  width: 15px; height: 15px; }
+.ambient-star.s4 { top: 68%; right: 8%; width: 20px; height: 20px; }
+
+/* 3. 샤르르 떠다니는 골드 가루 입자 */
+.ambient-glitter {
+    position: absolute;
+    border-radius: 50%;
+    background: #FFF5E6;
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.8), 0 0 4px #FFFFFF;
+    opacity: 0;
+}
+
+.ambient-glitter.g1 { top: 25%; left: 22%; width: 6px; height: 6px; }
+.ambient-glitter.g2 { top: 35%; right: 20%; width: 8px; height: 8px; }
+.ambient-glitter.g3 { top: 50%; left: 18%; width: 6px; height: 6px; }
+.ambient-glitter.g4 { top: 58%; right: 22%; width: 7px; height: 7px; }
+
+#envelopeOverlay.is-open .ambient-bokeh {
+    animation: floatGlow 3.5s ease-in-out infinite alternate !important;
+    animation-delay: 0.25s !important;
+}
+
+#envelopeOverlay.is-open .ambient-star {
+    animation: luxuryTwinkle 2.2s ease-in-out infinite alternate !important;
+    animation-delay: 0.25s !important;
+}
+
+#envelopeOverlay.is-open .ambient-glitter {
+    animation: floatGlitter 3.0s ease-in-out infinite alternate !important;
+    animation-delay: 0.25s !important;
+}
+
+/* 키프레임 애니메이션 */
+@keyframes ambientFadeIn {
+    0% { opacity: 0; transform: translateX(-50%) scale(0.95); }
+    100% { opacity: 1; transform: translateX(-50%) scale(1); }
+}
+
+@keyframes luxuryTwinkle {
+    0% { opacity: 0.3; transform: scale(0.7) rotate(0deg); }
+    100% { opacity: 1; transform: scale(1.2) rotate(10deg); filter: drop-shadow(0 0 12px rgba(255, 235, 200, 1)); }
+}
+
+@keyframes floatGlow {
+    0% { transform: translateY(0px) scale(0.9); opacity: 0; }
+    100% { transform: translateY(-8px) scale(1.1); opacity: 0.95; }
+}
+
+@keyframes floatGlitter {
+    0% { transform: translateY(0px) scale(0.8); opacity: 0; }
+    100% { transform: translateY(-12px) scale(1.3); opacity: 1; }
+}
+
+
+
+
+/* ==========================================
+   초대장 열기 버튼 클릭 후 화면 전환용 스타일
+========================================== */
+
+.card-container.show {
+    opacity: 1 !important;
+}
+
+/* 2. 봉투 오버레이 화면 전체가 부드럽게 지워짐 */
+#envelopeOverlay.fade-out {
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+}
+
+
+
+
+
+
+        .bgm-btn {
+            position: fixed;
+            top: 25px;
+            right: 25px;
+            z-index: 9999;
+            background:linear-gradient(135deg, #E8C1A0 0%, #F4E4D4 100%);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            border-radius: 20px;
+            padding: 6px 14px;
+            white-space: nowrap;
+            font-size: 11px;
+            color: #5C4A42; /* 가을 딥 브라운 */
+    background: linear-gradient(135deg, #E8C1A0 0%, #F4E4D4 100%);
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            backdrop-filter: blur(3px);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-family: inherit;
+        }
+
+/* SVG 아이콘 강제 크기 지정 및 색상 처리 */
+.bgm-btn svg,
+.lp-icon {
+    width: 14px !important;
+    height: 14px !important;
+    display: block !important;
+    flex-shrink: 0;
+    color: #5C4A42; /* 아이콘 색상 고정 */
+}
+
+/* 재생 중 회전 애니메이션 */
+.bgm-btn.playing svg,
+.bgm-btn.playing .lp-icon {
+    animation: spinLP 3s linear infinite;
+}
+
+@keyframes spinLP {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+        .main-header {
+            width: 100%;
+            text-align: center;
+            padding: 55px 20px 20px 20px;
+            background: linear-gradient(180deg, 
+        #D99A7A 0%, 
+        #E8B89B 20%, 
+        #F2D7C4 45%, 
+        #F8F6F0 85%, 
+        #F8F6F0 100%
+            );
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .watercolor-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 25% 20%, rgba(205, 130, 95, 0.35) 0%, transparent 55%),
+                radial-gradient(circle at 75% 30%, rgba(220, 150, 110, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 50% 70%, rgba(245, 220, 200, 0.3) 0%, transparent 60%);
+            mix-blend-mode: multiply;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .sunbeam-overlay {
+            position: absolute;
+            top: -30%;
+            left: -20%;
+            width: 120%;
+            height: 160%;
+            background: radial-gradient(ellipse at 15% 15%, rgba(255, 252, 240, 0.4) 0%, rgba(255, 245, 220, 0.12) 35%, transparent 70%);
+            pointer-events: none;
+            z-index: 2;
+            transform: rotate(-15deg);
+            mix-blend-mode: screen;
+        }
+
+        .header-particles-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .soft-bokeh {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.75) 0%, rgba(255, 240, 220, 0.25) 60%, transparent 100%);
+            filter: blur(4px);
+            animation: floatSoftBokeh ease-in-out infinite alternate;
+        }
+
+        .soft-bokeh:nth-child(1) { width: 60px; height: 60px; top: 10%; left: 8%; animation-duration: 6s; opacity: 0.7; }
+        .soft-bokeh:nth-child(2) { width: 90px; height: 90px; top: 20%; left: 78%; animation-duration: 8s; animation-delay: 1s; opacity: 0.5; }
+        .soft-bokeh:nth-child(3) { width: 45px; height: 45px; top: 55%; left: 12%; animation-duration: 5s; animation-delay: 2s; opacity: 0.8; }
+        .soft-bokeh:nth-child(4) { width: 110px; height: 110px; top: 40%; left: 65%; animation-duration: 9s; animation-delay: 0.5s; opacity: 0.4; }
+        .soft-bokeh:nth-child(5) { width: 50px; height: 50px; top: 75%; left: 82%; animation-duration: 7s; animation-delay: 1.5s; opacity: 0.6; }
+
+        @keyframes floatSoftBokeh {
+            0% { transform: translateY(0) scale(0.9); opacity: 0.3; }
+            50% { transform: translateY(-25px) scale(1.15); opacity: 0.75; }
+            100% { transform: translateY(-45px) scale(0.95); opacity: 0.2; }
+        }
+
+/* 👇 별가루 크기 및 글로우 효과 강화 (더 쨍하고 반짝거리게 변경) */
+.stardust {
+    position: absolute;
+    width: 3.5px;
+    height: 3.5px;
+    background-color: #FFF;
+    border-radius: 50%;
+    box-shadow: 0 0 8px 3px rgba(255, 255, 255, 1);
+    animation: sparkleDust ease-in-out infinite alternate;
+}
+
+/* 기존 13개 별가루 위치 및 속도 채워넣기 */
+.stardust:nth-child(6)  { top: 5%;  left: 18%; animation-duration: 1.8s; animation-delay: 0.1s; }
+.stardust:nth-child(7)  { top: 10%; left: 42%; animation-duration: 2.2s; animation-delay: 0.7s; }
+.stardust:nth-child(8)  { top: 15%; left: 85%; animation-duration: 1.9s; animation-delay: 0.3s; }
+.stardust:nth-child(9)  { top: 22%; left: 12%; animation-duration: 2.5s; animation-delay: 1.2s; }
+.stardust:nth-child(10) { top: 28%; left: 68%; animation-duration: 1.6s; animation-delay: 0.5s; }
+.stardust:nth-child(11) { top: 38%; left: 28%; animation-duration: 2.3s; animation-delay: 1.5s; }
+.stardust:nth-child(12) { top: 45%; left: 88%; animation-duration: 1.5s; animation-delay: 0.2s; }
+.stardust:nth-child(13) { top: 55%; left: 15%; animation-duration: 2.7s; animation-delay: 0.9s; }
+.stardust:nth-child(14) { top: 62%; left: 72%; animation-duration: 2.0s; animation-delay: 1.1s; }
+.stardust:nth-child(15) { top: 72%; left: 38%; animation-duration: 2.4s; animation-delay: 0.4s; }
+.stardust:nth-child(16) { top: 80%; left: 82%; animation-duration: 2.1s; animation-delay: 1.6s; }
+.stardust:nth-child(17) { top: 12%; left: 62%; animation-duration: 2.2s; animation-delay: 1.0s; }
+.stardust:nth-child(18) { top: 40%; left: 52%; animation-duration: 1.9s; animation-delay: 0.8s; }
+
+/* 👇 반짝이는 속도감을 빠르게(2s 내외) 조절하여 자글자글한 효과 연출 */
+@keyframes sparkleDust {
+    0% { opacity: 0.1; transform: scale(0.4); }
+    50% { opacity: 1; transform: scale(1.7); }
+    100% { opacity: 0.15; transform: scale(0.6); }
+}
+
+        .header-content {
+            position: relative;
+            z-index: 3;
+            width: 100%;
+            max-width: 650px;
+        }
+
+        .header-sub {
+            font-family: 'Great Vibes', cursive;
+            font-size: clamp(70px, 18vw, 155px);
+            line-height: 0.95;
+            color: rgba(255, 255, 255, 0.38); 
+            margin-top: 70px;
+            margin-bottom: -2.5px;
+            display: block;
+            text-align: center;
+            white-space: nowrap;
+            word-break: keep-all;
+            letter-spacing: -2px;
+            pointer-events: none; !important;
+            user-select: none;
+            filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.2));
+            -webkit-mask-image: radial-gradient(ellipse at center, rgba(0,0,0,1) 50%, rgba(0,0,0,0) 95%);
+            mask-image: radial-gradient(ellipse at center, rgba(0,0,0,1) 50%, rgba(0,0,0,0) 95%);
+        }
+
+        .header-sub span {
+            opacity: 0;
+            display: inline-block;
+            transform: translateY(4px);
+            animation: strokeWrite 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    
+    font-size: inherit;
+    vertical-align: middle; /* 💡 W처럼 큰 글자의 높이 축 덜컥거림 방지 */
+    will-change: transform, opacity; /* 💡 브라우저 그래픽 가속 적용으로 부드러움 극대화 */
+pointer-events: none;
+}
+
+@keyframes strokeWrite {
+    0% { 
+        opacity: 0; 
+        transform: translateY(6px) scale(0.96); 
+        filter: blur(2px); 
+    }
+    100% { 
+        opacity: 0.38; 
+        transform: translateY(0) scale(1); 
+        filter: blur(0); 
+    }
+}
+
+.header-title .big-first {
+    font-size: 38px;          
+    font-weight: 700;          /* '우' 자만 조금 더 */
+    vertical-align: -2px;      /* 커진 '우' 자와 옆의 '리' 글자 줄높이를 자연스럽게 맞춤 */
+    display: inline-block;
+}
+
+/* 1단계: '드' (기존 28px -> 31px) */
+.header-title .grow-1 {
+    font-size: 31px;
+    vertical-align: -1px;
+}
+
+/* 2단계: '는' (35px) */
+.header-title .grow-2 {
+    font-size: 35px;
+    vertical-align: -1px;
+}
+
+/* 3단계: '날' ('우'자 38px보다 살짝 더 큰 40px) */
+.header-title .grow-3 {
+    font-size: 40px;
+    vertical-align: -2px; /* 라인 밸런스 맞춤 */
+}
+
+        .header-title {
+            font-size: 28px;
+            color: #3B2018;
+            font-weight: 600;
+            line-height: 1.13;
+            margin: 10px 0 25px 0;
+            letter-spacing: -0.5px;
+            font-style: italic;
+            position: relative;
+            z-index: 2;
+            text-shadow: 
+                0 0 5px rgba(255, 255, 255, 0.9),
+                0 0 12px rgba(255, 255, 255, 0.8),
+                0 0 22px rgba(255, 255, 255, 0.6),
+                0 0 35px rgba(255, 255, 255, 0.4);
+            filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.85));
+        }
+
+        .header-date-wrapper {
+    position: relative;
+    display: inline-block;
+    padding: 6px 20px;
+    margin-bottom: 8px;
+}
+
+.header-date-watercolor {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    
+    background: linear-gradient(90deg, 
+        rgba(255, 248, 220, 0.0) 0%,   /* 은은한 레몬 틴트 투명 */
+        rgba(255, 240, 185, 0.85) 20%,  /* 부드러운 파스텔 레몬 */
+        rgba(255, 230, 150, 0.9) 50%,   /* 따뜻하고 화사한 소프트 레몬 포인트 */
+        rgba(255, 240, 185, 0.85) 80%, 
+        rgba(255, 248, 220, 0.0) 100%
+    );
+    box-shadow: 0 0 12px rgba(255, 218, 195, 0.6);
+
+    border-radius: 30px;
+    filter: blur(4px);
+    z-index: 1;
+    mix-blend-mode: normal;
+    transform-origin: left center;
+    transform: scaleX(0) translateZ(0);
+    opacity: 0;
+}
+
+.header-date-watercolor.active {
+    animation: flowWatercolor 2.0s cubic-bezier(0.22, 1, 0.36, 1) 5.0s forwards !important;
+}
+
+@keyframes flowWatercolor {
+0% {
+        transform: scaleX(0) translateZ(0);
+        opacity: 0;
+    }
+    20% {
+        opacity: 1;
+    }
+    100% {
+        transform: scaleX(1) translateZ(0);
+        opacity: 1;
+    }
+}
+        .header-date {
+            position: relative;
+            z-index: 2;
+            font-size: 16px;
+            color: #3B2018;
+            letter-spacing: 3px;
+            font-weight: 700;
+        }
+
+        .dday-timer {
+            position: relative;
+            z-index: 2;
+            font-size: 11.2px;
+            color: #5C3D31;
+            letter-spacing: 1.5px;
+            font-weight: 700;
+            margin-bottom: 18px;
+            display: block;
+        }
+
+        .leaf-symbol {
+            font-size: 20px;
+            color: #C89F82;
+            opacity: 0.85;
+            margin-bottom: 10px;
+        }
+
+        .header-main-image {
+            width: 92%;
+            max-width: 520px;
+            margin: -15px auto 0 auto;
+            border: none;
+            position: relative;
+            z-index: 4;
+            -webkit-mask-image: radial-gradient(ellipse at 50% 50%, rgba(0,0,0,1) 50%, rgba(0,0,0,0.7) 72%, rgba(0,0,0,0.2) 88%, rgba(0,0,0,0) 100%);
+    mask-image: radial-gradient(ellipse at 50% 50%, rgba(0,0,0,1) 50%, rgba(0,0,0,0.7) 72%, rgba(0,0,0,0.2) 88%, rgba(0,0,0,0) 100%);
+    animation: slowExpandAndFadeIn 6.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation-delay: 4.5s;
+    opacity: 0;
+    transform-origin: center center;
+}
+
+        .header-main-image img {
+            width: 100%;
+            height: auto;
+            display: block;
+            filter: contrast(102%) brightness(101%);
+        }
+
+        @keyframes slowExpandAndFadeIn {
+            0% { opacity: 0; transform: scale(0.82); filter: blur(6px); }
+            35% { opacity: 0.6; filter: blur(2px); }
+            100% { opacity: 1; transform: scale(1); filter: blur(0); }
+        }
+
+        .content-body {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px 24px 0px 24px;
+            background-color: transparent !important; /* 박스 배경을 투명하게 만들어 위 배경과 이어지게 */
+            border: none !important;                   /* 구분선 제거 */
+            box-shadow: none !important;               /* 박스 그림자 효과 제거 */
+            text-align: center;
+            flex: 1;
+            position: relative;
+        }
+
+/* ==========================================
+   하트 보케 영역 수정 코드 (기존 상승 거리 유지 + 천천히 상승)
+========================================== */
+.heart-bokeh-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    overflow: visible !important;
+    z-index: 3;
+}
+
+.bokeh-heart {
+    position: absolute;
+    color: rgba(225, 150, 150, 0.28);
+    user-select: none;
+    animation: floatHeartBokeh infinite ease-in-out;
+    filter: blur(0.8px);
+}
+
+/* animation-duration 수치를 13초~22초대로 늘려 느리고 부드럽게 상승하도록 변경 */
+.bokeh-heart:nth-child(1)  { left: 3%;  animation-duration: 14s; animation-delay: 0s;   font-size: 22px; color: rgba(235, 160, 160, 0.35); }
+.bokeh-heart:nth-child(2)  { left: 8%;  animation-duration: 18s; animation-delay: 1.5s; font-size: 15px; }
+.bokeh-heart:nth-child(3)  { left: 14%; animation-duration: 13s; animation-delay: 0.8s; font-size: 28px; color: rgba(220, 140, 120, 0.25); }
+.bokeh-heart:nth-child(4)  { left: 20%; animation-duration: 20s; animation-delay: 2.2s; font-size: 18px; }
+.bokeh-heart:nth-child(5)  { left: 26%; animation-duration: 15s; animation-delay: 3.1s; font-size: 24px; color: rgba(240, 170, 170, 0.32); }
+.bokeh-heart:nth-child(6)  { left: 32%; animation-duration: 17s; animation-delay: 0.4s; font-size: 16px; }
+.bokeh-heart:nth-child(7)  { left: 38%; animation-duration: 22s; animation-delay: 1.8s; font-size: 20px; color: rgba(225, 150, 140, 0.28); }
+.bokeh-heart:nth-child(8)  { left: 44%; animation-duration: 16s; animation-delay: 4.2s; font-size: 25px; }
+.bokeh-heart:nth-child(9)  { left: 50%; animation-duration: 19s; animation-delay: 3.6s; font-size: 14px; }
+.bokeh-heart:nth-child(10) { left: 56%; animation-duration: 14s; animation-delay: 2.7s; font-size: 21px; color: rgba(230, 165, 155, 0.3); }
+.bokeh-heart:nth-child(11) { left: 62%; animation-duration: 16s; animation-delay: 0.9s; font-size: 19px; color: rgba(235, 155, 145, 0.35); }
+.bokeh-heart:nth-child(12) { left: 68%; animation-duration: 21s; animation-delay: 2.0s; font-size: 26px; }
+.bokeh-heart:nth-child(13) { left: 74%; animation-duration: 15s; animation-delay: 1.1s; font-size: 17px; color: rgba(220, 135, 125, 0.25); }
+.bokeh-heart:nth-child(14) { left: 80%; animation-duration: 18s; animation-delay: 3.8s; font-size: 23px; }
+.bokeh-heart:nth-child(15) { left: 86%; animation-duration: 23s; animation-delay: 2.5s; font-size: 13px; color: rgba(240, 160, 150, 0.3); }
+.bokeh-heart:nth-child(16) { left: 92%; animation-duration: 16s; animation-delay: 4.8s; font-size: 22px; }
+.bokeh-heart:nth-child(17) { left: 10%; animation-duration: 18s; animation-delay: 1.3s; font-size: 16px; color: rgba(225, 145, 135, 0.28); }
+.bokeh-heart:nth-child(18) { left: 28%; animation-duration: 13s; animation-delay: 2.9s; font-size: 27px; }
+.bokeh-heart:nth-child(19) { left: 48%; animation-duration: 20s; animation-delay: 0.6s; font-size: 15px; color: rgba(230, 170, 160, 0.32); }
+.bokeh-heart:nth-child(20) { left: 65%; animation-duration: 17s; animation-delay: 3.4s; font-size: 21px; }
+.bokeh-heart:nth-child(21) { left: 82%; animation-duration: 20s; animation-delay: 1.7s; font-size: 18px; color: rgba(235, 150, 140, 0.35); }
+.bokeh-heart:nth-child(22) { left: 95%; animation-duration: 15s; animation-delay: 4.1s; font-size: 24px; }
+
+@keyframes floatHeartBokeh {
+    0% { 
+        transform: translateY(100%) scale(0.7) rotate(-10deg); 
+        opacity: 0; 
+    }
+    20% { 
+        opacity: 0.6; /* 은은하게 보이도록 투명도만 살짝 조절 */
+    }
+    60% {
+        opacity: 0.5;
+    }
+    100% { 
+        /* 원하셨던 -350% 상승 거리는 그대로 유지합니다! */
+        transform: translateY(-350%) scale(1.15) rotate(18deg); 
+        opacity: 0; 
+    }
+}
+
+.greeting-section {
+    position: relative;
+    padding: 10px 0 10px 0;
+    z-index: 2;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+        .subtitle {
+            font-size: 13px;
+            letter-spacing: 5px;
+            color: #A39382;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .title {
+            font-size: 24px;
+            color: #3D291F;
+            font-weight: 700;
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+        }
+
+        .divider-decoration {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px auto 35px auto;
+            width: 100%;
+            max-width: 260px;
+        }
+
+        .divider-line {
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #D0C5B8, transparent);
+        }
+
+        .divider-icon {
+            font-size: 14px;
+            color: #A39382;
+            opacity: 0.8;
+        }
+
+        .content {
+            font-size: 16px;
+            line-height: 1.7;
+            font-weight: 700;
+            color: #3D352E;
+            margin-bottom: 45px;
+            word-break: keep-all;
+            position: relative;
+            z-index: 2;
+        }
+
+        .highlight-red { color: #B85B56; font-weight: 700; }
+        .highlight-blue { color: #4A7A96; font-weight: 700; }
+
+        .parents-info {
+            font-size: 16px;
+            color: #3D291F;
+            font-weight: 700;
+            margin: 0 auto 50px auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            width: 100%;
+            position: relative;
+            z-index: 2;
+        }
+
+        .parent-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+        }
+
+        .parents-name {
+            text-align: right;
+            white-space: nowrap;
+            letter-spacing: -0.3px;
+        }
+
+        .relation {
+            color: #826958;
+            font-size: 12.5px;
+            font-weight: 400;
+            white-space: nowrap;
+            padding: 0 2px;
+        }
+
+        .child-name {
+            text-align: left;
+            font-weight: 700;
+            color: #2B1D16;
+            white-space: nowrap;
+        }
+
+/* 아들: 감성 파스텔 하늘색 */
+.relation .son {
+    color: #7BB3DA;
+    font-weight: 600; /* 필요시 글자 두께 살짝 조정 */
+}
+
+/* 딸: 감성 파스텔 분홍색 */
+.relation .daughter {
+    color: #E89ABE;
+    font-weight: 600;
+}
+
+/* 2. 안내 문구 전체 컨테이너 (흰 박스 완전히 바깥에 위치) */
+.gallery-notice-wrapper {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 2px !important;               /* 화살표와 글자 사이 간격 (밀착) */
+    
+    width: 100% !important;
+    max-width: 450px !important;       /* 달력 박스와 동일 너비 */
+    margin: 30px auto 0 auto !important;
+    padding-left: 8px !important;
+    box-sizing: border-box !important;
+    
+    position: relative;
+    z-index: 10;
+}
+
+/* 3. 화살표 이미지 (흰 박스 안쪽에 걸쳐지도록 이동) */
+.gallery-arrow-img {
+    width: 37px;                 /* 화살표 크기 */
+    height: auto;
+    display: inline-block;
+    vertical-align: middle;
+    flex-shrink: 0;
+
+    /* 핵심: 화살표만 아래로 이동시켜 흰 박스 안쪽에서부터 걸쳐 나오게 설정 */
+    transform: translateY(14.5px) rotate(-60deg);
+    margin-bottom: -8px;         /* 위치 이동으로 인한 전체 영역 이탈 방지 */
+}
+
+
+/* 4. 안내 텍스트 (박스 바깥에만 위치) */
+.gallery-notice-text {
+    font-size: 11.5px;
+    color: #A39382;
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: -0.3px;
+display: inline-block;
+    margin-top: 17px !important;
+}
+
+/* 분홍 밑줄(형광펜) 효과 */
+.highlight-underline {
+    position: relative;
+    display: inline-block;
+    /* 형광펜 효과: 아래쪽 5% 정도에 연한 분홍색을 채움 */
+    background: linear-gradient(180deg, transparent 80%, #ffd6d6 80%);
+    padding: 0 1px; /* 양옆 미세 여백 */
+}
+
+.calendar-section {
+    margin: 12px auto 40px auto;
+    padding: 30px 13px 30px 20px; 
+    background: #FAF8F5;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+    border: 1px solid #EFECE6 !important; /* 테두리 사라짐 방지 */
+    max-width: 450px;
+    position: relative;
+    z-index: 1;
+}
+
+.gallery-instruction {
+    font-size: 10.8px !important;
+    color: #A39382;
+    margin-top: -10px !important;
+    margin-bottom: 4px !important;
+    font-weight: 400;
+    line-height: 1.2;
+}
+
+.mosaic-gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    grid-auto-rows: 42px;
+    gap: 6px;
+    margin-bottom: 30px;
+    padding: 0 4px;
+    position: relative;
+    contain: layout paint;
+    z-index: 1; /* 갤러리 기본 레이어 순서 지정 */
+}
+
+        .gallery-item {
+            border-radius: 6px;
+            overflow: hidden;
+            cursor: pointer;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+            background-color: #EFECE6;
+            position: relative;
+            content-visibility: auto;
+            contain-intrinsic-size: 0 80px;
+            transform: translateZ(0);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.3s ease;
+            backface-visibility: hidden;
+            will-change: transform;
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.06);
+        }
+
+        .item-0  { grid-column: span 4; grid-row: span 4; }
+        .item-1  { grid-column: span 2; grid-row: span 3; }
+        .item-2  { grid-column: span 2; grid-row: span 3; } 
+        .item-3  { grid-column: span 2; grid-row: span 2; }
+        .item-4  { grid-column: span 2; grid-row: span 3; }
+        .item-5  { grid-column: span 2; grid-row: span 3; }
+        .item-6  { grid-column: span 2; grid-row: span 3; }
+        .item-7  { grid-column: span 2; grid-row: span 2; }
+        .item-8  { grid-column: span 2; grid-row: span 3; }
+        .item-9  { grid-column: span 2; grid-row: span 3; }
+        .item-10 { grid-column: span 1; grid-row: span 3; }
+        .item-11 { grid-column: span 2; grid-row: span 3; }
+        .item-12 { grid-column: span 2; grid-row: span 3; }
+        .item-13 { grid-column: span 1; grid-row: span 3; }
+        .item-14 { grid-column: span 1; grid-row: span 2; }
+        .item-15 { grid-column: span 1; grid-row: span 3; }
+        .item-16 { grid-column: span 1; grid-row: span 3; }
+        .item-17 { grid-column: span 3; grid-row: span 2; }
+        .item-18 { grid-column: span 6; grid-row: span 4; }
+        .item-19 { grid-column: span 2; grid-row: span 2; }
+
+        .calendar-header {
+            color: #C28E75;
+            font-weight: 700;
+            margin-bottom: 18px;
+            letter-spacing: 2px;
+            display: flex;
+            align-items: baseline;
+            justify-content: center;
+        }
+
+        .calendar-header .num-10 {
+            font-size: 33px;
+            line-height: 1;
+        }
+
+        .calendar-header .char-month {
+            font-size: 19.8px;
+            margin-left: 2px;
+        }
+
+        .calendar-table {
+            width: 100%;
+            max-width: 300px;
+            margin: 0 auto;
+            border-collapse: collapse;
+        }
+
+        .calendar-table th {
+            padding: 8px 0;
+            font-size: 12px;
+            color: #A39382;
+            font-weight: 400;
+        }
+
+        .calendar-table th.sun { color: #C86B6B; }
+
+        .calendar-table td {
+            padding: 10px 0;
+            font-size: 13px;
+            color: #555;
+            text-align: center;
+            font-weight: 400;
+            position: relative;
+            height: 44px;
+            vertical-align: middle;
+        }
+
+        .calendar-table td.sun { color: #C86B6B; }
+
+        .calendar-table td.target-day {
+            color: #FFF !important;
+            z-index: 1;
+            cursor: pointer;
+            transition: transform 0.15s ease;
+        }
+
+        .calendar-table td.target-day:active {
+            transform: scale(0.9);
+        }
+
+        .calendar-table td.target-day::before {
+            content: '';
+            position: absolute;
+            top: 6px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 30px;
+            height: 30px;
+            background-color: #B28F81;
+            border-radius: 50%;
+            z-index: -1;
+            box-shadow: 0 2px 8px rgba(178, 143, 129, 0.4);
+        }
+
+        .time-label {
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 10px;
+            color: #826958;
+            font-weight: 700;
+            white-space: nowrap;
+            letter-spacing: -0.5px;
+        }
+
+        .location-section {
+            margin: 50px auto 20px auto;
+            position: relative;
+            z-index: 2;
+            max-width: 450px;
+        }
+
+        .venue-name {
+            font-size: 20px;
+            color: #3D291F;
+            font-weight: 700;
+            margin-top: 10px;
+            margin-bottom: 6px;
+        }
+
+/* 전체 감싸는 부모 컨테이너 (중앙 정렬) */
+.venue-container {
+    position: relative;
+    display: inline-block;
+    padding: 6px 24px; /* 수채화가 번질 텍스트 주변 여백 */
+    margin: 0 auto;
+    text-align: center;
+}
+
+/* 1. 글자 뒤 수채화 번짐 레이어 */
+.venue-watercolor-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 0%; /* 처음엔 안 보임 */
+    
+background: linear-gradient(90deg, 
+    rgba(255, 253, 248, 0.0) 0%, 
+    rgba(240, 220, 190, 0.85) 25%, 
+    rgba(225, 198, 153, 0.95) 50%, 
+    rgba(240, 220, 190, 0.85) 75%, 
+    rgba(255, 253, 248, 0.0) 100%
+);
+box-shadow: 0 0 12px rgba(225, 198, 153, 0.4);
+    
+    /* 처음엔 정지 상태 */
+    animation-play-state: paused;
+}
+
+/* 스크롤 도착 시 active 붙으면서 번짐 시작 */
+.venue-watercolor-bg.active {
+    animation: spreadWatercolor 4.0s cubic-bezier(0.25, 1, 0.3, 1) forwards;
+}
+
+/* 좌->우 물감 퍼짐 키프레임 */
+@keyframes spreadWatercolor {
+    0% { 
+        width: 0%; 
+        opacity: 0; 
+    }
+    30% { 
+        opacity: 0.9; 
+    }
+    100% { 
+        width: 100%; 
+        opacity: 1; 
+    }
+}
+
+/* 2. 수채화 위에 얹어질 텍스트 */
+.venue-text {
+    position: relative;
+    z-index: 2; /* 수채화보다 위에 위치 */
+    font-size: 16px;
+    color: #3B2018;
+    letter-spacing: 1px;
+    font-weight: 700;
+    font-family: 'Gowun Batang', serif;
+}
+        .venue-address {
+            font-size: 14px;
+            color: #6E5A4C;
+            margin-bottom: 25px;
+            letter-spacing: -0.2px;
+        }
+
+.nav-buttons-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;                  /* 버튼 사이 간격 */
+    width: 100%;
+    margin-bottom: 25px;
+    padding: 0 10px;
+    box-sizing: border-box;
+    flex-wrap: nowrap;          /* 줄바꿈 방지 */
+}
+
+.nav-btn {
+    /* 너비와 높이를 절대 고정 */
+    width: 72px !important;
+    height: 72px !important;
+    min-width: 72px !important;
+    min-height: 72px !important;
+    max-width: 72px !important;
+    max-height: 72px !important;
+    
+    border-radius: 50% !important; /* 완벽한 동그라미 강제 */
+    background-color: #FAF8F5;
+    border: 1px solid #D8C8BD;
+    
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    
+    text-decoration: none;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+    box-sizing: border-box;
+    
+    /* flex 안에서 늘어나거나 줄어드는 현상 완전 차단 */
+    flex-shrink: 0 !important;
+    flex-grow: 0 !important;
+}
+
+.nav-btn:hover {
+    background-color: #EFECE6;
+    border-color: #A39382;
+}
+
+/* 내부 아이콘 고정 */
+.nav-icon-svg, 
+.nav-btn img {
+    width: 24px !important;
+    height: 24px !important;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
+.nav-emoji {
+    font-size: 20px !important;
+    line-height: 24px !important;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.nav-btn span {
+    font-size: 11px;
+    color: #3D291F;
+    font-weight: 600;
+    letter-spacing: -0.5px;
+    white-space: nowrap;
+    line-height: 1.2;
+}
+
+.accordion-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    text-align: left;
+}
+
+.accordion-item {
+    overflow: hidden;
+    transition: all 0.25s ease;
+}
+
+.accordion-header {
+    width: 100%;
+    padding: 16px 20px;
+    background: none;
+    border: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.accordion-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.35s cubic-bezier(0, 1, 0, 1);
+}
+
+        /* 주차 & 대중교통 나란히 배치 */
+        .transport-row-container {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            max-width: 420px;
+            margin: 0 auto 12px auto;
+        }
+
+        .transport-accordion {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+
+        .transport-accordion .accordion-item {
+            background-color: #FFFFFF;
+            border: 1px solid #EAE5DE;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+        }
+
+        .transport-accordion .accordion-item.active {
+            border-color: #CBB8A9;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .transport-accordion .accordion-header {
+            padding: 12px 14px;
+            font-size: 13.5px;
+            font-weight: 700;
+            color: #4A3B32;
+            white-space: nowrap;
+        }
+
+        .transport-badge-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 6px;
+            font-size: 14px;
+        }
+
+        .transport-accordion .accordion-header::after {
+            content: '';
+            display: inline-block;
+            width: 7px;
+            height: 7px;
+            border-right: 2px solid #99887B;
+            border-bottom: 2px solid #99887B;
+            transform: rotate(45deg);
+            transition: transform 0.3s ease;
+            margin-right: 2px;
+            flex-shrink: 0;
+        }
+
+        .transport-accordion .accordion-item.active .accordion-header::after {
+            transform: rotate(-135deg);
+            border-color: #725948;
+        }
+
+        .transport-info-body {
+            padding: 0 14px 16px 14px;
+            font-size: 12.5px;
+            color: #3D352E;
+            line-height: 1.65;
+        }
+
+        .transport-subtitle {
+            font-weight: 700;
+            color: #3D291F;
+            margin-top: 12px;
+            margin-bottom: 4px;
+            font-size: 13px;
+        }
+
+        .transport-desc {
+            margin: 0 0 8px 0;
+            color: #4A443E;
+            word-break: keep-all;
+        }
+
+        .transport-desc:last-child {
+            margin-bottom: 0;
+        }
+
+        /* 파란색/하늘색 동그라미 (크기 50% 줄임) */
+        .blue-dot {
+            font-size: 0.5em;
+            vertical-align: middle;
+            display: inline-block;
+            transform: translateY(-1px);
+        }
+
+        /* 예식장 안내 드롭다운 스타일 */
+        .venue-info-accordion {
+            max-width: 420px;
+            margin: 0 auto;
+        }
+
+        .venue-info-accordion .accordion-item {
+            background-color: #FFFFFF;
+            border: 1px solid #EAE5DE;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+        }
+
+        .venue-info-accordion .accordion-header {
+            padding: 12px 16px;
+            font-size: 13.5px;
+            font-weight: 700;
+            color: #4A3B32;
+        }
+
+        .venue-info-accordion .accordion-header::after {
+            content: '';
+            display: inline-block;
+            width: 7px;
+            height: 7px;
+            border-right: 2px solid #99887B;
+            border-bottom: 2px solid #99887B;
+            transform: rotate(45deg);
+            transition: transform 0.3s ease;
+        }
+
+        .venue-info-accordion .accordion-item.active .accordion-header::after {
+            transform: rotate(-135deg);
+            border-color: #725948;
+        }
+
+        .venue-img-wrapper {
+            padding: 10px 14px 16px 14px;
+            text-align: center;
+        }
+
+        .venue-img-wrapper img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            display: block;
+        }
+
+        /* 식사 안내 문구 및 분홍색 동그라미 스타일 */
+        .venue-meal-desc {
+            margin-top: 12px;
+            font-size: 12.5px;
+            color: #3D352E;
+            line-height: 1.6;
+            text-align: left;
+            word-break: keep-all;
+        }
+
+        .pink-dot {
+            color: #FF85A2;
+            font-size: 1.0em;
+            vertical-align: middle;
+            display: inline-block;
+            transform: translateY(-1px);
+        }
+
+        /* 계좌번호용 아코디언 스타일 */
+.account-accordion .accordion-item {
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+    transition: all 0.3s ease;
+    margin-bottom: 10px;
+    overflow: hidden;
+}
+
+/* 신랑측 수채화 블루 */
+.account-accordion .accordion-item.groom {
+    background: linear-gradient(120deg, #E2ECF8 0%, #F5F8FC 50%, #EBF1F9 100%);
+    border: 1px solid #C4D7E9;
+}
+
+/* 신부측 수채화 핑크 */
+.account-accordion .accordion-item.bride {
+    background: linear-gradient(120deg, #FCE8EA 0%, #FAF2F3 50%, #F9ECEE 100%);
+    border: 1px solid #EACACF;
+}
+
+/* 1. 아코디언 열림(active) 상태 테두리 - 신랑/신부 각각 맞춤 적용 */
+.account-accordion .accordion-item.groom.active {
+    border-color: #B2C8DF !important; /* 신랑측 활성화 테두리 */
+}
+
+.account-accordion .accordion-item.bride.active {
+    border-color: #E9C4C7 !important; /* 신부측 활성화 테두리 */
+}
+
+/* 2. 헤더 기본 스타일 (글자 및 여백) */
+.account-accordion .accordion-header {
+    font-size: 15px;
+    font-weight: 700;
+    color: #3D291F;
+    
+    /* 텍스트와 화살표 정렬을 위해 flex 추천 */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+}
+
+/* 신랑/신부 헤더 글자색 은은하게 톤다운 (선택사항) */
+.account-accordion .accordion-item.groom .accordion-header {
+    color: #324B63;
+}
+.account-accordion .accordion-item.bride .accordion-header {
+    color: #5C3D42;
+}
+
+/* 3. 화살표 기본 스타일 및 색상 정밀화 */
+.account-accordion .accordion-header::after {
+    content: '▾';
+    font-size: 14px;
+    color: #8C7A6B; /* 화살표 선명도 살짝 강화 */
+    transition: transform 0.3s ease;
+}
+
+/* 4. 열렸을 때(active) 화살표 회전 */
+.account-accordion .accordion-item.active .accordion-header::after {
+    transform: rotate(180deg);
+}
+
+/* 5. 계좌 정보가 나오는 하단 영역 (열렸을 때 배경) */
+.account-accordion .accordion-content {
+    background-color: #FFFFFF;
+    border-top: 1px dashed rgba(0, 0, 0, 0.08); /* 구분선 살짝 추가 */
+}
+        /* 마음 전하실 곳 섹션 스타일 */
+        .account-section {
+            margin: 60px auto 20px auto;
+            position: relative;
+            z-index: 2;
+            max-width: 450px;
+        }
+
+        .account-desc {
+            font-size: 14px;
+            color: #6E5A4C;
+            margin-bottom: 25px;
+            line-height: 1.6;
+            word-break: keep-all;
+        }
+
+        .account-row {
+            padding: 16px 20px;
+            border-top: 1px solid #F4EDE4;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .account-holder {
+            font-size: 13.5px;
+            color: #826958;
+            font-weight: 700;
+        }
+
+        .account-number-wrap {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .account-number {
+            font-size: 14.5px;
+            font-weight: 700;
+            color: #3D352E;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-copy {
+            padding: 5px 12px;
+            font-size: 12px;
+            border: 1px solid #D6C7B8;
+            background-color: #FAF8F5;
+            border-radius: 6px;
+            cursor: pointer;
+            color: #4A3B32;
+            font-family: inherit;
+            font-weight: 700;
+            transition: background 0.2s;
+        }
+
+        .btn-copy:active {
+            background-color: #EFECE6;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.9);
+            z-index: 999999;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-img-container {
+            position: relative;
+            max-width: 90vw;
+            max-height: 80vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-img-container img {
+            max-width: 100%;
+            max-height: 80vh;
+            object-fit: contain;
+            border-radius: 8px;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            color: #fff;
+            font-size: 32px;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        .modal-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            border: none;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+
+        .modal-nav:hover { background: rgba(255, 255, 255, 0.4); }
+        .modal-prev { left: 15px; }
+        .modal-next { right: 15px; }
+
+        .modal-indicator {
+            color: rgba(255, 255, 255, 0.8);
+            margin-top: 15px;
+            font-size: 14px;
+            letter-spacing: 1px;
+        }
+
+/* 반짝이는 하단 푸터 전체 스타일 */
+.card-footer {
+   position: relative;
+    overflow: hidden;
+    width: 100%;
+    min-height: 400px;
+    background: linear-gradient(180deg, 
+        #F8F6F0 0%, 
+        #F8F6F0 15%,   /* 아이보리 구간을 50% -> 15%로 대폭 축소 */
+        #F4EDE4 30%,   /* 은은한 베이지 연결 */
+        #E8B89B 60%,   /* 살구빛 그라데이션이 글자 바로 밑에서 서서히 시작됨 */
+        #D99A7A 100%
+    );
+    margin-top: 0px;
+    padding: 60px 20px 80px 20px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+/* 텍스트 요소 z-index 설정 */
+.thank-you-divider, .thank-you-en, .thank-you-kr, .thank-you-sub {
+    position: relative;
+    z-index: 2;
+}
+.thank-you-section {
+    width: 100% !important;
+    max-width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background: transparent;
+    box-sizing: border-box;
+    position: relative;
+    z-index: 2; /* 오버레이보다 위로 배치 */
+}
+
+/* 텍스트 스타일 및 레이어 통합 관리 */
+.thank-you-divider, 
+.thank-you-en, 
+.thank-you-kr, 
+.thank-you-sub {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* 구분선 여백 최적화 */
+.thank-you-divider {
+    width: 30px;
+    height: 1px;
+    background-color: #C2B2A3;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    opacity: 0.6;
+}
+
+/* 텍스트 스타일 지정 */
+.thank-you-en {
+    color: #8C7B6C;
+    font-size: 13px;
+    letter-spacing: 3px;
+    margin-bottom: 25px;
+}
+
+.thank-you-kr {
+    color: #3D291F;
+    font-size: 19px;
+    font-weight: 700;
+    margin-bottom: 25px;
+}
+
+.thank-you-sub {
+    color: #ffffff;
+    font-size: 14px;
+    word-break: keep-all;
+    line-height: 1.5;
+}
+
+/* ==========================================
+   하단 전용 효과 (아래가 짙고 위로 연해지는 버전)
+   ========================================== */
+
+/* 1. 수채화 오버레이 (아래쪽 50~70% 위치의 색감을 더 짙게 조정) */
+.footer-watercolor-overlay {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: 
+        radial-gradient(circle at 25% 85%, rgba(205, 130, 95, 0.45) 0%, transparent 60%),
+        radial-gradient(circle at 75% 80%, rgba(220, 150, 110, 0.4) 0%, transparent 55%),
+        radial-gradient(circle at 50% 30%, rgba(245, 220, 200, 0.2) 0%, transparent 50%);
+    mix-blend-mode: multiply;
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* 2. 햇살/빛줄기 오버레이 (아래에서 위쪽으로 비추도록 위치 및 회전 변경) */
+.footer-sunbeam-overlay {
+    position: absolute;
+    bottom: -30%; left: -20%;
+    width: 120%; height: 160%;
+    background: radial-gradient(ellipse at 15% 85%, rgba(255, 252, 240, 0.4) 0%, rgba(255, 245, 220, 0.12) 35%, transparent 70%);
+    pointer-events: none;
+    z-index: 2;
+    transform: rotate(15deg);
+    mix-blend-mode: screen;
+}
+
+/* 3. 파티클(보케+별가루) 컨테이너 */
+.footer-particles-container {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 2;
+}
+
+/* 4. 부드러운 보케 효과 */
+.footer-particles-container .soft-bokeh {
+    position: absolute;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.75) 0%, rgba(255, 240, 220, 0.25) 60%, transparent 100%);
+    filter: blur(4px);
+    animation: floatSoftBokeh ease-in-out infinite alternate;
+}
+
+.footer-particles-container .soft-bokeh:nth-child(1) { width: 60px; height: 60px; top: 10%; left: 8%; animation-duration: 6s; opacity: 0.7; }
+.footer-particles-container .soft-bokeh:nth-child(2) { width: 90px; height: 90px; top: 20%; left: 78%; animation-duration: 8s; animation-delay: 1s; opacity: 0.5; }
+.footer-particles-container .soft-bokeh:nth-child(3) { width: 45px; height: 45px; top: 55%; left: 12%; animation-duration: 5s; animation-delay: 2s; opacity: 0.8; }
+.footer-particles-container .soft-bokeh:nth-child(4) { width: 110px; height: 110px; top: 40%; left: 65%; animation-duration: 9s; animation-delay: 0.5s; opacity: 0.4; }
+.footer-particles-container .soft-bokeh:nth-child(5) { width: 50px; height: 50px; top: 75%; left: 82%; animation-duration: 7s; animation-delay: 1.5s; opacity: 0.6; }
+
+/* 5. 별가루(반짝임) 효과 */
+.footer-particles-container .stardust {
+    position: absolute;
+    width: 2.5px; height: 2.5px;
+    background-color: #FFF;
+    border-radius: 50%;
+    box-shadow: 0 0 6px 2px rgba(255, 255, 255, 0.95);
+    animation: sparkleDust ease-in-out infinite alternate;
+}
+
+.footer-particles-container .stardust:nth-child(6)  { top: 8%;  left: 18%; animation-duration: 2.2s; animation-delay: 0.1s; }
+.footer-particles-container .stardust:nth-child(7)  { top: 14%; left: 42%; animation-duration: 3.1s; animation-delay: 0.7s; }
+.footer-particles-container .stardust:nth-child(8)  { top: 22%; left: 85%; animation-duration: 2.8s; animation-delay: 0.3s; }
+.footer-particles-container .stardust:nth-child(9)  { top: 28%; left: 12%; animation-duration: 3.5s; animation-delay: 1.2s; }
+.footer-particles-container .stardust:nth-child(10) { top: 35%; left: 68%; animation-duration: 2.4s; animation-delay: 0.5s; }
+.footer-particles-container .stardust:nth-child(11) { top: 45%; left: 28%; animation-duration: 3.2s; animation-delay: 1.5s; }
+.footer-particles-container .stardust:nth-child(12) { top: 52%; left: 88%; animation-duration: 2.1s; animation-delay: 0.2s; }
+.footer-particles-container .stardust:nth-child(13) { top: 62%; left: 15%; animation-duration: 3.8s; animation-delay: 0.9s; }
+.footer-particles-container .stardust:nth-child(14) { top: 68%; left: 72%; animation-duration: 2.7s; animation-delay: 1.1s; }
+.footer-particles-container .stardust:nth-child(15) { top: 78%; left: 38%; animation-duration: 3.3s; animation-delay: 0.4s; }
+.footer-particles-container .stardust:nth-child(16) { top: 85%; left: 82%; animation-duration: 2.9s; animation-delay: 1.6s; }
+.footer-particles-container .stardust:nth-child(17) { top: 18%; left: 62%; animation-duration: 3.0s; animation-delay: 1.0s; }
+.footer-particles-container .stardust:nth-child(18) { top: 48%; left: 52%; animation-duration: 2.6s; animation-delay: 0.8s; }
+
+/* 공통 애니메이션 키프레임 */
+@keyframes floatSoftBokeh {
+    0% { transform: translateY(0) scale(0.9); opacity: 0.3; }
+    50% { transform: translateY(-25px) scale(1.15); opacity: 0.75; }
+    100% { transform: translateY(-45px) scale(0.95); opacity: 0.2; }
+}
+
+@keyframes sparkleDust {
+    0% { opacity: 0.1; transform: scale(0.5); }
+    50% { opacity: 1; transform: scale(1.6); }
+    100% { opacity: 0.2; transform: scale(0.7); }
+}
+
+/* 하단 가을 포인트 아이콘 스타일 */
+.footer-leaf-icon {
+    margin-top: 24px;
+    width: 28px;
+    height: 28px;
+    opacity: 0.55;
+    position: relative;
+    z-index: 2;
+}
+
+/* LP 아이콘 회전 애니메이션 */
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.lp-icon.playing,
+.bgm-btn.active .lp-icon {
+    animation: spin 3s linear infinite;
+    transform-origin: center;
+}
+
+/* 🎈 말풍선 전체 스타일 */
+.speech-bubble {
+    position: absolute;
+    top: -120px; /* 봉투 위쪽에 오도록 위치 조절 */
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(255, 255, 255, 0.95);
+    color: #555555;
+    padding: 10px 14px;
+    border-radius: 14px;
+    font-size: 0.72rem; /* 작은 글씨 크기 */
+    line-height: 1.5;
+    text-align: center;
+    white-space: nowrap;
+    word-break: keep-all;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+    pointer-events: none; /* 봉투 클릭 통과 */
+    z-index: 9999 !important;
+    display: block !important;
+    
+    /* 둥둥 애니메이션 */
+    animation: floatBubble 2.2s ease-in-out infinite;
+}
+
+/* 🎈 말풍선 아래 꼬리표 */
+.speech-bubble::after {
+    content: '';
+    position: absolute;
+    bottom: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 6px 6px 0 6px;
+    border-style: solid;
+    border-color: rgba(255, 255, 255, 0.95) transparent transparent transparent;
+}
+
+/* 🎈 부드럽게 위아래로 움직이는 효과 */
+@keyframes floatBubble {
+    0%, 100% {
+        transform: translate(-50%, 0);
+    }
+    50% {
+        transform: translate(-50%, -6px);
+    }
+}
+
+/* 🎈 2번째 줄: 진분홍 강조 */
+.speech-bubble .highlight-pink {
+    color: #e64a19; /* 또는 #d81b60 */
+    font-weight: 600;
+}
+
+/* 🎈 3번째 줄: 진파랑 */
+.speech-bubble .highlight-navy {
+    color: #0d47a1;
+    font-weight: 600;
+}
+
+    </style>
+</head>
+
+
+<body>
+
+<div class="envelope-main-outer">
+
+<!-- 1. 봉투 오버레이 화면 -->
+    <div id="envelopeOverlay">
+        <div class="envelope-box">
+            <div class="envelope-inside"></div>
+
+            <!-- 초대장 열기 버튼 -->
+            <button class="open-envelope-btn" id="openBtn" onclick="openWeddingInvitation()">
+
+    <div class="speech-bubble">
+        환경과 실용을 위해 종이 청첩장은 제작하지 않고,<br>
+        <span class="highlight-pink">저희가 직접 모바일 청첩장을 정성껏</span> 만들었습니다.<br>
+        <span class="highlight-navy">따뜻한 마음으로 봐주십시오♥</span>
+    </div>
+
+                <span class="btn-text">초대장 열기</span>
+                <span class="btn-subtext">Open Invitation</span>
+            </button>
+
+            <!-- 콘페티 레이어 -->
+            <div class="envelope-flowers">
+                <div class="sparkle heart"></div>
+                <div class="sparkle star"></div>
+                <div class="sparkle twinkle"></div>
+                <div class="sparkle star"></div>
+                <div class="sparkle rect"></div>
+                <div class="sparkle twinkle"></div>
+                <div class="sparkle dot"></div>
+                <div class="sparkle dot"></div>
+                <div class="sparkle heart"></div>
+                <div class="sparkle star"></div>
+                <div class="sparkle twinkle"></div>
+                <div class="sparkle dot"></div>
+                <div class="sparkle heart"></div>
+                <div class="sparkle rect"></div>
+                <div class="sparkle star"></div>
+                <div class="sparkle dot"></div>
+                <div class="sparkle heart"></div>
+                <div class="sparkle dot"></div>
+                <div class="sparkle rect"></div>
+                <div class="sparkle twinkle"></div>
+                <div class="sparkle rect"></div>
+                <div class="sparkle star"></div>
+            </div>
+
+            <!-- 봉투 덮개 및 포켓 -->
+            <div class="envelope-flap"></div>
+
+            <!-- 카드 래퍼 영역 -->
+            <div class="envelope-card-wrapper">
+                <div class="card-ambient-layer">
+                    <div class="ambient-bokeh b1"></div>
+                    <div class="ambient-bokeh b2"></div>
+                    <div class="ambient-bokeh b3"></div>
+                    <div class="ambient-bokeh b4"></div>
+
+                    <div class="ambient-star s1"></div>
+                    <div class="ambient-star s2"></div>
+                    <div class="ambient-star s3"></div>
+                    <div class="ambient-star s4"></div>
+
+                    <div class="ambient-glitter g1"></div>
+                    <div class="ambient-glitter g2"></div>
+                    <div class="ambient-glitter g3"></div>
+                    <div class="ambient-glitter g4"></div>
+                </div>
+
+                <!-- 미니 카드 본체 -->
+                <div class="envelope-card">
+                    <div class="mini-card-sub">Autumn Wedding</div>
+                    <div class="mini-card-names">훈 & 은미</div>
+                    <div class="mini-card-date">2026. 10. 31. SAT</div>
+                    <div class="mini-card-title">Two Become One.<br>We Are One!</div>
+                </div>
+            </div>
+
+            <div class="envelope-pocket"></div>
+        </div>
+    </div>
+
+
+    <!-- 🎵 오디오 태그 -->
+    <audio id="bgm" src="bgm.mp3" preload="auto" loop></audio>
+
+<button class="bgm-btn" id="bgmBtn" onclick="toggleBGM(event)">
+
+    <svg class="lp-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.8"/>
+        <circle cx="12" cy="12" r="7" stroke="currentColor" stroke-width="1" stroke-dasharray="1.5 1.5"/>
+        <circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1"/>
+        <circle cx="12" cy="12" r="2" fill="currentColor"/>
+    </svg>
+   <span id="bgmText">BGM ON</span>
+</button>
+
+
+    <div class="card-container">
+
+        <div class="main-header">
+            <div class="watercolor-overlay"></div>
+            <div class="sunbeam-overlay"></div>
+
+            <div class="header-particles-container">
+                <div class="soft-bokeh"></div>
+                <div class="soft-bokeh"></div>
+                <div class="soft-bokeh"></div>
+                <div class="soft-bokeh"></div>
+                <div class="soft-bokeh"></div>
+                <div class="stardust"></div>
+                <div class="stardust"></div>
+                <div class="stardust"></div>
+                <div class="stardust"></div>
+                <div class="stardust"></div>
+                <div class="stardust"></div>
+                <div class="stardust"></div>
+                <div class="stardust"></div>
+                <div class="stardust"></div>
+                <div class="stardust"></div>
+                <div class="stardust"></div>
+                <div class="stardust"></div>
+                <div class="stardust"></div>
+            </div>
+
+            <div class="header-content">
+                <div class="header-sub" id="typewriterText">Autumn Wedding</div>
+                
+                <h1 class="header-title">
+                    <span class="big-first">우</span>리, 계절을 닮아<br>
+서로에게 물<span class="grow-1">드</span><span class="grow-2">는</span> <span class="grow-3">날</span> ..<span class="title-leaf">🍂</span>
+</h1>
+                <div class="header-date-wrapper">
+                    <div class="header-date-watercolor"></div>
+                    <div class="header-date">2026년 10월 31일 토요일</div>
+                </div>
+
+                <div class="dday-timer" id="ddayTimer">D-DAY 계산 중...</div>
+
+                <div class="header-main-image">
+                    <img src="head.png" alt="메인 웨딩 사진" fetchpriority="high">
+                </div>
+            </div>
+        </div>
+
+        <div class="content-body">
+            
+            <section class="greeting-section">
+                <div class="heart-bokeh-container">
+                    <span class="bokeh-heart">♥</span>
+                    <span class="bokeh-heart">♥</span>
+                    <span class="bokeh-heart">♥</span>
+                    <span class="bokeh-heart">♥</span>
+                    <span class="bokeh-heart">♥</span>
+                    <span class="bokeh-heart">♥</span>
+                    <span class="bokeh-heart">♥</span>
+                    <span class="bokeh-heart">♥</span>
+                    <span class="bokeh-heart">♥</span>
+                    <span class="bokeh-heart">♥</span>
+                    <span class="bokeh-heart">♥</span>
+                    <span class="bokeh-heart">♥</span>
+                    <span class="bokeh-heart">♥</span>
+                    <span class="bokeh-heart">♥</span>
+                    <span class="bokeh-heart">♥</span>
+                    <span class="bokeh-heart">♥</span>
+                    <span class="bokeh-heart">♥</span>
+                    <span class="bokeh-heart">♥</span>
+                    <span class="bokeh-heart">♥</span>
+                    <span class="bokeh-heart">♥</span>
+                    <span class="bokeh-heart">♥</span>
+                    <span class="bokeh-heart">♥</span>
+                </div>
+<br><br>
+                <div class="subtitle">INVITATION</div>
+                <div class="title">모시는 글</div>
+
+                <div class="divider-decoration">
+                    <div class="divider-line"></div>
+                    <div class="divider-icon">🌿</div>
+                    <div class="divider-line"></div>
+                </div>
+
+                <div class="content">
+                    가을빛 고운 결실의 계절에 귀한 소식을 전합니다.<br><br>
+                    저희 두 사람, <span class="highlight-red">부모님께 배운 사랑</span>을 깊이 품고<br>
+                    <span class="highlight-blue">'우리'라는 새로운 세상</span>으로 나아가려 합니다.<br>
+                    두 집안이 만나 하나의 더 큰 가족이 되는<br>
+                    설레는 시작의 자리에<br>
+                    소중한 분들을 모시고 싶습니다.<br><br>
+
+                    직접 소식을 전하지 못하고 글로써 청함을<br>
+                    너그러운 마음으로 헤아려 주시기 바랍니다.<br>
+                    이 작은 청첩장에 저희의 온 진심을 담아 보냅니다.<br><br>
+
+                    저희 두 사람의 약속이 빈말이 되지 않도록<br>
+                    가장 가까운 곳에서 증인이 되어주시길 소망합니다.<br><br>
+                </div>
+
+                <div class="parents-info">
+    <div class="parent-row">
+        <span class="parents-name">양순철 · 연용숙</span>
+        <span class="relation">의 <span class="son">아들</span></span>
+        <span class="child-name">훈</span>
+    </div>
+    <div class="parent-row">
+        <span class="parents-name">장윤동 · 강애숙</span>
+        <span class="relation">의 <span class="daughter">딸</span></span>
+        <span class="child-name">은미</span>
+    </div>
+</div>
+
+            </section>
+
+
+                <div class="gallery-notice-wrapper">
+    <img src="arrow.png" alt="화살표" class="gallery-arrow-img">
+    <span class="gallery-notice-text">
+        <span class="highlight-underline">사진을 누르면 더 크게 보실 수 있습니다.</span>
+    </span>
+</div>
+
+            <div class="calendar-section">
+                <div class="mosaic-gallery-grid" id="galleryGrid">
+<div class="gallery-item item-0" onclick="openModal(0)"><img src="0.jpg" alt="0"></div>
+<div class="gallery-item item-1" onclick="openModal(1)"><img src="1.webp" alt="1"></div>
+<div class="gallery-item item-2" onclick="openModal(2)"><img src="2.webp" alt="2"></div>
+<div class="gallery-item item-3" onclick="openModal(3)"><img src="3.webp" alt="3"></div>
+<div class="gallery-item item-4" onclick="openModal(4)"><img src="4.webp" alt="4"></div>
+<div class="gallery-item item-5" onclick="openModal(5)"><img src="5.webp" alt="5" loading="lazy"></div>
+<div class="gallery-item item-6" onclick="openModal(6)"><img src="6.webp" alt="6" loading="lazy"></div>
+<div class="gallery-item item-7" onclick="openModal(7)"><img src="7.webp" alt="7" loading="lazy"></div>
+<div class="gallery-item item-16" onclick="openModal(8)"><img src="16.webp" alt="16" loading="lazy"></div>
+<div class="gallery-item item-8" onclick="openModal(9)"><img src="8.webp" alt="8" loading="lazy"></div>
+<div class="gallery-item item-9" onclick="openModal(10)"><img src="9.webp" alt="9" loading="lazy"></div>
+<div class="gallery-item item-10" onclick="openModal(11)"><img src="10.webp" alt="10" loading="lazy"></div>
+<div class="gallery-item item-15" onclick="openModal(12)"><img src="15.webp" alt="15" loading="lazy"></div>
+<div class="gallery-item item-11" onclick="openModal(13)"><img src="11.webp" alt="11" loading="lazy"></div>
+<div class="gallery-item item-13" onclick="openModal(14)"><img src="13.webp" alt="13" loading="lazy"></div>
+<div class="gallery-item item-12" onclick="openModal(15)"><img src="12.webp" alt="12" loading="lazy"></div>
+<div class="gallery-item item-14" onclick="openModal(16)"><img src="14.webp" alt="14" loading="lazy"></div>
+<div class="gallery-item item-17" onclick="openModal(17)"><img src="17.jpg" alt="17" loading="lazy"></div>
+<div class="gallery-item item-19" onclick="openModal(18)"><img src="19.jpg" alt="19" loading="lazy"></div>
+<div class="gallery-item item-18" onclick="openModal(19)"><img src="18.webp" alt="18" loading="lazy"></div>
+                </div>
+
+                <div class="calendar-header">
+                    <span class="num-10">10</span><span class="char-month">月</span>
+                </div>
+
+                <table class="calendar-table">
+                    <thead>
+                        <tr>
+                            <th class="sun">S</th>
+                            <th>M</th>
+                            <th>T</th>
+                            <th>W</th>
+                            <th>T</th>
+                            <th>F</th>
+                            <th>S</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td>1</td>
+                            <td>2</td>
+                            <td>3</td>
+                        </tr>
+                        <tr>
+                            <td class="sun">4</td>
+                            <td>5</td>
+                            <td>6</td>
+                            <td>7</td>
+                            <td>8</td>
+                            <td>9</td>
+                            <td>10</td>
+                        </tr>
+                        <tr>
+                            <td class="sun">11</td>
+                            <td>12</td>
+                            <td>13</td>
+                            <td>14</td>
+                            <td>15</td>
+                            <td>16</td>
+                            <td>17</td>
+                        </tr>
+                        <tr>
+                            <td class="sun">18</td>
+                            <td>19</td>
+                            <td>20</td>
+                            <td>21</td>
+                            <td>22</td>
+                            <td>23</td>
+                            <td>24</td>
+                        </tr>
+                        <tr>
+                            <td class="sun">25</td>
+                            <td>26</td>
+                            <td>27</td>
+                            <td>28</td>
+                            <td>29</td>
+                            <td>30</td>
+                            <td class="target-day" id="weddingDay" onclick="fireConfetti(event)">
+                                31
+                                <span class="time-label">pm 3:00</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+<br>
+            <section class="location-section">
+                <div class="subtitle">LOCATION</div>
+                <div class="title">장소</div>
+
+                <div class="divider-decoration">
+                    <div class="divider-line"></div>
+                    <div class="divider-icon">📍</div>
+                    <div class="divider-line"></div>
+                </div>
+
+                <div class="venue-container">
+    <!-- 1. 글자 뒤에서 번지는 수채화 막 -->
+    <div class="venue-watercolor-bg"></div>
+    
+    <!-- 2. 맨 위에 올릴 글자 -->
+    <span class="venue-text">호텔리베라 3층 베르사이유홀</span>
+</div><br><br>
+                <div class="venue-address">서울 강남구 영동대로 737</div><br>
+
+<div class="nav-buttons-container">
+    <a href="https://tmap.co.kr/tmap2/mobile/route.jsp?name=호텔리베라" target="_blank" class="nav-btn">
+        <svg class="nav-icon-svg" viewBox="0 0 24 24" width="22" height="22" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="24" height="24" rx="4" fill="#0066FF"/>
+            <path d="M5 7H19V10H14V18H10V10H5V7Z" fill="white"/>
+        </svg>
+        <span>티맵</span>
+    </a>
+
+    <a href="https://map.naver.com/v5/search/호텔리베라" target="_blank" class="nav-btn">
+        <span class="nav-emoji">🇳</span>
+        <span>네이버 지도</span>
+    </a>
+
+    <a href="https://map.kakao.com/link/search/호텔리베라" target="_blank" class="nav-btn">
+        <span class="nav-emoji">🟡</span>
+        <span>카카오내비</span>
+    </a>
+
+    <a href="https://maps.google.com/?q=호텔리베라" target="_blank" class="nav-btn">
+        <span class="nav-emoji">🗺️</span>
+        <span>구글 지도</span>
+    </a>
+</div>
+
+                <div class="transport-row-container">
+                    <div class="accordion-wrapper transport-accordion">
+                        <div class="accordion-item">
+                            <button class="accordion-header" onclick="toggleAccordion(this)">
+                                <span><span class="transport-badge-icon">🅿️</span>주차 안내</span>
+                            </button>
+
+                            <div class="accordion-content">
+                                <div class="transport-info-body">
+                                    <p class="transport-desc"><br>
+                                        ㆍ호텔 뒷편 주차 건물 또는<br>&nbsp;&nbsp;&nbsp;지하 주차장 이용 가능<br><br>
+                                        ㆍ하객 무료 주차 제공
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-wrapper transport-accordion">
+                        <div class="accordion-item">
+                            <button class="accordion-header" onclick="toggleAccordion(this)">
+                                <span><span class="transport-badge-icon">🚌</span>대중교통 안내</span>
+                            </button>
+                            <div class="accordion-content">
+                                <div class="transport-info-body">
+                                    <div class="transport-subtitle">🚃 지하철 이용 시</div>
+                                    <p class="transport-desc">
+                                        <span class="blue-dot">🔵</span> 7호선 청담역 13번 출구 (도보 약 5분)<br>
+                                        영동대교 남단 방면으로 직진
+                                    </p>
+
+                                    <div class="transport-subtitle">✈️ 김포공항에서 오시는 길</div>
+                                    <p class="transport-desc">
+                                        <span class="blue-dot">🔵</span> 지하철 (약 50분)<br>[김포공항역] 9호선 급행 탑승 ➔ [고속터미널역] 7호선 환승 ➔ [청담역] 13번 출구 (도보 5분)<br><br>
+                                        <span class="blue-dot">🔵</span> 택시 (약 40분)<br>국내선 도착층 승강장 탑승 ➔ '청담동 리베라호텔' 하차
+                                    </p>
+
+                                    <div class="transport-subtitle">🚆 KTX/SRT에서 오시는 길</div>
+                                    <p class="transport-desc">
+                                        <span class="blue-dot">🔵</span> KTX 서울역 (약 35분)<br>
+                                        [서울역] 4호선 탑승 ➔ [총신대입구(이수)역] 7호선 환승 ➔ [청담역] 13번 출구<br><br>
+                                        <span class="blue-dot">🔵</span> SRT 수서역 (약 20분)<br>
+                                        [수서역] 수인분당선 탑승 ➔ [강남구청역] 7호선 환승 ➔ [청담역] 13번 출구
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+<div class="accordion-wrapper venue-info-accordion">
+    <div class="accordion-item">
+        <button class="accordion-header" onclick="toggleAccordion(this)">
+            <span><span class="transport-badge-icon">🏛️</span>예식장 안내</span>
+        </button>
+        <div class="accordion-content">
+            <div class="venue-img-wrapper">
+                <img src="venue.jpg" alt="예식장 약도 및 안내 사진" loading="lazy">
+            </div>
+            <!-- 사진 상자 밖으로 빼내고, margin-left 스타일을 추가했습니다. -->
+            <p class="venue-meal-desc" style="margin-left: 50px;">
+                <span class="pink-dot">🌸</span> 식사 : 한식 코스<br>
+                <span class="pink-dot">🌸</span> 본식 1부 이후 이동 없이 예식 공간에서 진행 됩니다.<br><br>
+            </p>
+        </div>
+    </div>
+</div>
+            </section>
+
+<br><br>
+            <section class="account-section">
+                <div class="subtitle">ACCOUNT</div>
+                <div class="title">마음 전하실 곳</div>
+
+                <div class="divider-decoration">
+                    <div class="divider-line"></div>
+                    <div class="divider-icon">💌</div>
+                    <div class="divider-line"></div>
+                </div>
+
+                <div class="account-desc">
+                    함께하지 못하는 아쉬운 마음을 전달하고자 하는 분들을 위해<br>축하의 마음 전달하실 곳 안내해 드립니다.<br>너그러운 마음으로 양해 부탁드립니다.🙏🏻
+                </div>
+
+                <div class="accordion-wrapper account-accordion">
+                    <div class="accordion-item groom"  style="width: 77%; margin: 0 auto 0 auto;">
+    <button class="accordion-header" style="width: 100%; display: flex; justify-content: space-between; align-items: center;" onclick="toggleAccordion(this)">신랑측 계좌 번호</button>
+                        <div class="accordion-content">
+                            <div class="account-row">
+                                <span class="account-holder">신랑 양훈 (기업)</span>
+                                <div class="account-number-wrap">
+                                    <span class="account-number">20410895401012</span>
+                                    <button class="btn-copy" onclick="copyText('20410895401012')">복사</button>
+                                </div>
+                            </div>
+                            <div class="account-row">
+                                <span class="account-holder">아버지 양순철 (농협)</span>
+                                <div class="account-number-wrap">
+                                    <span class="account-number">17212952059379</span>
+                                    <button class="btn-copy" onclick="copyText('17212952059379')">복사</button>
+                                </div>
+                            </div>
+                            <div class="account-row">
+                                <span class="account-holder">어머니 연용숙 (기업)</span>
+                                <div class="account-number-wrap">
+                                    <span class="account-number">600-016080-01-011</span>
+                                    <button class="btn-copy" onclick="copyText('600-016080-01-011')">복사</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item bride"  style="width: 77%; margin: 0 auto 0 auto;">
+    <button class="accordion-header" style="width: 100%; display: flex; justify-content: space-between; align-items: center;" onclick="toggleAccordion(this)">신부측 계좌 번호</button>
+                        <div class="accordion-content">
+                            <div class="account-row">
+                                <span class="account-holder">신부 장은미 (기업)</span>
+                                <div class="account-number-wrap">
+                                    <span class="account-number">010-7939-6462</span>
+                                    <button class="btn-copy" onclick="copyText('010-7939-6462')">복사</button>
+                                </div>
+                            </div>
+                            <div class="account-row">
+                                <span class="account-holder">아버지 장윤동 (농협)</span>
+                                <div class="account-number-wrap">
+                                    <span class="account-number">382-02-019267</span>
+                                    <button class="btn-copy" onclick="copyText('382-02-019267')">복사</button>
+                                </div>
+                            </div>
+                            <div class="account-row">
+                                <span class="account-holder">어머니 강애숙 (농협)</span>
+                                <div class="account-number-wrap">
+                                    <span class="account-number">382-02-063057</span>
+                                    <button class="btn-copy" onclick="copyText('382-02-063057')">복사</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+ </section>
+        </div>
+
+<!-- 반짝이는 하단 푸터 영역 -->
+<div class="card-footer">
+    <!-- 1. 수채화 배경 오버레이 -->
+    <div class="footer-watercolor-overlay"></div>
+
+    <!-- 2. 햇살 빛줄기 오버레이 -->
+    <div class="footer-sunbeam-overlay"></div>
+
+    <!-- 3. 파티클(보케 5개 + 별가루 13개) 컨테이너 -->
+    <div class="footer-particles-container">
+        <!-- 보케 입자 (1~5번) -->
+        <div class="soft-bokeh"></div>
+        <div class="soft-bokeh"></div>
+        <div class="soft-bokeh"></div>
+        <div class="soft-bokeh"></div>
+        <div class="soft-bokeh"></div>
+
+        <!-- 반짝이는 별가루 입자 (6~18번) -->
+        <div class="stardust"></div>
+        <div class="stardust"></div>
+        <div class="stardust"></div>
+        <div class="stardust"></div>
+        <div class="stardust"></div>
+        <div class="stardust"></div>
+        <div class="stardust"></div>
+        <div class="stardust"></div>
+        <div class="stardust"></div>
+        <div class="stardust"></div>
+        <div class="stardust"></div>
+        <div class="stardust"></div>
+        <div class="stardust"></div>
+    </div>
+
+    <!-- 4. 감사 메시지 영역 -->
+    <div class="thank-you-section">
+        <div class="thank-you-divider"></div>
+        <div class="thank-you-en">THANK YOU</div>
+        <div class="thank-you-kr">감사합니다</div>
+        <div class="thank-you-sub">따뜻한 축복 속에 예쁘게 잘 살겠습니다.</div>
+        
+        <!-- 가을 나뭇잎 아이콘 -->
+        <svg class="footer-leaf-icon" viewBox="0 0 24 24" fill="none" stroke="#6E5A4C" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.4 19 2c1 2 2 4.1 1.4 9-1.3 11-10 10-10 10z"></path>
+            <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"></path>
+        </svg>
+    </div>
+</div>
+            </section>
+
+    </div>
+
+    <div class="modal" id="imageModal">
+        <span class="modal-close" onclick="closeModal()">×</span>
+        <button class="modal-nav modal-prev" onclick="changeModalImage(-1)">❮</button>
+        <div class="modal-img-container">
+            <img id="modalImg" src="" alt="확대 사진">
+        </div>
+        <button class="modal-nav modal-next" onclick="changeModalImage(1)">❯</button>
+        <div class="modal-indicator" id="modalIndicator">1 / 18</div>
+    </div>
+
+
+
+<script>
+
+// 1. 이미지 리스트 (HTML 배치 순서대로)
+const photoList = [
+    "0.jpg", "1.webp", "2.webp", "3.webp", "4.webp", 
+    "5.webp", "6.webp", "7.webp", "16.webp", "8.webp", 
+    "9.webp", "10.webp", "15.webp", "11.webp", "13.webp", "12.webp", 
+    "14.webp", "17.jpg", "19.jpg", "18.webp"
+];
+
+let currentModalIndex = 0;
+
+// 2. 모달 관련 전역 함수들
+function openModal(index) {
+    currentModalIndex = index;
+    updateModalImage();
+    
+    const modal = document.getElementById("imageModal");
+    if (modal) {
+        modal.style.display = "flex";
+        modal.classList.add("active");
+    }
+}
+
+function closeModal() {
+    const modal = document.getElementById("imageModal");
+    if (modal) {
+        modal.style.display = "none";
+        modal.classList.remove("active");
+    }
+}
+
+function changeModalImage(direction) {
+    currentModalIndex += direction;
+
+    if (currentModalIndex < 0) {
+        currentModalIndex = photoList.length - 1;
+    } else if (currentModalIndex >= photoList.length) {
+        currentModalIndex = 0;
+    }
+
+    updateModalImage();
+}
+
+function updateModalImage() {
+    const modalImg = document.getElementById("modalImg");
+    const modalIndicator = document.getElementById("modalIndicator");
+
+    if (modalImg) {
+        modalImg.src = photoList[currentModalIndex];
+    }
+    if (modalIndicator) {
+        modalIndicator.innerText = `${currentModalIndex + 1} / ${photoList.length}`;
+    }
+} 
+
+// 3. D-Day 타이머
+function startDdayTimer() {
+    const targetDate = new Date("2026-10-31T15:00:00").getTime();
+
+    function updateTimer() {
+        const now = new Date().getTime();
+        const difference = targetDate - now;
+        const timerEl = document.getElementById("ddayTimer");
+
+        if (!timerEl) return;
+
+        if (difference <= 0) {
+            timerEl.innerText = "WEDDING DAY!";
+            return;
+        }
+
+        const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+
+        timerEl.innerText = `D-${days} ${hours}시간 ${minutes}분 ${seconds}초`;
+    }
+
+    updateTimer();
+    setInterval(updateTimer, 1000);
+}
+
+// 4. 터치 폭죽 효과 (canvas-confetti)
+function fireConfetti(e) {
+    if (typeof confetti !== 'function') return;
+    
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = (rect.left + rect.width / 2) / window.innerWidth;
+    const y = (rect.top + rect.height / 2) / window.innerHeight;
+
+    const pastelColors = [
+        '#FFC0CB', '#FFD1DC', '#E6E6FA', '#FFF0F5', 
+        '#F5E6CC', '#D8BFD8', '#FFE4E1', '#F0E68C'
+    ];
+
+    confetti({
+        particleCount: 50,
+        spread: 70,
+        startVelocity: 30,
+        origin: { x: x, y: y },
+        colors: pastelColors,
+        scalar: 0.9
+    });
+
+    confetti({
+        particleCount: 35,
+        spread: 90,
+        startVelocity: 38,
+        origin: { x: x, y: y },
+        colors: pastelColors,
+        shapes: ['heart', 'star'],
+        scalar: 1.2
+    });
+}
+
+// 5. 오디오 / BGM 관련 설정
+let sparkleAudioCtx = null;
+let isSparklePlayed = false;
+
+// "샤랄라~" 효과음 연주 함수
+function playSparkleSoundEffect() {
+    if (isSparklePlayed) return;
+    
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContext) return;
+
+    if (!sparkleAudioCtx) {
+        sparkleAudioCtx = new AudioContext();
+    }
+    
+    if (sparkleAudioCtx.state === 'suspended') {
+        sparkleAudioCtx.resume();
+    }
+
+    const notes = [1046.50, 1318.51, 1567.98, 2093.00, 2637.02, 3135.96]; 
+    
+    notes.forEach((freq, index) => {
+        const osc = sparkleAudioCtx.createOscillator();
+        const gain = sparkleAudioCtx.createGain();
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, sparkleAudioCtx.currentTime + index * 0.07);
+
+        gain.gain.setValueAtTime(0.12, sparkleAudioCtx.currentTime + index * 0.07);
+        gain.gain.exponentialRampToValueAtTime(0.001, sparkleAudioCtx.currentTime + index * 0.07 + 1.2);
+
+        osc.connect(gain);
+        gain.connect(sparkleAudioCtx.destination);
+
+        osc.start(sparkleAudioCtx.currentTime + index * 0.07);
+        osc.stop(sparkleAudioCtx.currentTime + index * 0.07 + 1.2);
+    });
+
+    isSparklePlayed = true;
+}
+
+// BGM 버튼 UI 통합 업데이트 함수
+function updateBgmUI(isPlaying) {
+    const bgmBtn = document.getElementById('bgmBtn');
+    const bgmText = document.getElementById('bgmText');
+    const bgmIcon = bgmBtn ? bgmBtn.querySelector('.lp-icon') : null;
+
+    if (isPlaying) {
+        if (bgmText) bgmText.innerText = "BGM ON";
+        if (bgmIcon) bgmIcon.classList.add('playing');
+        if (bgmBtn) bgmBtn.classList.add('active', 'playing');
+    } else {
+        if (bgmText) bgmText.innerText = "BGM OFF";
+        if (bgmIcon) bgmIcon.classList.remove('playing');
+        if (bgmBtn) bgmBtn.classList.remove('active', 'playing');
+    }
+}
+
+// BGM 버튼 수동 토글
+function toggleBGM(event) {
+    if (event) event.stopPropagation();
+
+    const bgm = document.getElementById('bgm');
+    if (!bgm) return;
+
+    if (bgm.paused) {
+        bgm.play().then(() => {
+            updateBgmUI(true);
+            playSparkleSoundEffect();
+        }).catch(err => {
+            console.log("BGM 재생 실패:", err);
+        });
+    } else {
+        bgm.pause();
+        updateBgmUI(false);
+    }
+}
+
+// 💌 6. 핵심: 초대장 열기 버튼 클릭 함수
+function openWeddingInvitation() {
+    const overlay = document.getElementById('envelopeOverlay');
+    const btn = document.querySelector('.open-envelope-btn');
+    const bgm = document.getElementById('bgm');
+    const sparkleSound = document.getElementById('sparkle');
+    const mainContainer = document.querySelector('.card-container');
+
+    // Web Audio 잠금 해제
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    if (AudioContext && !sparkleAudioCtx) {
+        sparkleAudioCtx = new AudioContext();
+    }
+    if (sparkleAudioCtx && sparkleAudioCtx.state === 'suspended') {
+        sparkleAudioCtx.resume();
+    }
+
+    // 2) BGM 재생
+    if (bgm && bgm.paused) {
+        bgm.play().then(() => {
+            updateBgmUI(true);
+        }).catch(err => console.log("BGM 재생 실패:", err));
+    }
+
+    // 3) 애니메이션 클래스 적용
+    if (btn) btn.classList.add('fade-out');
+    if (overlay) overlay.classList.add('is-open');
+
+    // 4) 2.5초 뒤 메인 화면으로 이동
+    setTimeout(() => {
+        if (overlay) overlay.classList.add('fade-out');
+        if (mainContainer) mainContainer.classList.add('show');
+    }, 2300);
+}
+
+// 7. 기타 기능 및 이벤트 리스너
+function toggleAccordion(header) {
+    const item = header.parentElement;
+    const content = header.nextElementSibling;
+    const isOpen = item.classList.contains('active');
+
+    if (isOpen) {
+        item.classList.remove('active');
+        content.style.maxHeight = null;
+    } else {
+        item.classList.add('active');
+        content.style.maxHeight = content.scrollHeight + "px";
+    }
+}
+
+function copyText(text) {
+    navigator.clipboard.writeText(text).then(() => {
+        alert('계좌번호가 복사되었습니다: ' + text);
+    }).catch(() => {
+        alert('계좌번호 복사에 실패했습니다.');
+    });
+}
+
+// DOM 준비 완료 시 실행
+document.addEventListener("DOMContentLoaded", () => {
+    const el = document.getElementById("typewriterText");
+    if (el) {
+        // HTML 문맥(<br> 포함)을 그대로 유지하면서 쪼개기
+        const content = el.innerHTML.replace(/<br\s*\/?>/gi, " <br> ");
+        el.innerHTML = "";
+        
+        let charIndex = 0;
+        const words = content.split(" ");
+        
+        words.forEach((word) => {
+            if (word === "<br>") {
+                el.appendChild(document.createElement("br"));
+            } else {
+                [...word].forEach((char) => {
+                    const span = document.createElement("span");
+                    span.innerHTML = char;
+                    span.style.animationDelay = `${4.3 + charIndex * 0.18}s`;
+                    el.appendChild(span);
+                    charIndex++;
+                });
+            }
+        });
+    }
+
+    // D-day 타이머 실행
+    startDdayTimer();
+
+    // 모달 배경 클릭 이벤트
+    const modal = document.getElementById("imageModal");
+    if (modal) {
+        modal.addEventListener("click", (e) => {
+            if (e.target === modal) {
+                closeModal();
+            }
+        });
+    }
+
+    // 수채화 효과 Observer
+    const targets = document.querySelectorAll('.header-date-wrapper, .venue-container');
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const watercolor = entry.target.querySelector('.header-date-watercolor, .venue-watercolor-bg');
+                if (watercolor) watercolor.classList.add('active');
+            }
+        });
+    }, { threshold: 0.01 });
+
+    targets.forEach(target => {
+        observer.observe(target);
+        const rect = target.getBoundingClientRect();
+        if (rect.top < window.innerHeight && rect.bottom >= 0) {
+            const watercolor = target.querySelector('.header-date-watercolor, .venue-watercolor-bg');
+            if (watercolor) watercolor.classList.add('active');
+        }
+    });
+});
+
+// 키보드 제어
+document.addEventListener('keydown', (e) => {
+    const modal = document.getElementById('imageModal');
+    if (modal && modal.classList.contains('active')) {
+        if (e.key === 'Escape') closeModal();
+        if (e.key === 'ArrowLeft') changeModalImage(-1);
+        if (e.key === 'ArrowRight') changeModalImage(1);
+    }
+});
+
+</script>
+
+</body>
+</html>
