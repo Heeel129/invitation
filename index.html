@@ -10,6 +10,9 @@
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
 
     <style>
+/* style.css 파일의 맨 1번째 줄 */
+@import url('https://fonts.googleapis.com/css2?family=Alex+Brush&display=swap');
+
 * {
             box-sizing: border-box;
             margin: 0;
@@ -40,6 +43,7 @@
     opacity: 1;
     visibility: visible; /* 👈 페이드아웃 적용 */
     transition: opacity 2.3s cubic-bezier(0.33, 1, 0.68, 1), visibility 1.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+pointer-events: auto !important;
 }
 
 #envelopeOverlay.is-hidden {
@@ -65,8 +69,7 @@
     background-color: #D6C7B8;
     border-radius: 8px;
     box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
-    pointer-events: auto !important;
-    cursor: pointer !important;
+pointer-events: auto !important;
 }
 
 .envelope-inside {
@@ -76,67 +79,47 @@ position: absolute;
     background-color: #C2B09F;
     border-radius: 8px;
 z-index: 1;
+pointer-events: auto !important;
 }
 
-/* 1. 봉투 위 PNG 사진 (흰 배경 제거 및 위치 조정) */
-.venue-img-wrapper {
+
+/* 봉투 위 PNG 사진 */
+.front-img-wrapper {
     position: absolute;
-    /* 봉투 위쪽에 위치하도록 설정 */
     top: -27%;
-    left: 20%;           /* 봉투 왼쪽으로 배치 (중앙인 50%보다 좌측) */
+    left: 20%;
     transform: translate(-50%, -50%); /* 이미지 중심점 맞춤 */
     
     /* 반응형 크기 조절 (화면 폭에 따라 자동 조절되며 최대 크기 제한) */
     width: 32vw;         
     max-width: 140px;    /* 너무 커지지 않도록 크기 줄임 */
     min-width: 90px;
-    
-    z-index: 1;
+    z-index: 1 !important;
     background: transparent;
     padding: 0;
-    pointer-events: none; /* 클릭 이벤트가 봉투/버튼 작동을 방해하지 않도록 설정 */
+    pointer-events: none !important;
 }
 
-.venue-img-wrapper img {
+.front-img-wrapper img {
     width: 100%;
     height: auto;
     display: block;
-    /* 인물 테두리에만 깔끔하고 은은한 그림자 적용 */
     filter: drop-shadow(0px 3px 6px rgba(0, 0, 0, 0.15));
 }
 
+
 /* 2. 씰링왁스 버튼 (사진 아랫부분에 겹치도록 정중앙 배치) */
 .open-envelope-btn {
-    position: absolute;
-    top: 55%;            /* 봉투중앙~사진아래선에 겹치게 배치 (필요시 수치 조절) */
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 20;         /* 사진(z-index: 10)보다 위 레이어로 설정 */
-
+    position: absolute !important;
+    top: 55% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    z-index: 999999 !important; 
+    pointer-events: auto !important; /* 마우스 클릭 강제 활성화 */
+    cursor: pointer !important;
     background: none;
     border: none;
     padding: 0;
-    cursor: pointer;
-    outline: none;
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-    user-select: none;
-    transition: transform 0.2s ease, filter 0.2s ease;
-}
-
-/* ✉️ 초대장 열기 버튼 (실링 왁스 스타일) */
-.open-envelope-btn {
-    position: absolute;
-    top: 55%; /* 위치 높낮이 조절 필요시 이 값 변경 */
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 999; /* 다른 이미지/덮개보다 위에 뜨도록 설정 */
-
-    background: none;
-    border: none;
-    padding: 0;
-    cursor: pointer;
     outline: none;
     display: inline-flex;
     justify-content: center;
@@ -261,8 +244,7 @@ position: absolute;
     height: 100%;
     z-index: 2 !important; /* 포켓(z-index: 3)보다 낮게 설정하여 봉투 안으로 들어가게 함 */
     overflow: visible !important; /* 보케/별빛 효과가 잘리지 않도록 허용 */
-    pointer-events: auto !important;
-    cursor: pointer !important;
+    pointer-events: none !important;
 }
 
 /* 카드 본체 */
@@ -283,8 +265,8 @@ position: absolute;
     text-align: center; 오전 4:56 2026-09-14
     padding: 20px; 
     box-sizing: border-box;
-    pointer-events: auto;
-    z-index: 2 !important;
+    pointer-events: none !important;
+    z-index: 5 !important;
     transition: transform 1.2s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
@@ -295,7 +277,7 @@ position: absolute;
     left: 0;
     width: 100%;
     height: 60%;
-    z-index: 3;
+    z-index: 3 !important;
     pointer-events: none; /* 클릭 방해 안 받도록 */
 }
 
@@ -461,7 +443,7 @@ opacity: 1;
             width: 100%; height: 100%;
             background-color: #C2B09F;
             border-radius: 8px;
-z-index: 1;
+            z-index: 2 !important;
         }
 
 
@@ -980,15 +962,15 @@ opacity: 0;
 }
 
 /* 별가루 위치 및 속도 채워넣기 */
-.stardust:nth-child(6)  { top: 7.5%;  left: 50%; animation-duration: 1.8s; animation-delay: 0.5s; }
-.stardust:nth-child(7)  { top: 3%; left: 28%; animation-duration: 2.7s; animation-delay: 0.7s; } /* 맨 위 */
-.stardust:nth-child(8)  { top: 11%; left: 90%; animation-duration: 1.7s; animation-delay: 0.9s; } /* d */
+.stardust:nth-child(6)  { top: 7.5%;  left: 62.5%; animation-duration: 1.8s; animation-delay: 0.9s; }
+.stardust:nth-child(7)  { top: 3%; left: 45%; animation-duration: 2.7s; animation-delay: 0.7s; } /* 맨 위 */
+.stardust:nth-child(8)  { top: 14%; left: 92%; animation-duration: 1.7s; animation-delay: 0.9s; } /* g */
 .stardust:nth-child(9)  { top: 52%; left: 9%; animation-duration: 2.5s; animation-delay: 1.2s; }
 .stardust:nth-child(10) { top: 40%; left: 25%; animation-duration: 1.3s; animation-delay: 0.5s; } /* 2026 */
 .stardust:nth-child(11) { top: 22%; left: 30%; animation-duration: 2.5s; animation-delay: 0.5s; } /* 우 */
 .stardust:nth-child(12) { top: 25%; left: 73%; animation-duration: 1.9s; animation-delay: 0.2s; } /* 낙엽 위*/
 .stardust:nth-child(13) { top: 31%; left: 12%; animation-duration: 2.3s; animation-delay: 0.2s; } /* 서 옆 */
-.stardust:nth-child(14) { top: 27%; left: 98%; animation-duration: 1.9s; animation-delay: 0.5s; } /* 아 사선 */
+.stardust:nth-child(14) { top: 8.6%; left: 87%; animation-duration: 1.9s; animation-delay: 0.5s; } /* g 위 */
 .stardust:nth-child(15) { top: 58%; left: 43%; animation-duration: 2.0s; animation-delay: 0.4s; } /* 13밑 */
 .stardust:nth-child(16) { top: 52%; left: 92%; animation-duration: 2.6s; animation-delay: 0.9s; }
 .stardust:nth-child(17) { top: 60%; left: 82%; animation-duration: 2.2s; animation-delay: 1.0s; }
@@ -1015,55 +997,90 @@ opacity: 0;
 
 
 
-
-
-
-
         .header-content {
-            position: relative;
-            z-index: 3;
-            width: 100%;
-            max-width: 650px;
-
-/* 자식 요소들의 기준 글자 크기를 15~20% 일괄 확대 */
+    position: relative;
+    z-index: 3;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 auto !important;
+    text-align: center;
+    padding: 0 5px; /* 양끝이 최소한의 안전 여백 설정 */
+    box-sizing: border-box;
     font-size: 1.18em; 
-    
-    /* 글자가 커지면서 줄간격이 겹치지 않게 부드럽게 조정 */
     line-height: 1.6; 
 }
 
 
-        .header-sub {
-            font-family: 'Great Vibes', cursive;
-            font-size: clamp(70px, 18vw, 155px);
-            line-height: 0.95;
-            color: rgba(255, 255, 255, 0.38); 
-            margin-top: 70px;
-            margin-bottom: -2.5px;
-            display: block;
-            text-align: center;
-            white-space: nowrap;
-            word-break: keep-all;
-            letter-spacing: -2px;
-            pointer-events: none; !important;
-            user-select: none;
-            filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.2));
-            -webkit-mask-image: radial-gradient(ellipse at center, rgba(0,0,0,1) 50%, rgba(0,0,0,0) 95%);
-            mask-image: radial-gradient(ellipse at center, rgba(0,0,0,1) 50%, rgba(0,0,0,0) 95%);
-        }
+/* 1. 타자기 텍스트 기본 스타일 (HTML의 id="typewriterText"와 연동) */
+#typewriterText {
+    position: relative;
+    font-family: 'Great Vibes', cursive;
+    font-size: clamp(65px, 18vw, 160px) !important;
+    color: rgba(255, 255, 255, 0.38);
+    margin-top: 20px;
+    margin-bottom: -2.5px;
+   
+    width: 100%;
+    text-align: left;
+    pointer-events: none !important;
+    user-select: none;
+    height: auto !important;
+    max-height: none !important;
+    line-height: 0.8 !important;
+    padding-bottom: 12px !important;
+    filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.2));
 
-        .header-sub span {
-            opacity: 0;
-            display: inline-block;
-            transform: translateY(4px);
-            animation: strokeWrite 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    
-    font-size: inherit;
-    vertical-align: middle; /* 💡 W처럼 큰 글자의 높이 축 덜컥거림 방지 */
-    will-change: transform, opacity; /* 💡 브라우저 그래픽 가속 적용으로 부드러움 극대화 */
-pointer-events: none;
+    display: flex !important;
+    flex-wrap: wrap !important;
+    overflow: visible !important;
 }
 
+/* 2. 자바스크립트가 생성하는 글자(span) 애니메이션 설정 */
+#typewriterText span {
+    opacity: 0;
+    display: inline-block !important;
+    float: none !important;
+    transform: translateY(4px);
+    animation: strokeWrite 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    font-size: inherit;
+    vertical-align: middle;
+    will-change: transform, opacity;
+    pointer-events: none !important;
+    overflow: visible !important;
+}
+
+/* 첫 번째 줄 (Autumn 전체 : 1~6번째 글자) -> 왼쪽 위 배치 */
+#typewriterText span:nth-child(-n+6) {
+    position: relative;
+    top: 0;
+}
+
+/* 첫 글자 (A) 필기체 스타일 (Alex Brush) */
+#typewriterText span:first-child {
+    font-family: 'Alex Brush', cursive !important;
+    font-size: 1.35em !important;
+    text-transform: uppercase !important; /* 👈A를 강제로 대문자로 변경 */
+    vertical-align: -0.05em;
+    margin-right: -0.06em;
+    padding-right: 0.05em;
+    z-index: 1;
+    margin-left: 1% !important; /* Autumn 위치 (왼쪽) */
+}
+
+/* 2. 두 번째 줄 시작점 (W 글자 : 줄바꿈 + 오른쪽 밀기 + 위로 끌어올리기) */
+#typewriterText span:nth-child(7) {
+    display: inline-block !important;
+    margin-left: 30vw !important;    /* 💡 오른쪽으로 비껴나는 간격 (조절 가능) */
+    margin-top: -0.3em !important;   /* 💡 위로 포개어지는 겹침 정도 (조절 가능) */
+}
+
+/* 3. W 뒤의 글자들 (edding : W와 똑같이 위로 끌어올리기) */
+#typewriterText span:nth-child(n+8) {
+    display: inline-block !important;
+    margin-top: -0.3em !important;   /* 💡 W와 동일한 수치 입력 */
+}
+
+/* 6. 타자기 글자 피어오르는 키프레임 애니메이션 */
 @keyframes strokeWrite {
     0% { 
         opacity: 0; 
@@ -1077,10 +1094,11 @@ pointer-events: none;
     }
 }
 
+
 .header-title .big-first {
     font-size: 38px;          
-    font-weight: 700;          /* '우' 자만 조금 더 */
-    vertical-align: -2px;      /* 커진 '우' 자와 옆의 '리' 글자 줄높이를 자연스럽게 맞춤 */
+    font-weight: 700;          /* '아' 자만 조금 더 */
+    vertical-align: -2px;      /* 커진 '아' 자와 옆의 '름' 글자 줄높이를 자연스럽게 맞춤 */
     display: inline-block;
 }
 
@@ -1107,26 +1125,7 @@ pointer-events: none;
             color: #3B2018;
             font-weight: 600;
             line-height: 1.13;
-            margin: 10px 0 25px 0;
-            letter-spacing: -0.5px;
-            font-style: italic;
-            position: relative;
-            z-index: 2;
-            text-shadow: 
-                0 0 5px rgba(255, 240, 185, 0.85),
-                0 0 12px rgba(255, 230, 150, 0.9),
-                0 0 22px rgba(255, 230, 150, 0.9),
-                0 0 35px rgba(255, 230, 150, 0.9);
-            filter: drop-shadow(0 0 8px rgba(255, 230, 150, 0.9));
-        }
-
-
-        .header-title {
-            font-size: 28px;
-            color: #3B2018;
-            font-weight: 600;
-            line-height: 1.13;
-            margin: 10px 0 25px 0;
+            margin: 0 0 25px 0;
             letter-spacing: -0.5px;
             font-style: italic;
             position: relative;
@@ -1558,7 +1557,7 @@ display: inline-block;
 }
 
 .calendar-section {
-    margin: 12px auto 40px auto;
+    margin: 12px auto 40px auto; /* [상/우/하/좌] -> 상단 여백을 12px에서 40px로 증가 */
     padding: 30px 20px 45px 20px; /* 45px가 하단 여백 (기존 30px -> 45px) */
     background: #FAF8F5;
     border-radius: 16px;
@@ -1651,6 +1650,8 @@ display: inline-block;
         .calendar-header .num-10 {
             font-size: 33px;
             line-height: 1;
+            margin-top: 25px; /* 💡 수치를 조절해서 위쪽과의 간격을 늘려주세요 */
+            display: inline-block;
         }
 
         .calendar-header .char-month {
@@ -2523,23 +2524,6 @@ color: #8C5B4C;
 }
 
 
-#typewriterText {
-    height: auto !important;
-    max-height: none !important;
-    overflow: visible !important;
-    
-    /* 인라인 블록으로 만들어 수직 여백/줄높이를 정상 인식하도록 전환 */
-    display: inline-block !important;
-    
-    /* 빽빽했던 줄높이를 1.6배로 넉넉히 열어 g 꼬리가 들어갈 공간 확보 */
-    line-height: 1.6 !important;
-    
-    /* 글자 바닥선 수직 정렬 기준을 텍스트 상단으로 맞춰 꼬리가 아래로 쳐져도 보이게 함 */
-    vertical-align: top !important;
-    
-    padding-bottom: 12px !important;
-}
-
 
     </style>
 </head>
@@ -2558,16 +2542,17 @@ color: #8C5B4C;
     <div class="speech-bubble">
     환경과 실용을 위해<br>
     <span class="highlight-bold">종이 청첩장은 제작하지 않고,</span><br>
-    저희가 직접<span class="highlight-pink">모바일 청첩장을 정성껏 만들었습니다.</span><br>
-    <span class="highlight-navy">따뜻한 마음으로 봐주십시오♥</span>
+    저희가 직접<span class="highlight-navy"> 모바일 청첩장을 정성껏 만들었습니다.</span><br>
+    <span class="highlight-pink">따뜻한 마음으로 봐주십시오♥</span>
 </div>
 
-<div class="venue-img-wrapper">
+
+<div class="front-img-wrapper">
                 <img src="훈은미.png" alt="훈&은미" loading="lazy">
             </div>
 
             <!-- 2. 씰링왁스 버튼 (독립된 도장 형태) -->
-<button class="open-envelope-btn" id="openBtn" onclick="openWeddingInvitation()">
+<button class="open-envelope-btn" id="openBtn">
     <div class="wax-seal">
         <div class="wax-inner">
         <div class="wax-monogram">H&M</div>
@@ -2667,8 +2652,8 @@ color: #8C5B4C;
     <!-- 큰 십자성 (포인트) -->
     <div class="soft-bokeh large" style="top: 28%; left: 50%;"></div>
     <div class="soft-bokeh large" style="top: 36%; right: 18%; animation-delay: 0.4s;"></div>
-    <div class="soft-bokeh large" style="top: 60%; left: 18%; animation-delay: 0.8s;"></div>
-    <div class="soft-bokeh large" style="bottom: 28%; right: 30%; animation-delay: 1.2s;"></div>
+    <div class="soft-bokeh large" style="top: 20%; left: 18%; animation-delay: 0.8s;"></div>
+    <div class="soft-bokeh large" style="bottom: 88%; right: 27%; animation-delay: 1.2s;"></div>
 
     <!-- 중간/작은 십자성 (원형 둘레 배치) -->
     <div class="soft-bokeh" style="top: 32%; left: 30%; animation-delay: 0.2s;"></div>
@@ -2713,10 +2698,10 @@ color: #8C5B4C;
             </div>
 
             <div class="header-content">
-                <div class="header-sub" id="typewriterText">Autumn Wedding</div>
+                <div id="typewriterText">AutumnWedding</div>
                 
                 <h1 class="header-title">
-                    <span class="big-first">우</span>리, 계절을 닮아<br>
+                    <span class="big-first">아</span>름다운 계절을 닮아,<br>
 서로에게 물<span class="grow-1">드</span><span class="grow-2">는</span> <span class="grow-3">날</span> ...
 </h1>
 
@@ -2783,10 +2768,13 @@ color: #8C5B4C;
 
                 <div class="content">
                     안녕하세요.<br>가을빛 고운 결실의 계절에<br>귀한 소식을 전합니다.<br><br>
-                    저희 두 사람,<br><span class="highlight-red">부모님께 배운 사랑</span>을 깊이 품고<br>
-                    <span class="highlight-blue">'우리'라는 새로운 세상</span>으로<br>나아가려 합니다.<br>
-                    두 집안이 만나<br>하나의 더 큰 가족이 되는<br>
-                    설레는 시작의 자리에<br>
+                    훈 · 은미 저희 두 사람,<br><span class="highlight-red">부모님께 배운 사랑</span>을 깊이 품고<br>
+                    <span class="highlight-blue">'우리'라는 새로운 세상</span>으로<br>
+                    나아가려 합니다.<br><br>
+                    두 개의 물줄기가 만나<br>
+                    하나의 넓은 바다로 흘러가듯,<br>
+                    하나의 더 큰 가족이 되는<br>
+                    뜻깊은 시작의 자리에<br>
                     소중한 분들을 모시고 싶습니다.<br><br>
 
                     직접 소식을 전하지 못하고<br>글로써 청함을 너그러운 마음으로<br>
@@ -2794,18 +2782,18 @@ color: #8C5B4C;
                     이 작은 청첩장에<br>저희의 온 진심을 담아 보냅니다.<br><br>
 
                     저희 <span class="highlight-green">두 사람의 약속이 빈말이 되지 않도록</span><br>
-                    가장 가까운 곳에서<br><span class="highlight-green">증인이 되어주시길</span> 소망합니다.<br><br>
+                    가장 가까운 곳에서<br><span class="highlight-green">증인이 되어주시길 소망합니다.</span><br>감사합니다.<br><br>
                 </div>
 
                 <div class="parents-info">
     <div class="parent-row">
         <span class="parents-name">양순철 · 연용숙</span>
-        <span class="relation">의 <span class="son">아들</span></span>
+        <span class="relation">의 &nbsp;&nbsp;<span class="son">아들</span></span>
         <span class="child-name">훈</span>
     </div>
     <div class="parent-row">
         <span class="parents-name">장윤동 · 강애숙</span>
-        <span class="relation">의 <span class="daughter">딸</span></span>
+        <span class="relation">의 &nbsp;&nbsp;<span class="daughter">딸</span></span>
         <span class="child-name">은미</span>
     </div>
 </div>
@@ -2967,9 +2955,9 @@ color: #8C5B4C;
                             <div class="accordion-content">
                                 <div class="transport-info-body">
                                     <p class="transport-desc"><br>
-                                        ㆍ하객 무료 주차 제공<br>
-                                        ㆍ호텔 뒷편 주차 건물<br>&nbsp;&nbsp;&nbsp;또는 지하 주차장 이용 가능<br><br>
-                                        
+                                        ㆍ하객 무료 주차 제공<br><br>
+                                        ㆍ호텔 뒷편 주차 건물<br>&nbsp;&nbsp;&nbsp;또는<br>
+                                           &nbsp;&nbsp;&nbsp;지하 주차장 이용 가능<br><br>
                                     </p>
                                 </div>
                             </div>
@@ -3016,12 +3004,12 @@ color: #8C5B4C;
         </button>
         <div class="accordion-content">
             <div class="venue-img-wrapper">
-                <img src="venue.jpg" alt="예식장 약도 및 안내 사진" loading="lazy">
+                <img src="venue.jpg" alt="예식장 사진" loading="lazy">
             </div>
 
             <p class="venue-meal-desc" style="margin-left: 20px;">
                 <span class="pink-dot">🌸</span> 식사 : 한식 코스<br>
-                <span class="pink-dot">🌸</span> 본식 1부 이후 이동 없이 예식 공간에서 진행 됩니다.<br><br>
+                <span class="pink-dot">🌸</span> 식사는 예식이 진행된 자리에서 바로 마련될 예정입니다.<br><br>
             </p>
         </div>
     </div>
@@ -3048,21 +3036,21 @@ color: #8C5B4C;
     <button class="accordion-header" style="width: 100%; display: flex; justify-content: space-between; align-items: center;" onclick="toggleAccordion(this)">신랑측 계좌 번호</button>
                         <div class="accordion-content">
                             <div class="account-row">
-                                <span class="account-holder">신랑 양훈 (기업)</span>
+                                <span class="account-holder">신랑 양훈 [기업]</span>
                                 <div class="account-number-wrap">
                                     <span class="account-number">20410895401012</span>
                                     <button class="btn-copy" onclick="copyText('20410895401012')">복사</button>
                                 </div>
                             </div>
                             <div class="account-row">
-                                <span class="account-holder">아버지 양순철 (농협)</span>
+                                <span class="account-holder">아버지 양순철 [농협]</span>
                                 <div class="account-number-wrap">
                                     <span class="account-number">17212952059379</span>
                                     <button class="btn-copy" onclick="copyText('17212952059379')">복사</button>
                                 </div>
                             </div>
                             <div class="account-row">
-                                <span class="account-holder">어머니 연용숙 (기업)</span>
+                                <span class="account-holder">어머니 연용숙 [기업]</span>
                                 <div class="account-number-wrap">
                                     <span class="account-number">600-016080-01-011</span>
                                     <button class="btn-copy" onclick="copyText('600-016080-01-011')">복사</button>
@@ -3075,21 +3063,21 @@ color: #8C5B4C;
     <button class="accordion-header" style="width: 100%; display: flex; justify-content: space-between; align-items: center;" onclick="toggleAccordion(this)">신부측 계좌 번호</button>
                         <div class="accordion-content">
                             <div class="account-row">
-                                <span class="account-holder">신부 장은미 (기업)</span>
+                                <span class="account-holder">신부 장은미 [기업]</span>
                                 <div class="account-number-wrap">
                                     <span class="account-number">010-7939-6462</span>
                                     <button class="btn-copy" onclick="copyText('010-7939-6462')">복사</button>
                                 </div>
                             </div>
                             <div class="account-row">
-                                <span class="account-holder">아버지 장윤동 (농협)</span>
+                                <span class="account-holder">아버지 장윤동 [농협]</span>
                                 <div class="account-number-wrap">
                                     <span class="account-number">382-02-019267</span>
                                     <button class="btn-copy" onclick="copyText('382-02-019267')">복사</button>
                                 </div>
                             </div>
                             <div class="account-row">
-                                <span class="account-holder">어머니 강애숙 (농협)</span>
+                                <span class="account-holder">어머니 강애숙 [농협]</span>
                                 <div class="account-number-wrap">
                                     <span class="account-number">382-02-063057</span>
                                     <button class="btn-copy" onclick="copyText('382-02-063057')">복사</button>
@@ -3163,10 +3151,10 @@ color: #8C5B4C;
 
     <div class="modal" id="imageModal">
         <span class="modal-close" onclick="closeModal()">×</span>
-        <button class="modal-nav modal-prev" onclick="changeModalImage(-1)">❮</button>
         <div class="modal-img-container">
             <img id="modalImg" src="" alt="확대 사진">
         </div>
+        <button class="modal-nav modal-prev" onclick="changeModalImage(-1)">❮</button>
         <button class="modal-nav modal-next" onclick="changeModalImage(1)">❯</button>
         <div class="modal-indicator" id="modalIndicator">1 / 18</div>
     </div>
@@ -3363,10 +3351,8 @@ function updateBgmUI(isPlaying) {
 
 
 
-// 💡 [필수] 전역 스코프에 sparkleAudioCtx 변수 선언 (ReferenceError 방지)
-let sparkleAudioCtx = null;
 
-// 💌 6. 핵심: 초대장 열기 버튼 클릭 함수 (에러 방지 안전 버전)
+// 💌 초대장 열기 버튼 클릭 함수 (에러 방지 안전 버전)
 function openWeddingInvitation() {
     const overlay = document.getElementById('envelopeOverlay');
     const btn = document.querySelector('.open-envelope-btn');
@@ -3400,13 +3386,13 @@ function openWeddingInvitation() {
     if (btn) btn.style.display = 'none';
     if (speechBubble) speechBubble.style.display = 'none';
 
-    const venueImg = document.querySelector('.venue-img-wrapper');
-    if (venueImg) venueImg.style.display = 'none';
+  const envelopeVenueImg = document.querySelector('.envelope-wrapper');
+if (envelopeVenueImg) envelopeVenueImg.style.display = 'none';
 
-    if (overlay) overlay.classList.add('is-open');
+if (overlay) overlay.classList.add('is-open');
 
-    const headerWatercolor = document.querySelector('.header-date-watercolor');
-    if (headerWatercolor) headerWatercolor.classList.add('active');
+const headerWatercolor = document.querySelector('.header-date-watercolor');
+if (headerWatercolor) headerWatercolor.classList.add('active');
 
     // 4) 메인 화면 전환 (2.3초 후)
     setTimeout(() => {
@@ -3444,15 +3430,21 @@ function copyText(text) {
 
 // DOM 준비 완료 시 실행
 document.addEventListener("DOMContentLoaded", () => {
-    // 1. 타자기 효과 애니메이션 (기존 코드)
+    // 💡 1. 열기 버튼 클릭 이벤트 직접 연결 (ReferenceError 해결)
+    const openBtn = document.querySelector('.open-envelope-btn');
+    if (openBtn) {
+        openBtn.addEventListener('click', openWeddingInvitation);
+    }
+
+    // 2. 타자기 애니메이션 (기존 코드)
     const el = document.getElementById("typewriterText");
     if (el) {
         const content = el.innerHTML.replace(/<br\s*\/?>/gi, " <br> ");
         el.innerHTML = "";
-        
+
         let charIndex = 0;
         const words = content.split(" ");
-        
+
         words.forEach((word) => {
             if (word === "<br>") {
                 el.appendChild(document.createElement("br"));
@@ -3460,18 +3452,21 @@ document.addEventListener("DOMContentLoaded", () => {
                 [...word].forEach((char) => {
                     const span = document.createElement("span");
                     span.innerHTML = char;
-                    span.style.animationDelay = `${4.3 + charIndex * 0.18}s`;
+
+                    // 딜레이 설정
+                    span.style.animationDelay = `${4.3 + charIndex * 0.12}s`;
+                    
                     el.appendChild(span);
                     charIndex++;
                 });
             }
         });
     }
-
+});
 
 
     // D-day 타이머 실행
-    startDdayTimer();
+if (typeof startDdayTimer === 'function') startDdayTimer();
 
     // 모달 배경 클릭 이벤트
     const modal = document.getElementById("imageModal");
@@ -3527,7 +3522,6 @@ setTimeout(() => {
             if (watercolor) watercolor.classList.add('active');
         }
     });
-});
 
 
 // 키보드 제어
