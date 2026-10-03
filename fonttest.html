@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>폰트 테스트</title>
+<style>
+/* 청첩장과 겹치지 않도록 일부러 다른 이름을 씁니다 */
+@font-face {
+    font-family: 'GB Test';
+    src: url('fonts/GowunBatang-Regular.ttf') format('truetype');
+    font-weight: 400;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'GB Test';
+    src: url('fonts/GowunBatang-Bold.ttf') format('truetype');
+    font-weight: 700;
+    font-display: swap;
+}
+body { margin: 16px; font-size: 20px; line-height: 1.7; color: #000; background: #fff; }
+.gb { font-family: 'GB Test', serif; margin: 6px 0; }
+.fb { font-family: serif; margin: 6px 0; }
+pre { font-size: 13px; line-height: 1.5; white-space: pre-wrap; word-break: break-all;
+      background: #f3f3f3; padding: 10px; margin-top: 20px; }
+</style>
+</head>
+<body>
+<p class="gb" style="font-weight:400">① 내 파일 400 : 환경과 사람, 계절을 닮아</p>
+<p class="gb" style="font-weight:700">② 내 파일 700 : 환경과 사람, 계절을 닮아</p>
+<p class="gb" style="font-weight:800">③ 800 요청 : 환경과 사람, 계절을 닮아</p>
+<p class="fb">④ 기본 serif (비교용) : 환경과 사람, 계절을 닮아</p>
+
+<pre id="log">확인 중...</pre>
+
+<script>
+(async function () {
+    var log = [];
+    log.push('화면 배율(DPR): ' + window.devicePixelRatio);
+    log.push('브라우저: ' + navigator.userAgent.slice(0, 100));
+
+    var names = ['Regular', 'Bold'];
+    for (var i = 0; i < names.length; i++) {
+        try {
+            var r = await fetch('fonts/GowunBatang-' + names[i] + '.ttf');
+            var b = await r.arrayBuffer();
+            log.push(names[i] + ' 파일: HTTP ' + r.status + ', ' + (b.byteLength / 1048576).toFixed(1) + 'MB');
+        } catch (e) {
+            log.push(names[i] + ' 파일: 실패 (' + e + ')');
+        }
+    }
+
+    try {
+        await document.fonts.load("400 20px 'GB Test'", '한');
+        await document.fonts.load("700 20px 'GB Test'", '한');
+    } catch (e) {
+        log.push('로드 오류: ' + e);
+    }
+    document.fonts.forEach(function (f) {
+        log.push('폰트 ' + f.family + ' ' + f.weight + ' → ' + f.status);
+    });
+
+    document.getElementById('log').textContent = log.join('\n');
+})();
+</script>
+</body>
+</html>
