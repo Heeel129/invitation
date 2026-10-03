@@ -3774,5 +3774,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
 </script>
 
+<script>
+if (location.search.indexOf('debug') > -1) {
+  window.addEventListener('load', async function () {
+    try { await document.fonts.ready; } catch (e) {}
+    function pick(sel) {
+      var el = document.querySelector(sel);
+      if (!el) return sel + ': 없음';
+      var c = getComputedStyle(el);
+      return sel + ' → ' + c.fontFamily.split(',')[0] + ' / ' + c.fontWeight + ' / ' + c.fontStyle;
+    }
+    var faces = [];
+    document.fonts.forEach(function (f) { faces.push(f.family + ' ' + f.weight + ' → ' + f.status); });
+    var box = document.createElement('pre');
+    box.style.cssText = 'position:fixed;left:0;right:0;bottom:0;z-index:99999;margin:0;padding:8px;background:rgba(0,0,0,.85);color:#0f0;font:11px/1.4 monospace;white-space:pre-wrap;max-height:45vh;overflow:auto';
+    box.textContent = [pick('body'), pick('.header-title'), pick('.header-date'), pick('.speech-bubble')].concat(faces).join('\n');
+    document.body.appendChild(box);
+  });
+}
+</script>
+
 </body>
 </html>
