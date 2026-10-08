@@ -10,6 +10,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;1,500&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
 
 
@@ -702,6 +703,8 @@ opacity: 1;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     transition: width 0.35s ease, background 0.3s ease, border-color 0.3s ease, opacity 0.8s ease, visibility 0.8s;
     font-family: inherit;
+
+    /* 💡 인트로(봉투) 화면에서는 숨김 */
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
@@ -1099,7 +1102,7 @@ opacity: 1;
     padding: 10px 0;
     margin: 10px 0;
     z-index: 5;
-    overflow: visible !important;
+overflow: visible !important;
 }
 
 .header-date-watercolor {
@@ -1122,16 +1125,18 @@ opacity: 1;
     border-radius: 0;
     filter: blur(12px);
     z-index: 1;
-    animation: spreadWatercolor 3s cubic-bezier(0.25, 1, 0.3, 1) forwards;
+    animation: spreadHeaderWatercolor 3s cubic-bezier(0.25, 1, 0.3, 1) forwards;
     animation-delay: 5.3s;
     mix-blend-mode: normal !important;
 }
 
-@keyframes spreadWatercolor {
+@keyframes spreadHeaderWatercolor {
     0%   { width: 0px;   opacity: 0; }
     50%  { opacity: 0.95; }
     100% { width: 300px; opacity: 1; }
 }
+
+
 
 
 /* 예식일시 */
@@ -1277,7 +1282,7 @@ opacity: 1;
             drop-shadow(0 0 10px rgba(230, 180, 100, 0.85)) 
             drop-shadow(0 0 4px rgba(255, 215, 140, 0.9));
     animation-name: floatHeartBokeh;
-    animation-timing-function: linear;
+    animation-timing-function: linear;   /* 💡 일정한 속도로 계속 상승 */
 
     --rise: -240px;   /* 💡 -30vh → -240px */
     --sway: 10px;
@@ -1869,7 +1874,6 @@ max-width: 26.25rem;
   body{margin:0;padding:40px 20px 60px;background:var(--bg);color:var(--ink);
        font-family:'Gowun Batang',serif;text-align:center;line-height:1.7}
 
-
   /* 금색 P 원형 마크 */
   .p-mark{display:inline-flex;align-items:center;justify-content:center;
           width:30px;height:30px;border-radius:50%;
@@ -1904,8 +1908,8 @@ max-width: 26.25rem;
     flex-direction: column;
     min-width: 0;
     gap: 0.85rem;
-    max-width: 20rem;     /* 티켓과 같은 폭 */
-    margin: 0 auto;       /* 가운데 정렬 */
+    max-width: 20rem;     /* ← 추가: 티켓과 같은 폭 */
+    margin: 0 auto;       /* ← 추가: 가운데 정렬 */
 }
 
         .transport-accordion .accordion-item {
@@ -2313,8 +2317,7 @@ letter-spacing: -0.4px; /* 자간을 미세하게 좁혀 한 줄에 들어가게
     transform: translateX(-50%);
     width: 90%;
     margin: 0;
-    font-size: 13px;
-    line-height: 1.2; /* 행간(기본값 보통 1.4~1.5) */
+    font-size: 14px;
     color: #ffffff;
     text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
     z-index: 2;
@@ -2441,7 +2444,224 @@ letter-spacing: -0.4px; /* 자간을 미세하게 좁혀 한 줄에 들어가게
     }
 }
 
+
+
+:root{
+  /* 청첩장 톤에 맞게 이 값만 바꾸면 전체 색이 바뀝니다 */
+  --cm-paper:#fbf8f3;
+  --cm-ink:#3a332d;
+  --cm-sub:#7d7368;
+  --cm-accent:#a8856a;
+  --cm-line:#e6dccf;
+  --cm-font:"Nanum Myeongjo","Noto Serif KR",serif;
+}
+
+/* ---- 하단 트리거 영역 ---- */
+.cm-section{padding:48px 20px;text-align:center}
+.cm-trigger{
+  display:block;margin:0 auto 14px;padding:0;border:0;background:none;cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+}
+.cm-trigger img{display:block;width:min(260px,70vw);height:auto;margin:0 auto}
+.cm-trigger:focus-visible{outline:2px solid var(--cm-accent);outline-offset:6px;border-radius:4px}
+.cm-trigger:active img{opacity:.7}
+
+.cm-on-image .cm-trigger{display:block;width:100%}
+
+.cm-trigger .cm-cap{
+  display:block;width:auto;max-width:290px;margin:0 auto;
+  text-align:center;
+  font-family:'Cormorant Garamond','Playfair Display',serif;
+  font-style:italic;font-weight:500;font-size:14px;line-height:1.3;
+  text-wrap:balance;
+  color:#fff6e0;
+  text-shadow:0 1px 3px rgba(0,0,0,.7),0 0 12px rgba(0,0,0,.35);
+  animation:cmCapGlow 5.5s ease-in-out 2;
+}
+
+.cm-trigger .cm-cap small{
+  display:block;margin-top:8px;
+  font-style:normal;font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;opacity:.9;
+}
+
+.cm-trigger .cm-cap small .cm-tap{
+  width:13px;height:13px;margin-left:1px;vertical-align:-2px;
+  fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;
+}
+
+/* ---- 모달 ---- */
+.cm-modal{
+  position:fixed;top:0;right:0;bottom:0;left:0;inset:0;z-index:10000000;display:none;
+  align-items:center;justify-content:center;
+  background:rgba(30,24,20,.62);
+  padding:max(16px,env(safe-area-inset-top)) 16px max(16px,env(safe-area-inset-bottom));
+}
+.cm-modal.is-open{display:flex;animation:cmFade .2s ease}
+@keyframes cmFade{from{opacity:0}to{opacity:1}}
+
+.cm-dialog{
+  position:relative;width:100%;max-width:400px;
+  display:flex;flex-direction:column;
+  background:var(--cm-paper);border-radius:10px;overflow:hidden;
+  opacity:1;isolation:isolate;
+  box-shadow:0 20px 50px rgba(0,0,0,.3);
+  font-family:var(--cm-font);color:var(--cm-ink);
+}
+.cm-head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 16px 12px 20px;border-bottom:1px solid var(--cm-line);
+}
+.cm-head h2{margin:0;font-family:"Noto Serif KR","Nanum Myeongjo",serif;font-size:16px;font-weight:900;letter-spacing:.02em}
+.cm-close{
+  width:36px;height:36px;border:0;background:none;cursor:pointer;
+  font-size:26px;line-height:1;color:var(--cm-sub);border-radius:50%;
+}
+.cm-close:focus-visible,.cm-nav:focus-visible{outline:2px solid var(--cm-accent)}
+
+/* 카드 슬라이드 (좌우 스와이프) */
+.cm-track{
+  display:flex;overflow-x:auto;scroll-snap-type:x mandatory;
+  scrollbar-width:none;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;
+}
+.cm-track::-webkit-scrollbar{display:none}
+.cm-slide{
+  flex:0 0 100%;scroll-snap-align:center;
+  height:min(520px,calc(100vh - 190px));height:min(520px,calc(100dvh - 190px));min-height:200px;
+  padding:28px 28px 20px;box-sizing:border-box;overflow-y:auto;
+  display:flex;flex-direction:column;justify-content:flex-start;text-align:center;
+}
+/* 카드 속 사진 (구분선 아래) */
+.cm-slide > :first-child{margin-top:auto}      /* 내용이 짧으면 세로 가운데, 길면 위부터 스크롤 */
+.cm-slide > :last-child{margin-bottom:auto}
+.cm-photo{
+  display:block;width:90%;height:104px;margin:0 auto 16px;
+  object-fit:cover;object-position:center;border-radius:10px;
+  box-shadow:0 4px 12px rgba(120,86,52,.18);
+}
+/* 윤슬 글씨: 금빛 그라데이션이 물결처럼 흐릅니다 */
+.cm-slide .cm-no,
+.cm-slide h3,
+.cm-slide .cm-verse{
+  background:linear-gradient(105deg,#8a5f36 0%,#b98a52 25%,#f4d99a 42%,#fff4d2 50%,#f4d99a 58%,#b98a52 75%,#8a5f36 100%);
+  background-size:260% 100%;
+  -webkit-background-clip:text;background-clip:text;
+  -webkit-text-fill-color:transparent;color:transparent;
+  animation:cmGlint 4.5s ease-in-out 2;
+}
+.cm-slide .cm-no{font-size:13px;font-weight:800;margin-bottom:10px}
+.cm-slide h3{margin:0 0 8px;font-family:"Noto Serif KR","Nanum Myeongjo",serif;font-size:24px;font-weight:900;line-height:1.4;letter-spacing:-.01em;
+  filter:drop-shadow(0 1px 0 rgba(120,80,30,.25))}
+.cm-slide .cm-verse{
+  margin:0 auto 18px;padding-bottom:16px;max-width:90%;
+  font-size:13.5px;font-weight:700;line-height:1.6;
+  border-bottom:1px solid var(--cm-line);
+}
+/* 본문은 읽기 편하게 굵게 + 은은한 빛결만 */
+.cm-slide p{
+    white-space:pre-line;margin:0;font-size:15px;font-weight:700;line-height:1.65;word-break:keep-all;
+  background:linear-gradient(105deg,#3a2c20 0%,#3a2c20 38%,#8a6a45 50%,#3a2c20 62%,#3a2c20 100%);
+  background-size:300% 100%;
+  -webkit-background-clip:text;background-clip:text;
+  -webkit-text-fill-color:transparent;color:transparent;
+  animation:cmGlint 6s ease-in-out 2;
+}
+@keyframes cmGlint{from{background-position:130% 0}to{background-position:-130% 0}}
+@keyframes cmGlintOnce{from{background-position:100% 0}to{background-position:0% 0}}
+
+/* 반짝이는 물결빛 점들 */
+.cm-dialog::before,.cm-dialog::after{
+  content:"";position:absolute;inset:0;z-index:2;pointer-events:none;
+  background-repeat:no-repeat;
+  animation:cmTwinkle 3.2s ease-in-out 2 forwards;
+}
+.cm-dialog::before{
+  background-image:
+    radial-gradient(circle,rgba(255,236,176,.95) 0 1.6px,transparent 2.4px),
+    radial-gradient(circle,rgba(255,236,176,.9) 0 1.2px,transparent 2px),
+    radial-gradient(circle,rgba(255,236,176,.95) 0 2px,transparent 3px);
+  background-size:12px 12px,10px 10px,14px 14px;
+  background-position:12% 22%,84% 38%,22% 78%;
+}
+.cm-dialog::after{
+  background-image:
+    radial-gradient(circle,rgba(255,236,176,.95) 0 1.4px,transparent 2.2px),
+    radial-gradient(circle,rgba(255,236,176,.9) 0 2px,transparent 3px),
+    radial-gradient(circle,rgba(255,236,176,.9) 0 1.2px,transparent 2px);
+  background-size:10px 10px,14px 14px,10px 10px;
+  background-position:78% 16%,10% 52%,88% 82%;
+  animation-delay:-1.6s;
+}
+@keyframes cmTwinkle{0%,100%{opacity:.1}50%{opacity:1}}
+
+/* 트리거 글자 이미지도 은은하게 반짝 */
+.cm-trigger img{animation:cmGlow 3.6s ease-in-out infinite}
+@keyframes cmGlow{
+  0%,100%{filter:brightness(1) drop-shadow(0 0 0 rgba(244,217,154,0))}
+  50%{filter:brightness(1.12) drop-shadow(0 0 6px rgba(244,217,154,.9))}
+}
+
+/* 하단 컨트롤 */
+.cm-foot{display:flex;align-items:center;justify-content:space-between;padding:8px 10px 14px}
+.cm-nav{
+  width:40px;height:40px;border:0;background:none;cursor:pointer;
+  font-size:20px;color:var(--cm-sub);border-radius:50%;
+}
+.cm-nav[disabled]{opacity:.25;cursor:default}
+.cm-dots{display:flex}
+.cm-dot{margin:0 3.5px}
+.cm-dot{width:7px;height:7px;border-radius:50%;background:var(--cm-line);transition:background .2s,transform .2s}
+.cm-dot.is-on{background:var(--cm-accent);transform:scale(1.25)}
+
+@media (max-width:359px){
+  .cm-slide{padding:22px 18px 16px}
+  .cm-slide h3{font-size:21px}
+  .cm-slide p{font-size:14px}
+}
+@media (prefers-reduced-motion:reduce){
+  .cm-modal.is-open,.cm-slide .cm-no,.cm-slide h3,.cm-slide .cm-verse,.cm-slide p,
+  .cm-dialog::before,.cm-dialog::after,.cm-trigger img{animation:none}
+  .cm-dialog::before,.cm-dialog::after{opacity:.5}
+  .cm-track{scroll-behavior:auto}
+}
+
+/* ---- 이미지 위에 올라가는 트리거 (RSVP 사진 위) ---- */
+.cm-on-image{z-index:5;pointer-events:auto;text-align:center}
+.cm-on-image .cm-trigger{margin:0 auto 6px}
+.cm-on-image .cm-trigger:last-child{margin-bottom:0}
+.cm-on-image .cm-trigger img{width:min(230px,62vw)}
 .sparkle-layer{pointer-events:none}   /* 반짝이 레이어가 터치를 가로채지 않도록 */
+/* ---- 사진 위(밖) 하트 말풍선 (기도 요청) : 오른쪽, 살짝 기울임 ---- */
+.cm-bubble-wrap{position:relative;z-index:6;max-width:280px;margin:0 auto -6px;padding:0 8% 0 0;text-align:right}
+
+.cm-bubble{
+  position:relative; left:70px; display:inline-block;width:98px;height:118px;
+  padding:0;border:0;background:none;cursor:pointer;
+  filter:drop-shadow(0 3px 6px rgba(185,138,82,.35));   /* RSVP 버튼과 같은 은은한 그림자 톤 */
+  -webkit-tap-highlight-color:transparent;
+  animation:cmBubbleFloat 3.4s ease-in-out infinite;
+}
+
+.cm-bubble svg{position:absolute;top:0;left:0;width:100%;height:100%;overflow:visible}
+.cm-bubble svg .cm-heart{fill:url(#cmHeartGrad)}
+.cm-bubble svg circle{fill:#dcc08a}
+.cm-bubble svg .cm-shine{fill:#fff;opacity:.22}
+.cm-bubble span{
+  position:absolute;left:6%;right:6%;top:28%;
+  font-family:var(--cm-font);font-size:10.5px;font-weight:800;line-height:1.45;
+  letter-spacing:-.03em;white-space:nowrap;text-align:center;
+  color:#fff;text-shadow:0 1px 2px rgba(120,80,30,.6);  /* 흰 글씨가 연한 분홍 위에서도 읽히도록 */
+}
+.cm-bubble:active{filter:brightness(.97) drop-shadow(0 3px 6px rgba(190,130,118,.30))}
+.cm-bubble:focus-visible{outline:2px solid var(--cm-accent);outline-offset:4px;border-radius:12px}
+@keyframes cmBubbleFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+@media (max-width:359px){.cm-bubble{width:86px;height:103px}.cm-bubble span{font-size:9.5px}}
+@media (prefers-reduced-motion:reduce){.cm-bubble{animation:none}}
+/* 사진 위에서는 어두운 그림자 + 밝은 빛으로 글씨가 또렷하게 */
+.cm-on-image .cm-trigger img{animation:cmGlowOn 3.6s ease-in-out infinite}
+@keyframes cmGlowOn{
+  0%,100%{filter:brightness(1.05) drop-shadow(0 1px 3px rgba(0,0,0,.65)) drop-shadow(0 0 0 rgba(255,236,176,0))}
+  50%{filter:brightness(1.2) drop-shadow(0 1px 3px rgba(0,0,0,.65)) drop-shadow(0 0 8px rgba(255,236,176,.95))}
+}
 
 
 
@@ -2649,7 +2869,6 @@ color: #8C5B4C;
 
 
     </style>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;1,500&display=swap" rel="stylesheet">
 </head>
 
 
@@ -2882,35 +3101,30 @@ color: #8C5B4C;
                 </div>
 
                 <div class="content">
-                    안녕하세요.<br>가을빛 고운 결실의 계절에<br>귀한 소식을 전합니다.<br><br>
-                    <span class="highlight-red">각자의 삶을 살아가던 두 사람</span>이<br>
-                    <span class="highlight-blue">이제 같은 곳을 바라보며 함께</span><br>
-                    나아가려 합니다.<br><br>
-                    두 개의 물줄기가 만나<br>
-                    하나의 넓은 바다로 흘러가듯,<br>
-                    하나의 더 큰 가족이 되는<br>
-                    뜻깊은 시작의 자리에<br>
-                    소중한 분들을 모시고 싶습니다.<br><br>
-                    직접 소식을 전하지 못하고<br>글로써 청함을 너그러운 마음으로<br>
-                    헤아려 주시기 바라며,<br>
-                    이 작은 청첩장에<br>저희의 온 진심을 담아 보냅니다.<br><br>
+                    강사님 안녕하세요!<br>은미입니다.<br><br>
 
-                    <span class="highlight-green">두 사람의 약속이 빈말이 되지 않도록</span><br>
-                    가장 가까운 곳에서<br><span class="highlight-green">증인이 되어주시길 소망합니다.</span><br>감사합니다.<br><br>
+                    스물 일곱이 막 되었을 때 강사님을 처음 뵈었는데 어느덧 서른 다섯이 되어 이렇게 결혼의 소식을 전하게 되어 감회가 새롭습니다.<br><br>
+
+                    지금까지 저의 삶을 돌아보면..<br>
+                    하나님께서 인도하지 않으셨던 순간이<br>
+                    단 한 순간도 없었습니다.<br>
+                    그 시간 동안 기도와 격려로 함께해 주셔서<br>
+                    진심으로 감사드립니다.<br><br>
+
+                    지난 1월 강사님께 짝꿍을 소개해 드리고 기도받고 나오자마자 주민센터로부터 혼인신고 완료 문자를 받았는데, 마치 하늘의 허락하심처럼 느껴져 크게 기쁘고 감사했습니다.<br><br>
+
+        <span class="highlight-red">하나님께서 허락하신 소중한 동역자와 함께 이룬</span><br>
+                    <span class="highlight-blue">믿음의 가정을 사람들 앞에 소개하는 복된 자리에 강사님을 모시고 싶습니다.</span><br><br>
+
+                    결혼식 준비하는 과정 중에 저보다 더 제 일정에 관심 가져주시고 격려해 주시는 중진 분들과 안부 물어봐 주시는 성도님들 계셔서 제가 순간 순간 깊은 감사를 느꼈고, 하나님의 도우심과 은혜를 많이 경험하였습니다. 혈육도 귀하지만, 주 안에서 한 가족된 우리 식구들이 바쁜 일정 뒤로 하고 예식에 함께해 주시겠다는 그 한마디가 얼마나 감사한 것인지 새삼 깨달았습니다.<br><br>
+
+오셔서 따뜻한 기도와 축복으로 함께해 주신다면 저희에게 더없는 기쁨과 감격이 되겠습니다.<br>
+                    <span class="highlight-green">항상 감사드립니다. 강사님!</span><br><br>
+
+                    - 은미 올림 -<br><br>
                 </div>
 
-                <div class="parents-info">
-    <div class="parent-row">
-        <span class="parents-name">양순철 · 연용숙</span>
-        <span class="relation">의 &nbsp;&nbsp;<span class="son">아들</span></span>
-        <span class="child-name">훈</span>
-    </div>
-    <div class="parent-row">
-        <span class="parents-name">장윤동 · 강애숙</span>
-        <span class="relation">의 &nbsp;&nbsp;<span class="daughter">딸</span></span>
-        <span class="child-name">은미</span>
-    </div>
-</div>
+
 
             </section>
 
@@ -3104,7 +3318,7 @@ color: #8C5B4C;
 
 
 
-</section>
+            </section>
 
 <section class="info-section location-section" style="margin-top:180px;">
     <div class="subtitle">INFORMATION</div>
@@ -3121,6 +3335,7 @@ color: #8C5B4C;
             <img src="venue.jpg" alt="예식장 사진" loading="lazy">
         </div>
 
+
         <div class="venue-meal-desc" style="display:flex;gap:8px;align-items:flex-start;padding:0 10%;margin:0 0 8px;">
             <span class="pink-dot" style="flex:none;">🪑</span>
             <span>좌석 : 원탁 테이블, 버진로드 양옆 일자테이블</span>
@@ -3130,6 +3345,8 @@ color: #8C5B4C;
             <span>식사 : 한식 코스<br>식사는 예식이 진행된 자리에서 바로 마련될 예정입니다.</span>
         </div>
     </div>
+
+
 
     <div class="info-card" style="background:#fff;border:1px solid #EAE5DE;border-radius:0.75rem;padding:18px 10%;margin-top:12px;">
         <div class="venue-meal-desc" style="display:flex;gap:8px;align-items:flex-start;margin:0;">
@@ -3215,13 +3432,46 @@ color: #8C5B4C;
 
 
 
-<!-- 1) RSVP 이미지 영역 -->
+<!-- 1) RSVP 이미지 영역 (문구 → 모달 트리거로 교체) -->
+<!-- ★ 기도 요청: 사진 밖(위) 하트 말풍선 (오른쪽, 살짝 기울임) -->
+<div class="cm-bubble-wrap">
+  <button type="button" class="cm-bubble" data-open="prayer" aria-haspopup="dialog" aria-label="기도해 주세요! 기도 제목 보기">
+    <svg viewBox="0 0 200 240" aria-hidden="true">
+      <defs><linearGradient id="cmHeartGrad" x1="0" y1="0" x2="0.6" y2="1">
+        <stop offset="0" stop-color="#f3e4c3"/><stop offset="0.55" stop-color="#e3c88f"/><stop offset="1" stop-color="#c9a468"/>
+      </linearGradient></defs>
+      <g transform="rotate(11 100 95)"><path class="cm-heart" d="M100 58C100 30 80 14 56 14C28 14 8 36 8 66C8 106 52 136 100 178C148 136 192 106 192 66C192 36 172 14 144 14C120 14 100 30 100 58Z"/>
+        <ellipse class="cm-shine" cx="52" cy="48" rx="20" ry="11" transform="rotate(-32 52 48)"/></g>
+      <circle cx="64" cy="199" r="11"/><circle cx="43" cy="226" r="6.5"/>
+    </svg>
+    <span>기도해<br>주세요!</span>
+  </button>
+</div>
+
 <div class="rsvp-shadow-wrapper">
-<div class="rsvp-image-container">
+  <div class="rsvp-image-container">
     <img src="RSVP.webp" alt="사진" class="arch-image">
-   <div class="sparkle-layer"></div>
-<p class="rsvp-subtext">"So they are no longer two, but one. Therefore what God has joined together, let man not separate."</p>
-</div></div>
+    <div class="sparkle-layer"></div>
+<!-- ★ 기존 문구 대신: 모달 여는 글자 이미지 (위치는 기존 rsvp-subtext 스타일을 그대로 사용) -->
+    <div class="rsvp-subtext cm-on-image">
+  <button type="button" class="cm-trigger" data-open="order" aria-haspopup="dialog">
+     <span class="cm-cap">
+  As each step of our ceremony reflects a biblical foundation,
+  we invite you to discover the sacred meaning behind our wedding.
+  <small>View the meaning
+  <svg class="cm-tap" viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M22 14a8 8 0 0 1-8 8"/>
+    <path d="M18 11v-1a2 2 0 0 0-2-2a2 2 0 0 0-2 2"/>
+    <path d="M14 10V9a2 2 0 0 0-2-2a2 2 0 0 0-2 2v1"/>
+    <path d="M10 9.5V4a2 2 0 0 0-2-2a2 2 0 0 0-2 2v10"/>
+    <path d="M18 11a2 2 0 1 1 4 0v3a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/>
+  </svg>
+</small>
+</span>
+</button>
+</div>
+  </div>
+</div>
 
 <!-- 2) 참석 여부 (RSVP) 버튼 섹션 (기존 그대로) -->
 <div class="rsvp-section">
@@ -3236,6 +3486,21 @@ color: #8C5B4C;
   </div>
 </div>
 
+<!-- 4) ★ 신규: 카드뉴스 모달 (공용 1개) -->
+<div class="cm-modal" id="cmModal" aria-hidden="true">
+  <div class="cm-dialog" role="dialog" aria-modal="true" aria-labelledby="cmTitle">
+    <div class="cm-head">
+      <h2 id="cmTitle"></h2>
+      <button type="button" class="cm-close" aria-label="닫기">&times;</button>
+    </div>
+    <div class="cm-track" id="cmTrack"></div>
+    <div class="cm-foot">
+      <button type="button" class="cm-nav" id="cmPrev" aria-label="이전 카드">‹</button>
+      <div class="cm-dots" id="cmDots" aria-hidden="true"></div>
+      <button type="button" class="cm-nav" id="cmNext" aria-label="다음 카드">›</button>
+    </div>
+  </div>
+</div>
 
 
 
@@ -3555,8 +3820,8 @@ if (headerWatercolor) headerWatercolor.classList.add('active');
             }, 1000); 
         }
         if (mainContainer) mainContainer.classList.add('show');
-    const bgmBtnEl = document.getElementById('bgmBtn');
-    if (bgmBtnEl) bgmBtnEl.classList.add('is-ready');
+        const bgmBtnEl = document.getElementById('bgmBtn');
+        if (bgmBtnEl) bgmBtnEl.classList.add('is-ready');
     }, 2300);
 }
 
@@ -3699,11 +3964,144 @@ document.addEventListener('keydown', (e) => {
 
 
 
+(function(){
+  /* ★ 문구는 여기서 자유롭게 수정하세요. 카드 수도 늘리고 줄일 수 있습니다. */
+  var DATA = {
+    order: {
+      title: '결혼식 순서에 담긴 의미',
+      cards: [
+        { no:'1', img:'card1.jpg', title:`왜 신랑신부는 '갈라진 길' 사이로 걸어갈까요?`,
+  verse:`"…횃불이 쪼갠 고기 사이로 지나더라" (창 15:17)`,
+  body:`창세기 15장에서 아브라함이 제물을 반으로 쪼개 놓았던 현장을 상징합니다. '약속을 어기면 이 제물처럼 쪼개지겠다'는 목숨을 건 다짐이에요. 버진로드는 하나님 앞에서 걷는 생명을 건 '약속의 통로'입니다.` },
+{ no:'2', img:'card2.webp', title:`신랑이 왜 먼저 입장할까요?`,
+  verse:`"…신랑이 신부를 기뻐함 같이 네 하나님이 너를 기뻐하시리라" (사 62:5)`,
+  body:`단순히 오늘의 주인공이라서가 아닙니다. 성경적 관점에서 신랑은 사랑을 먼저 시작하고 제안한 언약의 주도자인데요. 하나님이 우리를 먼저 사랑하셔서 찾아오셨듯, 신랑은 가정을 책임질 리더이자 제사장으로서 먼저 제단 앞에 서서 신부를 기다리는 것을 의미합니다.` },
+        { no:'3', img:'card3.webp', title:'신부가 쓰는 베일의 의미',
+          verse:`"…리브가가 면박을 취하여 스스로 가리우더라" (창 24:65)`,
+          body:`유대교와 고대 기독교 문화에서 베일은 순결, 겸손, 하나님에 대한 순종을 상징했습니다. 성경 구절이나 유대교 전통(신랑이 신부의 베일을 올려 얼굴을 확인하는 '베데켄' 의식 등)에서도 신부의 외모가 아닌 내면을 사랑한다는 의미로 베일을 중요하게 여겼습니다.
 
+창세기에서 리브가가 이삭을 만날 때 자신을 베일로 가렸듯, 신부는 오직 한 사람인 신랑에게만 허락된 거룩한 존재임을 의미합니다. 베일은 겉모습 너머의 내면과 영혼까지 사랑하고 책임지겠다는 약속이며, 베일이 걷히는 순간은 서로에게 숨김없는 온전한 연합의 시작을 뜻합니다. 신랑이 베일을 올려 신부의 얼굴을 드러내는 행위는 두 사람 사이의 깊은 신뢰와 솔직함, 그리고 비로소 한 몸을 이룬 부부가 되었음을 선언하는 거룩한 상징입니다.` },
+        { no:'4', img:'card4.webp', title:'성혼 선언',
+          verse:'"하나님이 짝지어 주신 것을 사람이 나누지 못할지니라" (마 19:6)',
+          body:'"남자가 부모를 떠나 그의 아내와 합하여 둘이 한 몸을 이룰지로다."라는 말씀처럼, 성혼 선언은 부모의 그늘에서 벗어나 새로운 가정이 탄생했음을 알리는 것입니다. 이는 단순한 사회적 결합을 넘어, 영적으로 거룩한 한 몸이자 완전한 부부로서 새 출발을 하게 되었음을 공식적으로 선언하는 순간입니다.' },
+        { no:'5', img:'card5.jpg', title:`하객은 관객이 아니라 증인이자 수호자`,
+          verse:`"성문에 있는 모든 백성과 장로들이 가로되 우리가 증인이 되노니…" (룻 4:11)`,
+          body:`하객은 단순한 축하객이 아니라, 부부의 언약을 곁에서 지키는 ‘성혼의 증인이이자 파수꾼’입니다. 룻기 4장에서 보아스와 룻의 결합에 마을 장로들이 증인이 되었듯, 하객은 하나님과 사람 앞에서의 서약을 목격하고, 훗날 부부가 위기를 만났을 때 그 서약을 기억하며 가정을 온전히 지켜주도록 돕는 공적·영적 파수꾼입니다.` },
+        { no:'6', img:'card6.jpg', title:`결혼`,
+          verse:`"너희는 세상의 빛이라" (마 5:14)`,
+          body:`성경에서 결혼(Marriage)은 단순한 사회적 관혼상제 중 하나가 아니라, 하나님의 구원 역사를 보여주는 가장 거룩한 비유입니다. 하나님께서는 인간과의 깊은 언약 관계를 설명하실 때 '왕과 신하'나 '주인과 종'을 넘어 '남편과 아내'라는 가장 친밀한 사랑의 관계를 택하셨습니다. 구약에서 하나님은 친히 스스로를 이스라엘의 '남편'이라 부르셨습니다. 이스라엘이 우상을 숭배할 때 이를 단순한 죄가 아닌 '간음'으로 여겨 아파하신 까닭은, 백성을 향한 그분의 사랑이 그만큼 깊고 신실했기 때문입니다.
+예수님 역시 자신을 '신랑'이라 칭하셨고(마 9:15), 사도 바울은 교회를 '그리스도의 정결한 신부'라 정의했습니다(고후 11:2, 엡 5:31-32). 따라서 남편은 교회를 위해 십자가에서 피 흘리신 예수님처럼 아내를 사랑하고, 아내는 그리스도를 따르는 교회처럼 남편을 신뢰하고 존중해야 합니다. 부부는 이 아름다운 연합을 통해 하나님의 사랑을 세상에 시각적으로 증언하는 거룩한 통로가 됩니다. 이처럼 성경적 결혼은 상황이나 조건에 따라 해지될 수 있는 세상의 '계약(Contract)'과 달리, 하나님을 보증인 삼아 생명이 다할 때까지 지켜내는 거룩한 '언약(Covenant)'입니다.` },
+        { no:'7', img:'card7.webp', title:`훈련의 터`,
+          verse:`"철이 철을 날카롭게 하는 것 같이 사람이 그 친구의 얼굴을 빛나게 하느니라" (잠 27:17)`,
+          body:`저희는 결혼식을 올리기 전 법적으로 먼저 부부의 연을 맺고, 지난 9개월의 시간을 함께 보냈습니다. 그 시간 동안 함께하는 기쁨도 컸지만, 서로의 미성숙함이 부딪히며 때로는 어려움을 겪기도 했습니다. 그러나 그 다듬어짐의 시간을 거치며 저희는 서로와 우리의 관계를 바라보는 시각을 새롭게 갖게 되었습니다. 원석과 같던 두 사람이 만나 부딪히고 깨어지는 이 모든 순간은, 서로를 아름다운 보석으로 다듬어가시는 거룩한 훈련이라는 것임을 믿고 그 과정을 하나님께 맡기며 나아가려 합니다.
 
+이제 하나님과 여러 증인들 앞에서 성스러운 언약을 맺으며, 참된 사랑과 하나 됨, 그리고 깊은 신뢰가 무엇인지 끊임없이 배워가고자 합니다. 날마다 자라고 해마다 성숙해져, 먼 훗날 하나님과 예수님 앞에 서는 그날에 흠 없고 순전한 모습으로 발견되기를 간절히 소망합니다.` }
+      ]
+    },
+    prayer: {
+      title: '저희를 위해 기도해주세요🙏🏻',
+      cards: [
+        { no:'1', img:'IMG/prayer-1.jpg', title:'이러한 가정이 되기를...',
+          verse:'"아내들아 남편에게 복종하라 이는 주 안에서 마땅하니라 남편들아 아내를 사랑하며 괴롭게 하지 말라" (골 3:18-19)',
+          body:`1. 함께 말씀을 읽고 기도하며 모든 결정의 중심에 하나님을 모시는 가정, 하나님이 기뻐하시는 믿음의 가정이 되게 해주세요.<br>
+                    2. 영과 육이 건강하게 해주세요.<br>
+                    3. 다른 환경에서 다른 성향을 가지고 살아온 서로를 이해하고, 다툼 속에서도 온유함으로 지혜롭게 해결해 나가게 해주세요.<br>
+                    4. 신실하신 하나님을 닮아 서로를 향한 신뢰와 사랑이 불변하도록 해주세요.` },
+        { no:'2', img:'IMG/prayer-2.jpg', title:'훈이의 기도 제목',
+          verse:'"오히려 하나님의 말씀을 듣고 지키는 자가 복이 있느니라" (눅 11:28)',
+          body:`1. 성장하는 신앙인이 되게 해주세요.<br>
+                    2. 하나님 말씀 잘 깨닫고, 지혜로운 사람이 되게 해주세요.<br>
+                    3. 양가 부모님께 건강 허락해 주시고 오래도록 함께할 수 있게 해주세요. ` },
+        { no:'3', img:'IMG/prayer-3.jpg', title:'은미의 기도 제목',
+          verse:'"사람이 마음으로 자기의 길을 계획할지라도 그 걸음을 인도하는 자는 여호와시니라" (잠 16:9)',
+          body:`1. 하나님과 예수님의 사랑을 실천하여 한 해 한 해 결실을 맺는 참 신앙인이 되게 해주세요.<br>
+                    2. 건강한 모습으로 주님 주시는 능력 안에서 사명 완수하게 해주세요.<br>
+                    3. 주 안에서 남편을 존경하고 나보다 낫게 여기며 함께 성장하게 해주세요.` },
+      ]
+    }
+  };
 
+  var modal = document.getElementById('cmModal');
+/* 어떤 부모 안에 붙여도 항상 최상단에 뜨도록 body 직속으로 이동 */
+if (modal.parentNode !== document.body) document.body.appendChild(modal);
+  var track = document.getElementById('cmTrack');
+  var dots  = document.getElementById('cmDots');
+  var title = document.getElementById('cmTitle');
+  var prev  = document.getElementById('cmPrev');
+  var next  = document.getElementById('cmNext');
+  var closeBtn = modal.querySelector('.cm-close');
+  var lastFocus = null, count = 0;
 
+  function esc(s){ return String(s).replace(/[&<>"]/g, function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
 
+  function render(key){
+    var set = DATA[key]; count = set.cards.length;
+    title.textContent = set.title;
+    track.innerHTML = set.cards.map(function(c){
+      return '<article class="cm-slide">' +
+        '<div class="cm-no">' + esc(c.no) + ' / ' + count + '</div>' +
+        '<h3>' + esc(c.title) + '</h3>' +
+        '<div class="cm-verse">' + esc(c.verse) + '</div>' +
+        (c.img ? '<img class="cm-photo" src="' + esc(c.img) + '" alt="' + esc(c.title) + '" loading="lazy" decoding="async" onerror="this.remove()">' : '') +
+        '<p>' + esc(c.body).replace(/&lt;br\s*\/?&gt;/gi, '<br>') + '</p></article>';
+    }).join('');
+    dots.innerHTML = set.cards.map(function(){ return '<span class="cm-dot"></span>'; }).join('');
+    track.scrollLeft = 0;
+    update();
+  }
+
+  function index(){ return Math.round(track.scrollLeft / track.clientWidth) || 0; }
+
+  function update(){
+    var i = index();
+    var d = dots.children;
+    for (var k = 0; k < d.length; k++) d[k].classList.toggle('is-on', k === i);
+    prev.disabled = i <= 0;
+    next.disabled = i >= count - 1;
+  }
+
+  function go(n){
+    n = Math.max(0, Math.min(count - 1, n));
+    if (track.scrollTo) { track.scrollTo({ left: n * track.clientWidth, behavior: 'smooth' }); } else { track.scrollLeft = n * track.clientWidth; }
+  }
+
+  function open(key, trigger){
+    lastFocus = trigger;
+    render(key);
+    modal.classList.add('is-open');
+    modal.setAttribute('aria-hidden', 'false');
+    document.documentElement.style.overflow = 'hidden'; document.body.style.overflow = 'hidden';   /* 뒤 페이지 스크롤 잠금 */
+    closeBtn.focus();
+  }
+
+  function close(){
+    modal.classList.remove('is-open');
+    modal.setAttribute('aria-hidden', 'true');
+    document.documentElement.style.overflow = ''; document.body.style.overflow = '';
+    if (lastFocus) lastFocus.focus();
+  }
+
+  /* 트리거 클릭 */
+  document.querySelectorAll('[data-open]').forEach(function(el){
+    el.addEventListener('click', function(){ open(el.getAttribute('data-open'), el); });
+  });
+
+  track.addEventListener('scroll', function(){ requestAnimationFrame(update); }, { passive: true });
+  prev.addEventListener('click', function(){ go(index() - 1); });
+  next.addEventListener('click', function(){ go(index() + 1); });
+  closeBtn.addEventListener('click', close);
+  modal.addEventListener('click', function(e){ if (e.target === modal) close(); });  /* 바깥 클릭 */
+
+  document.addEventListener('keydown', function(e){
+    if (!modal.classList.contains('is-open')) return;
+    if (e.key === 'Escape') close();
+    if (e.key === 'ArrowLeft') go(index() - 1);
+    if (e.key === 'ArrowRight') go(index() + 1);
+  });
+
+  window.addEventListener('resize', function(){ go(index()); });
+})();
 
 
 
@@ -3774,26 +4172,6 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
-</script>
-
-<script>
-if (location.search.indexOf('debug') > -1) {
-  window.addEventListener('load', async function () {
-    try { await document.fonts.ready; } catch (e) {}
-    function pick(sel) {
-      var el = document.querySelector(sel);
-      if (!el) return sel + ': 없음';
-      var c = getComputedStyle(el);
-      return sel + ' → ' + c.fontFamily.split(',')[0] + ' / ' + c.fontWeight + ' / ' + c.fontStyle;
-    }
-    var faces = [];
-    document.fonts.forEach(function (f) { faces.push(f.family + ' ' + f.weight + ' → ' + f.status); });
-    var box = document.createElement('pre');
-    box.style.cssText = 'position:fixed;left:0;right:0;bottom:0;z-index:99999;margin:0;padding:8px;background:rgba(0,0,0,.85);color:#0f0;font:11px/1.4 monospace;white-space:pre-wrap;max-height:45vh;overflow:auto';
-    box.textContent = [pick('body'), pick('.header-title'), pick('.header-date'), pick('.speech-bubble')].concat(faces).join('\n');
-    document.body.appendChild(box);
-  });
-}
 </script>
 
 </body>
