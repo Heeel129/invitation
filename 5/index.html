@@ -1,0 +1,4183 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>소중한 분들을 모십니다♥</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;1,500&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+
+
+    <style>
+@import url('https://fonts.googleapis.com/css2?family=Alex+Brush&display=swap');
+
+* {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            margin: 0 !important;
+            padding: 0 !important;
+            width: 100%;
+            min-height: 100vh;
+            min-height: 100dvh;
+            background-color: #F8F6F0;
+            font-family: 'Gowun Batang', serif;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+
+        .envelope-box {
+    position: relative;
+    width: 90%;
+    max-width: 380px;
+    aspect-ratio: 380 / 250;
+    margin: clamp(40px, 15vh, 135px) auto 0 auto;
+    background-color: #EADBCB;
+    box-shadow: 0 15px 35px rgba(170, 140, 110, 0.22);
+    border-radius: 8px;
+    pointer-events: auto !important;
+    perspective: 1000px;   /* 추가: 덮개가 열릴 때 3D 효과 */
+}
+
+        .envelope-inside {
+    position: absolute;
+    inset: 0;
+    background-color: #DCC8B5;
+    border-radius: inherit;
+    z-index: 0;   /* 맨 아래 배경 */
+}
+
+
+/* 봉투 위 PNG */
+.front-img-wrapper {
+    position: absolute;
+    top: -27%;
+    left: 20%;
+    transform: translate(-50%, -50%);
+    width: 33%;         
+    max-width: 140px;
+    min-width: 90px;
+    z-index: -1 !important;
+    background: transparent;
+    padding: 0;
+    pointer-events: none !important;
+    transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.front-img-wrapper.is-behind {
+    z-index: 0 !important;
+    opacity: 0;
+}
+
+.front-img-wrapper img {
+    width: 100%;
+    height: auto;
+    display: block;
+    filter: drop-shadow(0px 3px 6px rgba(0, 0, 0, 0.15));
+}
+
+
+/* 씰링왁스 버튼 (사진 아랫부분에 겹치도록 정중앙 배치) */
+.open-envelope-btn {
+    position: absolute !important;
+    top: 55% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    z-index: 999999 !important; 
+    pointer-events: auto !important; /* 마우스 클릭 강제 활성화 */
+    cursor: pointer !important;
+    background: none;
+    border: none;
+    padding: 0;
+    outline: none;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    user-select: none;
+    opacity: 1;
+    transition: transform 0.2s ease, filter 0.2s ease, opacity 1.2s cubic-bezier(0.33, 1, 0.68, 1);}
+
+.open-envelope-btn:hover {
+    transform: translate(-50%, -50%) scale(1.05);
+    filter: brightness(1.05);
+}
+
+.open-envelope-btn:active {
+    transform: translate(-50%, -50%) scale(0.95);
+}
+
+.open-envelope-btn.is-hiding {
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
+/* 씰링 왁스 외곽 테두리 */
+.wax-seal {
+    position: relative;
+overflow: hidden;
+    width: 110px;
+    height: 110px;
+    clip-path: none !important;
+    border-radius: 42% 58% 48% 52% / 54% 44% 56% 46%;
+
+    /* 골드 메탈릭: 밝은 하이라이트 → 짙은 앰버 */
+    background:
+        radial-gradient(circle at 28% 25%, #fff0b8 0%, rgba(255, 240, 184, 0) 35%),
+        linear-gradient(145deg, #f3d488 0%, #d4a24c 45%, #a8742a 75%, #d9ac5c 100%);
+
+    padding: 7px;
+    box-sizing: border-box;
+
+    filter: none !important;
+    box-shadow:
+        0 8px 16px rgba(90, 60, 20, 0.35),
+        0 2px 5px rgba(60, 40, 10, 0.25),
+        inset 1px 2px 2px rgba(255, 245, 210, 0.9),
+        inset -2px -3px 4px rgba(110, 70, 15, 0.55);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* 3. 왁스 안쪽 눌린 원형 테두리 (음각 테두리 느낌) */
+.wax-inner {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background:
+        radial-gradient(circle at 35% 30%, #e9c273 0%, #cf9a4a 55%, #b8832f 100%);
+    border: 1px solid rgba(255, 235, 175, 0.5);
+    box-shadow:
+        inset 2px 3px 5px rgba(110, 70, 15, 0.5),
+        inset -2px -2px 4px rgba(255, 240, 190, 0.6);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 6px;
+    box-sizing: border-box;
+}
+
+/* 4. 이니셜 모노그램 (양각 텍스트 효과) */
+.wax-monogram {
+    font-family: 'Dancing Script', cursive;
+    font-size: 33px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    color: #f2d7a6;
+    text-shadow:
+        -1px -1px 1px rgba(0,0,0,0.4), 1px 1px 1px rgba(255,255,255,0.3);
+    line-height: 1;
+    margin-top: 10px;
+    margin-bottom: 3.5px;
+}
+
+/* & 전용 크기 및 위치 조정 */
+.wax-monogram .ampersand {
+    font-size: 18px; /* 💡 기본 26px에서 취향에 맞게 줄여주세요 (16~19px 추천) */
+    vertical-align: middle; /* 💡 H와 M 사이 중앙 정렬 */
+    display: inline-block;
+    margin: 0 -1px; /* 💡 양옆 H, M과의 간격이 넓어 보일 경우 미세 조정 */
+}
+
+.btn-subtext {
+    display: block;
+    font-size: 7px;
+    letter-spacing: 0.8px;
+    font-weight: 600;
+    color: #7a4c14;
+    text-shadow: 0 0.5px 0 rgba(255, 240, 190, 0.85);
+    text-transform: uppercase;
+    line-height: 1;
+    margin-bottom: 1px;
+}
+
+.btn-text {
+display: block;
+    font-size: 10px;
+    font-weight: 600;
+    color: #7a4c14;
+    text-shadow: 0 0.5px 0 rgba(255, 240, 190, 0.85);
+line-height: 12px;
+    margin-top: 1.1px;
+}
+
+/* 잎사귀 아이콘 컨테이너 */
+.wax-leaf-icon {
+    width: 68px;            /* 월계수 양옆 너비 */
+    height: 26px;
+    margin: -10px auto 0 auto; /* 💡 음수 margin으로 31 OCTOBER와 간격을 바짝 좁힙니다 */
+    filter: drop-shadow(-0.5px -0.5px 0.5px rgba(0,0,0,0.4)) drop-shadow(0.5px 0.5px 0.5px rgba(255,255,255,0.3));
+}
+
+.wax-leaf-icon svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.wax-seal::after {
+    content: "";
+    position: absolute;
+    top: 0; left: -60%;
+    width: 40%; height: 100%;
+    background: linear-gradient(100deg, rgba(255,255,255,0) 0%, rgba(255,250,220,0.6) 50%, rgba(255,255,255,0) 100%);
+    transform: skewX(-20deg);
+    animation: waxShine 3s ease-in-out infinite;
+    pointer-events: none;
+}
+
+@keyframes waxShine {
+    0%, 60% { left: -60%; }
+    100%    { left: 130%; }
+}
+
+
+
+.card-container > header:first-child,
+        .card-container > section:first-child,
+        .card-container > div:first-child,
+        .head-section {
+            margin-top: 0 !important;
+            padding-top: 0 !important;
+            position: relative;
+            top: 0;
+        }
+
+        /* 4. 헤드 영역 내부 첫 번째 요소 마진 튀어나옴 방지 */
+        .card-container > header:first-child > *:first-child,
+        .card-container > section:first-child > *:first-child,
+        .card-container > div:first-child > *:first-child {
+            margin-top: 0 !important;
+        }
+
+
+
+/* 메인 컨테이너 */
+.card-container {
+    width: 100%;
+    min-height: 100vh;
+    min-height: 100dvh;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    margin: 0 auto !important; /* 화면 정중앙 배치 */
+    padding-top: 0 !important;
+    opacity: 0;
+    transition: opacity 1.2s ease;
+}
+
+
+@keyframes mainCardFadeIn {
+    0% { opacity: 0; transform: scale(0.99); }
+    100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes fadeOverlayOut {
+    0% { opacity: 1; visibility: visible; }
+    100% { opacity: 0; visibility: hidden; pointer-events: none; }
+}
+
+
+/* 덮개 */
+.envelope-flap {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 54%;
+    background: #E3D0BE;
+    clip-path: polygon(0 0, 100% 0, 50% 100%);
+    transform-origin: top center;
+    z-index: 4;
+    transition: transform 1.5s cubic-bezier(0.25, 1, 0.5, 1),
+                z-index 0s 0.5s;
+}
+
+#envelopeOverlay.is-open .envelope-flap {
+    transform: rotateX(180deg);
+    z-index: 1;
+}
+
+
+/* 봉투 포켓 */
+.envelope-pocket {
+    position: absolute;
+    inset: 0;
+    background: #EADBCB;
+    clip-path: polygon(0 0, 50% 54%, 100% 0, 100% 100%, 0 100%);
+    border-radius: 0 0 8px 8px;
+    z-index: 3;
+}
+
+/* 아래쪽 삼각형만 살짝 진하게 (입체감) */
+.envelope-pocket::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: #DDCBB9;
+    clip-path: polygon(0 100%, 50% 54%, 100% 100%);
+}
+
+/* 🎉 콘페티(꽃가루) 설정 - 클릭할 때만 실행되도록 수정 */
+.envelope-flowers {
+    position: absolute;
+    bottom: 120px; left: 50%;
+    transform: translateX(-50%);
+    width: 0; height: 0;
+    z-index: 10;
+    pointer-events: none;
+}
+
+.sparkle {
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0;
+}
+
+#envelopeOverlay.is-open .sparkle {
+    animation: burstConfetti 1.8s cubic-bezier(0.1, 0.9, 0.2, 1) forwards;
+    animation-delay: 0;
+}
+
+.sparkle.heart {
+    clip-path: polygon(50% 15%, 65% 0%, 85% 0%, 100% 20%, 100% 45%, 50% 95%, 0% 45%, 0% 20%, 15% 0%, 35% 0%);
+    filter: drop-shadow(0 0 5px rgba(255, 192, 203, 0.8));
+}
+
+.sparkle.star {
+    clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+    filter: drop-shadow(0 0 6px rgba(255, 235, 170, 0.9));
+}
+
+.sparkle.twinkle {
+    clip-path: polygon(50% 0%, 60% 40%, 100% 50%, 60% 60%, 50% 100%, 40% 60%, 0% 50%, 40% 40%);
+    background: #FFFFFF !important;
+    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 1)) drop-shadow(0 0 12px rgba(255, 220, 180, 0.9));
+}
+
+.sparkle.dot {
+    border-radius: 50%;
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.9);
+}
+
+.sparkle.rect {
+    border-radius: 2px;
+}
+
+/* 입자별 풍성한 발사 좌표 (사방 대각선, 넓은 분사각, 렌덤 회전) */
+.sparkle:nth-child(1)  { width: 16px; height: 16px; background: #FFC0CB; --tx: -170px; --ty: -220px; --rot: 240deg; }
+.sparkle:nth-child(2)  { width: 14px; height: 14px; background: #FFD1DC; --tx: 180px;  --ty: -200px; --rot: -180deg; }
+.sparkle:nth-child(3)  { width: 22px; height: 22px; --tx: 0px;     --ty: -340px; --rot: 420deg; } /* 중앙 높이 치솟는 반짝이 */
+.sparkle:nth-child(4)  { width: 18px; height: 18px; background: #FFF0F5; --tx: -90px;  --ty: -300px; --rot: 320deg; }
+.sparkle:nth-child(5)  { width: 15px; height: 15px; background: #F5E6CC; --tx: 100px;   --ty: -280px; --rot: -290deg; }
+.sparkle:nth-child(6)  { width: 26px; height: 26px; --tx: -130px; --ty: -310px; --rot: -360deg; } /* 대각선 반짝이 */
+.sparkle:nth-child(7)  { width: 10px; height: 10px; background: #E6E6FA; --tx: -210px; --ty: -140px; --rot: 150deg; }
+.sparkle:nth-child(8)  { width: 9px;  height: 9px;  background: #D8BFD8; --tx: 220px;  --ty: -150px; --rot: -210deg; }
+.sparkle:nth-child(9)  { width: 20px; height: 20px; background: #FFE4E1; --tx: -40px;  --ty: -330px; --rot: 180deg; }
+.sparkle:nth-child(10) { width: 12px; height: 12px; background: #F0E68C; --tx: 50px;   --ty: -350px; --rot: -360deg; }
+.sparkle:nth-child(11) { width: 24px; height: 24px; --tx: 140px;  --ty: -320px; --rot: 500deg; } /* 대각선 반짝이 */
+.sparkle:nth-child(12) { width: 9px;  height: 9px;  background: #FFC0CB; --tx: -240px; --ty: -190px; --rot: 270deg; }
+.sparkle:nth-child(13) { width: 14px; height: 14px; background: #FFF0F5; --tx: 230px;  --ty: -240px; --rot: -150deg; }
+.sparkle:nth-child(14) { width: 8px;  height: 18px; background: #FFE4E1; --tx: -110px; --ty: -270px; --rot: 190deg; }
+.sparkle:nth-child(15) { width: 18px; height: 18px; background: #FFD1DC; --tx: 130px;  --ty: -300px; --rot: -240deg; }
+.sparkle:nth-child(16) { width: 10px; height: 10px; background: #E6E6FA; --tx: -70px;  --ty: -250px; --rot: 190deg; }
+.sparkle:nth-child(17) { width: 16px; height: 16px; background: #FFE4E1; --tx: 80px;   --ty: -260px; --rot: -300deg; }
+.sparkle:nth-child(18) { width: 8px;  height: 8px;  background: #F0E68C; --tx: -180px; --ty: -260px; --rot: 220deg; }
+.sparkle:nth-child(19) { width: 12px; height: 12px; background: #D8BFD8; --tx: 190px;  --ty: -280px; --rot: -190deg; }
+.sparkle:nth-child(20) { width: 20px; height: 20px; --tx: -50px;  --ty: -290px; --rot: 300deg; } /* 중앙 반짝이 */
+.sparkle:nth-child(21) { width: 10px; height: 18px; background: #F5E6CC; --tx: 110px;  --ty: -220px; --rot: 140deg; }
+.sparkle:nth-child(22) { width: 14px; height: 14px; background: #FFC0CB; --tx: -150px; --ty: -200px; --rot: -200deg; }
+
+/* 팡 터지며 번쩍이는 폭발 애니메이션 */
+@keyframes burstConfetti {
+    0% {
+        opacity: 0;
+        transform: translate(0, 0) scale(0.3) rotate(0deg);
+    }
+    15% {
+        opacity: 1; /* 순간적으로 선명하고 환하게 반짝임 */
+    }
+    100% {
+        opacity: 0;
+        transform: translate(var(--tx), var(--ty)) scale(1) rotate(var(--rot));
+    }
+}
+
+/* 카드 래퍼 영역 */
+.envelope-card-wrapper {
+    position: absolute !important;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    height: 100%;
+    z-index: 2 !important; /* 포켓(3)보다 낮게 설정. 봉투 안으로 쏙 */
+    overflow: visible !important;
+    pointer-events: none !important;
+}
+
+/* 카드 본체 */
+.envelope-card {
+    position: absolute;
+    top: 10%;
+    left: 50%;
+    transform: translateX(-50%) translateY(0) scale(0.95);
+    width: 85%;
+    height: 80%;
+    background: linear-gradient(180deg, #DDA888 0%, #E8C1A0 40%, #F4E4D4 75%, #F8F6F0 100%);
+    border-radius: 8px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+    display: flex; 
+    flex-direction: column; 
+    justify-content: center; 
+    align-items: center;
+    text-align: center;
+    padding: 15px; 
+    box-sizing: border-box;
+    pointer-events: none !important;
+    z-index: 5 !important;
+    transition: transform 1.2s cubic-bezier(0.25, 1, 0.5, 1);
+    backface-visibility: hidden;
+    -webkit-font-smoothing: antialiased;
+    will-change: transform;
+}
+
+/* 💡클릭 시(is-open) 카드 위로! */
+#envelopeOverlay.is-open .envelope-card {
+transform: translateX(-50%) translateY(-100px) scale(1.05) translateZ(0);
+    transition-delay: 0.4s;
+    opacity: 1;
+    z-index: 10;
+}
+
+/* 대문자 A의 폰트를 교체하는 클래스 */
+.mini-card-sub {
+    font-family: 'Great Vibes', cursive;
+    font-size: 26px;
+    color: rgba(255, 255, 255, 0.95);
+    margin-bottom: 4px;
+    line-height: 1.2;
+}
+
+/* A 대문자 */
+.mini-card-sub::first-letter {
+    font-family: 'Alex Brush', 'Playfair Display', serif !important;
+    font-size: 1.35em !important;
+    font-style: italic;
+}
+
+        .mini-card-names { font-size: 16px; color: #4A3B32; font-weight: 700; margin-bottom: 6px; letter-spacing: 1px; }
+        .mini-card-date { font-size: 12px; color: #826958; letter-spacing: 2px; margin-bottom: 8px; font-weight: 700; }
+        .mini-card-title { font-size: 13px; color: #6E5A4C; font-weight: 700; line-height: 1.1; font-style: italic; }
+
+        @keyframes openFlap {
+            0% { transform: rotateX(0deg); z-index: 4; }
+            100% { transform: rotateX(180deg); z-index: 1; }
+        }
+
+
+/* --------------------------------------------------
+   샴페인 골드 오로라 & 웜 보케 레이어
+   -------------------------------------------------- */
+.card-ambient-layer {
+    position: absolute;
+    top: -60px; /* 👈 상단으로 위치를 올려주어야 카드 위쪽으로 빛이 퍼집니다 */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 360px;
+    height: 320px;
+    pointer-events: none;
+    z-index: 10 !important;
+    opacity: 0;
+display: none;
+}
+
+#envelopeOverlay.is-open .card-ambient-layer {
+    display: block !important;
+    opacity: 1 !important;
+    animation: ambientFadeIn 0.2s ease forwards !important;
+    animation-delay: 0.25s !important;
+}
+
+.ambient-bokeh,
+.ambient-star,
+.ambient-glitter {
+    animation-play-state: paused; /* 봉투 열리기 전엔 애니메이션 멈춤 */
+}
+
+#envelopeOverlay.is-open .ambient-bokeh,
+#envelopeOverlay.is-open .ambient-star,
+#envelopeOverlay.is-open .ambient-glitter {
+    animation-play-state: running;
+    animation-delay: 0.3s !important; /* 👈 카드가 정점에 도달할 때까지 입자 애니메이션 시작을 강제로 지연 */
+}
+
+/* 1. 고급스러운 크림 & 로즈골드 몽글 보케 */
+.ambient-bokeh {
+    position: absolute;
+    border-radius: 50%;
+opacity: 0;
+}
+
+.ambient-bokeh.b1 { 
+    top: 5%; right: 10%; width: 65px; height: 65px; 
+    background: radial-gradient(circle, rgba(255, 220, 190, 0.85) 0%, rgba(255, 235, 210, 0.2) 60%, transparent 100%);
+    filter: blur(6px);
+}
+.ambient-bokeh.b2 { 
+    top: 40%; left: -2%; width: 75px; height: 75px; 
+    background: radial-gradient(circle, rgba(255, 205, 180, 0.75) 0%, rgba(255, 225, 200, 0.2) 60%, transparent 100%);
+    filter: blur(8px);
+}
+.ambient-bokeh.b3 { 
+    top: 55%; right: 2%; width: 55px; height: 55px; 
+    background: radial-gradient(circle, rgba(255, 230, 200, 0.8) 0%, rgba(255, 240, 220, 0.2) 60%, transparent 100%);
+    filter: blur(5px);
+}
+.ambient-bokeh.b4 { 
+    top: 10%; left: 8%; width: 50px; height: 50px; 
+    background: radial-gradient(circle, rgba(255, 245, 230, 0.9) 0%, rgba(255, 220, 190, 0.25) 60%, transparent 100%);
+    filter: blur(4px);
+}
+
+/* 2. 도톰하고 밀도 있는 4구 별빛 */
+.ambient-star {
+    position: absolute;
+    background: #FFFFFF;
+    clip-path: polygon(50% 0%, 63% 37%, 100% 50%, 63% 63%, 50% 100%, 37% 63%, 0% 50%, 37% 37%);
+    filter: drop-shadow(0 0 8px rgba(255, 225, 180, 0.95));
+opacity: 0;
+}
+
+.ambient-star.s1 { top: 12%; left: 12%; width: 18px; height: 18px; }
+.ambient-star.s2 { top: 18%; right: 10%; width: 22px; height: 22px; }
+.ambient-star.s3 { top: 62%; left: 6%;  width: 15px; height: 15px; }
+.ambient-star.s4 { top: 68%; right: 8%; width: 20px; height: 20px; }
+
+/* 3. 샤르르 떠다니는 골드 가루 입자 */
+.ambient-glitter {
+    position: absolute;
+    border-radius: 50%;
+    background: #FFF5E6;
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.8), 0 0 4px #FFFFFF;
+    opacity: 0;
+}
+
+.ambient-glitter.g1 { top: 25%; left: 22%; width: 6px; height: 6px; }
+.ambient-glitter.g2 { top: 35%; right: 20%; width: 8px; height: 8px; }
+.ambient-glitter.g3 { top: 50%; left: 18%; width: 6px; height: 6px; }
+.ambient-glitter.g4 { top: 58%; right: 22%; width: 7px; height: 7px; }
+
+#envelopeOverlay.is-open .ambient-bokeh {
+    animation: floatGlow 3.5s ease-in-out infinite alternate !important;
+    animation-delay: 0.25s !important;
+}
+
+#envelopeOverlay.is-open .ambient-star {
+    animation: luxuryTwinkle 2.2s ease-in-out infinite alternate !important;
+    animation-delay: 0.25s !important;
+}
+
+#envelopeOverlay.is-open .ambient-glitter {
+    animation: floatGlitter 3.0s ease-in-out infinite alternate !important;
+    animation-delay: 0.25s !important;
+}
+
+/* 키프레임 애니메이션 */
+@keyframes ambientFadeIn {
+    0% { opacity: 0; transform: translateX(-50%) scale(0.95); }
+    100% { opacity: 1; transform: translateX(-50%) scale(1); }
+}
+
+@keyframes luxuryTwinkle {
+    0% { opacity: 0.3; transform: scale(0.7) rotate(0deg); }
+    100% { opacity: 1; transform: scale(1.2) rotate(10deg); filter: drop-shadow(0 0 12px rgba(255, 235, 200, 1)); }
+}
+
+@keyframes floatGlow {
+    0% { transform: translateY(0px) scale(0.9); opacity: 0; }
+    100% { transform: translateY(-8px) scale(1.1); opacity: 0.95; }
+}
+
+@keyframes floatGlitter {
+    0% { transform: translateY(0px) scale(0.8); opacity: 0; }
+    100% { transform: translateY(-12px) scale(1.3); opacity: 1; }
+}
+
+
+/* ==========================================
+   초대장 열기 버튼 클릭 후 화면 전환용 스타일
+========================================== */
+
+        #envelopeOverlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background-color: linear-gradient(180deg, #FFF9F3 0%, #FBF1E8 55%, #F6E7DA 100%);
+            z-index: 99999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            perspective: 1200px;
+opacity: 1;
+    visibility: visible;
+    transition: opacity 1.2s ease, visibility 1.2s ease;
+        }
+
+.card-container.show {
+    opacity: 1 !important;
+}
+
+/* 봉투 오버레이 화면 전체가 부드럽게 지워짐 */
+#envelopeOverlay.fade-out {
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+}
+
+
+.card-container > section:first-child,
+.card-container > div:first-child {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+    padding-bottom: 50px !important;
+
+/* 🍁 원형 그라데이션 + 하단 경계선 투명화 마스크 처리 */
+    background: 
+        linear-gradient(
+            to bottom, 
+            rgba(248, 246, 240, 0) 60%, 
+            #F8F6F0 100%
+        ),
+        /* 2. 메인 원형 그라데이션 (중앙 맑음 + 외곽 진함) */
+        radial-gradient(
+            ellipse at 50% 30%, 
+            #FFFFF5 0%,    
+            #F3D5C0 35%,   /* 피치 베이지 */
+            #C27D56 70%,   /* 진한 웜 브라운 */
+            #8C4A29 100%   /* 최외곽: 딥 브라운 */
+);
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+}
+
+
+.bgm-btn {
+    position: fixed;
+    top: 15px;
+    right: 15px;
+    z-index: 9999;
+
+    display: flex;
+    align-items: center;
+    gap: 0;
+
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    overflow: hidden;
+
+    background: rgba(255, 255, 255, 0.2) !important;
+    border: 1px solid rgba(255, 255, 255, 0.4) !important;
+    backdrop-filter: blur(8px) !important;
+    -webkit-backdrop-filter: blur(8px) !important;
+
+    border-radius: 999px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: width 0.35s ease, background 0.3s ease, border-color 0.3s ease, opacity 0.8s ease, visibility 0.8s;
+    font-family: inherit;
+
+    /* 💡 인트로(봉투) 화면에서는 숨김 */
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+/* 💡 초대장이 열려 메인 화면이 나타나면 표시 */
+.bgm-btn.is-ready {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+/* 마우스 오버 시 옆으로 펼쳐지며 텍스트 노출 */
+.bgm-btn:hover {
+    width: 104px;
+    background: rgba(255, 255, 255, 0.35) !important;
+    border-color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.bgm-btn .lp-icon {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+    margin-left: 11px;
+    color: #FFFFFF !important;
+    fill: currentColor;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.35));
+}
+
+.bgm-btn #bgmText {
+    color: #FFFFFF !important;
+    font-size: 11px;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+    margin-left: 8px;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+}
+
+.bgm-btn:hover #bgmText {
+    opacity: 1;
+}
+
+/* 재생 중일 때만 회전 (클래스/키프레임 하나로 통일) */
+.bgm-btn.playing .lp-icon {
+    animation: spin 3s linear infinite;
+    transform-origin: center;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+
+/* 메인 헤더*/
+        .main-header {
+            width: 100%;
+            text-align: center;
+            padding: 55px 20px 20px 20px;
+
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .watercolor-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 25% 20%, rgba(205, 130, 95, 0.35) 0%, transparent 55%),
+                radial-gradient(circle at 75% 30%, rgba(220, 150, 110, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 50% 70%, rgba(245, 220, 200, 0.3) 0%, transparent 60%);
+            mix-blend-mode: multiply;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+/*        .sunbeam-overlay {
+            position: absolute;
+            top: -30%;
+            left: -20%;
+            width: 120%;
+            height: 160%;
+            background: radial-gradient(ellipse at 15% 15%, rgba(255, 252, 240, 0.4) 0%, rgba(255, 245, 220, 0.12) 35%, transparent 70%);
+            pointer-events: none;
+            z-index: 2;
+            transform: rotate(-15deg);
+            mix-blend-mode: screen;
+        } 보류보류보류*/
+
+        .header-particles-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+/* 십자성 */
+.starlight-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none; /* 클릭 방해 금지 */
+    overflow: hidden;
+    z-index: 10;
+}
+
+/* 1. 기본 원형 별 */
+.starlight {
+    position: absolute;
+    background-color: #ffe4b5f;
+    border-radius: 50%;
+    box-shadow: 0 0 3px rgba(255, 215, 0, 0.6);
+    animation: starlight-twinkle 2s infinite ease-in-out;
+    opacity: 0;
+}
+
+/* 2. 과하지 않은 은은한 십자성 */
+.starlight.cross {
+    background: transparent;
+    box-shadow: none;
+}
+
+/* 십자성 가로/세로 빛줄기 공통 */
+.starlight.cross::before,
+.starlight.cross::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    background: linear-gradient(to right, rgba(255, 255, 255, 0), #ffffff, rgba(255, 255, 255, 0));
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.7));
+}
+
+/* 세로, 가로 빛줄기 */
+.starlight.cross::before {
+    width: 100%;
+    height: 15%;
+}
+
+.starlight.cross::after {
+    width: 15%;
+    height: 100%;
+}
+
+/* 반짝임 애니메이션 키프레임 명칭 충돌 방지 */
+@keyframes starlight-twinkle {
+    0%, 100% {
+        opacity: 0;
+        transform: scale(0.3) rotate(0deg);
+    }
+    50% {
+        opacity: 0.85;
+        transform: scale(1.5) rotate(15deg);
+    }
+}
+
+
+
+/* 👇 별가루 크기 및 글로우 효과 강화 (더 쨍하고 반짝거리게 변경) */
+.stardust {
+    position: absolute;
+    width: 2.7px;
+    height: 2.7px;
+    background-color: #FFF;
+    border-radius: 50%;
+    box-shadow: 0 0 8px 3px rgba(255, 255, 255, 1);
+    animation: sparkleDust ease-in-out infinite alternate;
+}
+
+/* 별가루 위치 및 속도 채워넣기 */
+.stardust:nth-child(6)  { top: 7.5%;  left: 64%; animation-duration: 1.8s; animation-delay: 0.9s; } /* n */
+.stardust:nth-child(7)  { top: 3%; left: 45%; animation-duration: 2.7s; animation-delay: 0.7s; } /* 맨 위 */
+.stardust:nth-child(8)  { top: 16%; left: 91%; animation-duration: 1.7s; animation-delay: 0.6s; } /* g */
+.stardust:nth-child(9)  { top: 52%; left: 9%; animation-duration: 2.5s; animation-delay: 1.2s; }
+.stardust:nth-child(10) { top: 37%; left: 25%; animation-duration: 1.3s; animation-delay: 0.7s; } /* 2026 */
+.stardust:nth-child(11) { top: 14.5%; left: 37%; animation-duration: 2.5s; animation-delay: 0.5s; } /* w */
+.stardust:nth-child(12) { top: 25%; left: 73%; animation-duration: 1.9s; animation-delay: 0.2s; } /* 낙엽 위*/
+.stardust:nth-child(13) { top: 31%; left: 12%; animation-duration: 2.3s; animation-delay: 0.2s; } /* 서 옆 */
+.stardust:nth-child(14) { top: 8.6%; left: 84%; animation-duration: 1.5s; animation-delay: 1s; } /* g 위 */
+.stardust:nth-child(15) { top: 58%; left: 43%; animation-duration: 2.0s; animation-delay: 0.4s; }
+.stardust:nth-child(16) { top: 52%; left: 92%; animation-duration: 2.6s; animation-delay: 0.9s; }
+.stardust:nth-child(17) { top: 60%; left: 82%; animation-duration: 2.2s; animation-delay: 1.0s; }
+.stardust:nth-child(18) { top: 65%; left: 52%; animation-duration: 1.9s; animation-delay: 0.3s; }
+.stardust:nth-child(19) { top: 67.5%;  left: 82%; animation-duration: 2.0s; animation-delay: 0.4s; } 
+.stardust:nth-child(20) { top: 75%;  left: 20%;  animation-duration: 2.4s; animation-delay: 0.2s; } 
+.stardust:nth-child(21) { top: 80%;  left: 30%;  animation-duration: 1.8s; animation-delay: 1.3s; }
+.stardust:nth-child(22) { top: 77%;  left: 6%;  animation-duration: 2.2s; animation-delay: 0.5s; }
+.stardust:nth-child(23) { top: 90%;  left: 60%;  animation-duration: 1.5s; animation-delay: 0.5s; }
+.stardust:nth-child(24) { top: 95%;  left: 10%;  animation-duration: 2.3s; animation-delay: 1.1s; }
+.stardust:nth-child(25) { top: 92%;  left: 88%;  animation-duration: 1.7s; animation-delay: 0.6s; }
+.stardust:nth-child(26) { top: 7%;  left: 5%;  animation-duration: 2.7s; animation-delay: 0.2s; }
+.stardust:nth-child(27) { top: 9%;  left: 21%;  animation-duration: 2.0s; animation-delay: 1.7s; } /* A */
+.stardust:nth-child(28)  { top: 35%; left: 86%; animation-duration: 2.5s; animation-delay: 0.3s; } /* 낙엽 오 */
+.stardust:nth-child(29)  { top: 63%; left: 12%; animation-duration: 1.5s; animation-delay: 0.7s; }
+.stardust:nth-child(30)  { top: 40%; left: 73%; animation-duration: 2.6s; animation-delay: 0.5s; } /* 3시 */
+/* 하단 그라데이션 및 모시는 글 상단 여백 영역 별가루 (31~35) */
+.stardust:nth-child(31) { top: 82%; left: 22%; animation-duration: 2.8s; animation-delay: 0.2s; }
+.stardust:nth-child(32) { top: 88%; left: 45%; animation-duration: 2.2s; animation-delay: 0.8s; }
+.stardust:nth-child(33) { top: 85%; left: 78%; animation-duration: 3.0s; animation-delay: 0.4s; }
+.stardust:nth-child(34) { top: 92%; left: 32%; animation-duration: 2.5s; animation-delay: 1.1s; }
+.stardust:nth-child(35) { top: 77%; left: 95%; animation-duration: 2.7s; animation-delay: 0.6s; }
+
+/* 👇 반짝이는 속도감을 빠르게(2s 내외) 조절하여 자글자글한 효과 연출 */
+@keyframes sparkleDust {
+    0% { opacity: 0.1; transform: scale(0.4); }
+    50% { opacity: 1; transform: scale(1.7); }
+    100% { opacity: 0.15; transform: scale(0.6); }
+}
+
+
+
+        .header-content {
+    position: relative;
+    z-index: 3;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 auto !important;
+    text-align: center;
+    padding: 0 5px;
+    box-sizing: border-box;
+    font-size: 1.18em; 
+    line-height: 1.6; 
+    overflow: visible;
+}
+
+
+/* AW 타자기 기본 스타일 (HTML의 id="typewriterText"와 연동) */
+#typewriterText {
+    position: relative;
+    font-family: 'Great Vibes', cursive;
+    font-size: clamp(65px, 18vw, 160px) !important;
+    color: rgba(255, 255, 255, 0.38);
+    margin-top: clamp(35px, 9vw, 80px);
+    margin-bottom: -2.5px;
+   
+    width: 100%;
+    text-align: left;
+    pointer-events: none !important;
+    user-select: none;
+    height: auto !important;
+    max-height: none !important;
+    line-height: 0.8 !important;
+    padding-bottom: 12px !important;
+    filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.2));
+
+    display: flex !important;
+    flex-wrap: wrap !important;
+    overflow: visible !important;
+    white-space: nowrap !important;
+}
+
+/* 자바스크립트가 생성하는 글자(span) 애니메이션 설정 */
+#typewriterText span {
+    opacity: 0;
+    display: inline-block !important;
+    float: none !important;
+    transform: translateY(4px);
+    animation: strokeWrite 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    font-size: inherit;
+    vertical-align: middle;
+    will-change: transform, opacity;
+    pointer-events: none !important;
+    overflow: visible !important;
+}
+
+/* 첫 번째 줄 (Autumn 전체 : 1~6번째 글자) -> 왼쪽 위 배치 */
+#typewriterText span:nth-child(-n+6) {
+    position: relative;
+    top: 0;
+}
+
+/* 첫 글자 (A) 필기체 스타일 (Alex Brush) */
+#typewriterText span:first-child {
+    font-family: 'Alex Brush', cursive !important;
+    font-size: 1.35em !important;
+    text-transform: uppercase !important; /* 👈A를 강제로 대문자로 변경 */
+    vertical-align: -0.05em;
+    margin-right: -0.06em;
+    padding-right: 0.05em;
+    z-index: 1;
+    margin-left: 1% !important; /* Autumn 위치 (왼쪽) */
+}
+
+/* br 바로 다음 span (=W)에 들여쓰기 + 위로 끌어올리기 적용 */
+#typewriterText br + span {
+    display: inline-block !important;
+    margin-left: 1.4em !important;
+    margin-top: -0.3em !important;
+    white-space: nowrap !important;
+}
+
+/* W 뒤에 오는 나머지 글자들(edding)도 위로 끌어올리기 유지 */
+#typewriterText br ~ span {
+    margin-top: -0.3em !important;
+}
+
+/* 6. 타자기 글자 피어오르는 키프레임 애니메이션 */
+@keyframes strokeWrite {
+    0% { 
+        opacity: 0; 
+        transform: translateY(6px) scale(0.96); 
+        filter: blur(2px); 
+    }
+    100% { 
+        opacity: 0.58; 
+        transform: translateY(0) scale(1); 
+        filter: blur(0); 
+    }
+}
+
+
+.header-title .big-first {
+    font-size: 38px;          
+    font-weight: 700;          /* '아' 자만 조금 더 */
+    vertical-align: -2px;      /* 커진 '아' 자와 옆의 '름' 글자 줄높이를 자연스럽게 맞춤 */
+    display: inline-block;
+}
+
+.header-title .small {
+    font-size: 24px;          
+    font-weight: 700;          /* 름다운계절을닮아 */
+    vertical-align: -2px;      
+    display: inline-block;
+}
+
+/* 1단계: '드' (기존 28px -> 31px) */
+.header-title .grow-1 {
+    font-size: 31px;
+    vertical-align: -1px;
+}
+
+/* 2단계: '는' (35px) */
+.header-title .grow-2 {
+    font-size: 35px;
+    vertical-align: -1px;
+}
+
+/* 3단계: '날' ('우'자 38px보다 살짝 더 큰 40px) */
+.header-title .grow-3 {
+    font-size: 40px;
+    vertical-align: -2px; /* 라인 밸런스 맞춤 */
+}
+
+.header-title .dot {
+    font-size: 22px;          
+    font-weight: 700;
+    vertical-align: 7px;      
+    display: inline-block;
+    letter-spacing: 2px !important;
+}
+
+        .header-title {
+            font-size: 28px;
+            color: #3A271D;
+            font-weight: 600;
+            line-height: 1.13;
+            margin: 0 0 25px 0;
+            letter-spacing: -0.5px;
+            font-style: italic;
+            position: relative;
+            z-index: 2;
+            text-shadow: 
+        0 0 3px #FFF8E7,
+        0 0 8px rgba(255, 240, 200, 1),
+        0 0 15px rgba(255, 230, 170, 0.95), 
+        0 0 25px rgba(255, 220, 150, 0.8);
+        }
+
+        .leaf-symbol {
+            font-size: 20px;
+            color: #C89F82;
+            opacity: 0.85;
+            margin-bottom: 10px;
+        }
+
+
+/* 예식일시 감싸는 영역 */
+.header-date-wrapper {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    padding: 10px 0;
+    margin: 10px 0;
+    z-index: 5;
+overflow: visible !important;
+}
+
+.header-date-watercolor {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    height: 60%;
+    width: 0px;
+    max-width: 100%;            /* 💡 아주 좁은 화면에서만 줄어들게 */
+    background: linear-gradient(90deg,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.1) 15%,
+        rgba(255, 255, 255, 0.6) 35%,
+        rgba(255, 255, 255, 0.9) 50%,
+        rgba(255, 255, 255, 0.6) 65%,
+        rgba(255, 255, 255, 0.1) 85%,
+        rgba(255, 255, 255, 0) 100%
+    );
+    border-radius: 0;
+    filter: blur(12px);
+    z-index: 1;
+    animation: spreadHeaderWatercolor 3s cubic-bezier(0.25, 1, 0.3, 1) forwards;
+    animation-delay: 5.3s;
+    mix-blend-mode: normal !important;
+}
+
+@keyframes spreadHeaderWatercolor {
+    0%   { width: 0px;   opacity: 0; }
+    50%  { opacity: 0.95; }
+    100% { width: 300px; opacity: 1; }
+}
+
+
+
+
+/* 예식일시 */
+.header-date {
+    font-family: 'Gowun Batang', serif !important;
+    font-size: 26.5px;
+    color: #3B2018;
+    font-weight: 800;
+    line-height: 1.4;
+    letter-spacing: 0.5px;
+    position: relative;
+    z-index: 2;
+    text-shadow:
+        0 0 2px rgba(255, 255, 255, 0.9),       /* 글자 테두리를 가볍게 분리 */
+        0 1px 3px rgba(255, 248, 240, 0.8),     /* 은은한 크림빛 입체감 */
+        0 0 10px rgba(235, 170, 160, 0.4);
+}
+
+
+
+/* 연도 포인트 ('우' 자 스타일의 볼드함) */
+.header-date .date-year {
+    font-size: 23px;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+/* 월/일 숫자 ('드/는/날' 단계를 잇는 정돈된 볼드) */
+.header-date .date-num {
+    font-size: 28.5px;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+/* 요일 ('토' 자에 포인트) */
+.header-date .date-day {
+    font-size: 28.5px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: #5C2E1E; /* 살짝 더 깊은 앰버 브라운 */
+}
+
+/* 시간 */
+.header-date .date-time {
+    font-size: 23px;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+
+        .dday-timer {
+            position: relative;
+            z-index: 2;
+            font-size: 17px;
+            color: #5C3D31;
+            letter-spacing: 1.5px;
+            font-weight: 700;
+            margin-bottom: 18px;
+            display: block;
+            text-shadow: 0 1px 3px rgba(74, 46, 27, 0.35);
+        }
+
+        .header-main-image {
+            width: 100% !important;
+            max-width: none !important;
+            margin: 5px auto 0 auto !important;
+            border: none;
+            position: relative;
+            z-index: 10;
+            -webkit-mask-image: radial-gradient(ellipse at 50% 50%, rgba(0,0,0,1) 50%, rgba(0,0,0,0.7) 72%, rgba(0,0,0,0.2) 88%, rgba(0,0,0,0) 100%);
+    mask-image: radial-gradient(ellipse at 50% 50%, rgba(0,0,0,1) 50%, rgba(0,0,0,0.7) 72%, rgba(0,0,0,0.2) 88%, rgba(0,0,0,0) 100%);
+    animation: slowExpandAndFadeIn 6.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation-delay: 4.5s;
+    opacity: 0;
+    transform-origin: center center;
+}
+
+        .header-main-image img {
+            width: 100%;
+            height: auto;
+            display: block;
+            filter: contrast(102%) brightness(101%);
+        }
+
+@keyframes slowExpandAndFadeIn {
+    0% { opacity: 0; transform: scale(1.1); filter: blur(6px); }
+    35% { opacity: 0.6; filter: blur(2px); }
+    100% { opacity: 1; transform: scale(1.3); filter: blur(0); } /* 1.0 -> 1.3으로 확대 */
+}
+
+        .content-body {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px 24px 0px 24px;
+            background-color: transparent !important; /* 박스 배경을 투명하게 만들어 위 배경과 이어지게 */
+            border: none !important;                   /* 구분선 제거 */
+            box-shadow: none !important;               /* 박스 그림자 효과 제거 */
+            text-align: center;
+            flex: 1;
+            position: relative;
+        }
+
+
+.heart-bokeh-container {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    pointer-events: none !important;
+    z-index: 10 !important;
+}
+
+.bokeh-heart {
+    position: absolute !important;
+    bottom: 0 !important;
+    border-radius: 50%;
+    filter: blur(2px);
+    transform: translateY(0) translateZ(0);
+    animation-name: floatHeartBokeh !important;
+    animation-iteration-count: infinite !important;
+    animation-timing-function: linear !important;   /* ease-in-out → linear */
+    animation-play-state: running !important;
+    pointer-events: none !important;
+    will-change: transform, opacity;
+}
+
+.bokeh-heart svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+/* 하트 보케 최적화 */
+.layer-front {
+    position: absolute !important;
+    z-index: 15 !important;
+    width: 16px;
+    height: 16px;
+    opacity: 0.95;
+    filter: blur(1.2px) 
+            drop-shadow(0 0 10px rgba(230, 180, 100, 0.85)) 
+            drop-shadow(0 0 4px rgba(255, 215, 140, 0.9));
+    animation-name: floatHeartBokeh;
+    animation-timing-function: linear;   /* 💡 일정한 속도로 계속 상승 */
+
+    --rise: -240px;   /* 💡 -30vh → -240px */
+    --sway: 10px;
+}
+
+.layer-front svg path {
+    fill: #FFF5E1 !important;
+}
+
+/* 💡 left / 속도 / 딜레이 + 도착 높이(--rise), 흔들림(--sway)을 하트마다 다르게 */
+.bokeh-heart:nth-child(1)  { left: 3%;  animation-duration: 9.2s;  animation-delay: -0.8s;  --rise: -190px; --sway: 12px; }
+.bokeh-heart:nth-child(2)  { left: 9%;  animation-duration: 11.5s; animation-delay: -7.3s;  --rise: -300px; --sway: -10px; }
+.bokeh-heart:nth-child(3)  { left: 15%; animation-duration: 8.8s;  animation-delay: -3.2s;  --rise: -230px; --sway: 8px; }
+.bokeh-heart:nth-child(4)  { left: 21%; animation-duration: 12.0s; animation-delay: -10.1s; --rise: -330px; --sway: -14px; }
+.bokeh-heart:nth-child(5)  { left: 27%; animation-duration: 9.8s;  animation-delay: -1.4s;  --rise: -170px; --sway: 11px; }
+.bokeh-heart:nth-child(6)  { left: 33%; animation-duration: 10.4s; animation-delay: -6.8s;  --rise: -280px; --sway: -9px; }
+.bokeh-heart:nth-child(7)  { left: 39%; animation-duration: 9.5s;  animation-delay: -4.5s;  --rise: -215px; --sway: 13px; }
+.bokeh-heart:nth-child(8)  { left: 45%; animation-duration: 11.8s; animation-delay: -9.0s;  --rise: -320px; --sway: -12px; }
+.bokeh-heart:nth-child(9)  { left: 51%; animation-duration: 8.6s;  animation-delay: -2.1s;  --rise: -185px; --sway: 9px; }
+.bokeh-heart:nth-child(10) { left: 57%; animation-duration: 10.2s; animation-delay: -8.5s;  --rise: -265px; --sway: -11px; }
+.bokeh-heart:nth-child(11) { left: 63%; animation-duration: 9.7s;  animation-delay: -1.9s;  --rise: -310px; --sway: 10px; }
+.bokeh-heart:nth-child(12) { left: 69%; animation-duration: 11.2s; animation-delay: -5.4s;  --rise: -200px; --sway: -13px; }
+.bokeh-heart:nth-child(13) { left: 75%; animation-duration: 8.5s;  animation-delay: -0.3s;  --rise: -290px; --sway: 12px; }
+.bokeh-heart:nth-child(14) { left: 81%; animation-duration: 10.6s; animation-delay: -7.1s;  --rise: -225px; --sway: -8px; }
+.bokeh-heart:nth-child(15) { left: 87%; animation-duration: 9.2s;  animation-delay: -3.8s;  --rise: -255px; --sway: 11px; }
+
+/* 올라가면서 서서히 흩어지듯 사라지는 애니메이션 */
+@keyframes floatHeartBokeh {
+    0% {
+        transform: translateY(60px) translateX(0) scale(0.8) rotate(-6deg);
+        opacity: 0;
+    }
+    15% {
+        transform: translateY(calc(var(--rise) * 0.1)) translateX(calc(var(--sway) * 0.4)) scale(0.9) rotate(-2deg);
+        opacity: 0.85;
+    }
+    40% {
+        transform: translateY(calc(var(--rise) * 0.5)) translateX(var(--sway)) scale(1.05) rotate(5deg);
+        opacity: 0.85;
+    }
+    70% {
+        transform: translateY(calc(var(--rise) * 0.85)) translateX(calc(var(--sway) * -0.7)) scale(1.25) rotate(-4deg);
+        opacity: 0.45;   /* 💡 멈추지 않고 이미 투명해지는 중 */
+    }
+    100% {
+        transform: translateY(var(--rise)) translateX(calc(var(--sway) * 0.8)) scale(1.4) rotate(4deg);
+        opacity: 0;
+    }
+}
+
+.greeting-section {
+    position: relative;
+    padding: 10px 0 10px 0;
+    z-index: 2;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+        .subtitle {
+            font-size: 13px;
+            letter-spacing: 4px;
+            color: #A39382;
+            text-transform: uppercase;
+            margin-top: 120px;
+            margin-bottom: 12px;
+            font-weight: 500;
+        }
+
+        .title {
+            font-size: 28px;
+            color: #3D291F;
+            font-weight: 700;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+
+        .divider-decoration {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin: 25px auto 55px auto;
+            width: 100%;
+            max-width: 260px;
+        }
+
+        .divider-line {
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #D0C5B8, transparent);
+        }
+
+        .divider-icon {
+            font-size: 14px;
+            color: #A39382;
+            opacity: 0.8;
+        }
+
+        .content {
+            font-size: 19px;
+            line-height: 1.7;
+            font-weight: 700;
+            color: #3D352E;
+            margin-bottom: 45px;
+            word-break: keep-all;
+            position: relative;
+            z-index: 2;
+        }
+
+        .highlight-red { color: #B85B56; font-weight: 700; }
+        .highlight-blue { color: #4A7A96; font-weight: 700; }
+        .highlight-green { color: #488B49; font-weight: 700; }
+
+
+        .parents-info {
+            font-size: 17.5px;
+            color: #3D291F;
+            font-weight: 700;
+            margin: 0 auto 88px auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            width: 100%;
+            position: relative;
+            z-index: 2;
+        }
+
+        .parent-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+        }
+
+        .parents-name {
+            text-align: right;
+            white-space: nowrap;
+            letter-spacing: -0.3px;
+        }
+
+        .relation {
+            color: #826958;
+            font-size: 12.5px;
+            font-weight: 400;
+            white-space: nowrap;
+            padding: 0 2px;
+        }
+
+        .child-name {
+            text-align: left;
+            font-weight: 700;
+            color: #2B1D16;
+            white-space: nowrap;
+        }
+
+/* 아들: 감성 파스텔 하늘색 */
+.relation .son {
+    color: #7BB3DA;
+    font-weight: 600; /* 필요시 글자 두께 살짝 조정 */
+}
+
+/* 딸: 감성 파스텔 분홍색 */
+.relation .daughter {
+    color: #E89ABE;
+    font-weight: 600;
+}
+
+/* 2. 안내 문구 전체 컨테이너 (흰 박스 완전히 바깥에 위치) */
+.gallery-notice-wrapper {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 2px !important;               /* 화살표와 글자 사이 간격 (밀착) */
+    
+    width: 100% !important;
+    max-width: 450px !important;       /* 달력 박스와 동일 너비 */
+    margin: 30px auto 0 auto !important;
+    padding-left: 8px !important;
+    box-sizing: border-box !important;
+    
+    position: relative;
+    z-index: 10;
+}
+
+/* 3. 화살표 이미지 (흰 박스 안쪽에 걸쳐지도록 이동) */
+.gallery-arrow-img {
+    width: 37px;                 /* 화살표 크기 */
+    height: auto;
+    display: inline-block;
+    vertical-align: middle;
+    flex-shrink: 0;
+
+    /* 핵심: 화살표만 아래로 이동시켜 흰 박스 안쪽에서부터 걸쳐 나오게 설정 */
+    transform: translateY(14.5px) rotate(-60deg);
+    margin-bottom: -8px;         /* 위치 이동으로 인한 전체 영역 이탈 방지 */
+}
+
+
+/* 4. 안내 텍스트 (박스 바깥에만 위치) */
+.gallery-notice-text {
+    font-size: 12.9px;
+    color: #A39382;
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: -0.3px;
+display: inline-block;
+    margin-top: 13px !important;
+}
+
+/* 분홍 밑줄(형광펜) 효과 */
+.highlight-underline {
+    position: relative;
+    display: inline-block;
+    /* 형광펜 효과: 아래쪽 5% 정도에 연한 분홍색을 채움 */
+    background: linear-gradient(180deg, transparent 80%, #ffd6d6 80%);
+    padding: 0 1px; /* 양옆 미세 여백 */
+}
+
+.calendar-section {
+    margin: 10px auto 40px auto; /* [상/우/하/좌] */
+    padding: 30px 20px 45px 20px; /* 45px가 하단 여백 (기존 30px -> 45px) */
+    background: #FAF8F5;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+    border: 1px solid #EFECE6 !important; /* 테두리 사라짐 방지 */
+    width: 100%; /* 부모 너비에 맞춰 갤러리와 폭을 일치시킴 */
+    box-sizing: border-box;
+    position: relative;
+    z-index: 1;
+}
+
+.gallery-instruction {
+    font-size: 10.8px !important;
+    color: #A39382;
+    margin-top: -10px !important;
+    margin-bottom: 4px !important;
+    font-weight: 400;
+    line-height: 1.2;
+}
+
+.mosaic-gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    grid-auto-rows: 42px;
+    gap: 6px;
+    margin-bottom: 30px;
+    padding: 0 4px;
+    position: relative;
+    contain: layout paint;
+    z-index: 1; /* 갤러리 기본 레이어 순서 지정 */
+}
+
+        .gallery-item {
+            border-radius: 6px;
+            overflow: hidden;
+            cursor: pointer;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+            background-color: #EFECE6;
+            position: relative;
+            content-visibility: auto;
+            contain-intrinsic-size: 0 80px;
+            transform: translateZ(0);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.3s ease;
+            backface-visibility: hidden;
+            will-change: transform;
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.06);
+        }
+
+        .item-0  { grid-column: span 4; grid-row: span 4; }
+        .item-1  { grid-column: span 2; grid-row: span 3; }
+        .item-2  { grid-column: span 2; grid-row: span 3; } 
+        .item-3  { grid-column: span 2; grid-row: span 2; }
+        .item-4  { grid-column: span 2; grid-row: span 3; }
+        .item-5  { grid-column: span 2; grid-row: span 3; }
+        .item-6  { grid-column: span 2; grid-row: span 3; }
+        .item-7  { grid-column: span 2; grid-row: span 2; }
+        .item-8  { grid-column: span 2; grid-row: span 3; }
+        .item-9  { grid-column: span 2; grid-row: span 3; }
+        .item-10 { grid-column: span 1; grid-row: span 3; }
+        .item-11 { grid-column: span 2; grid-row: span 3; }
+        .item-12 { grid-column: span 2; grid-row: span 3; }
+        .item-13 { grid-column: span 1; grid-row: span 3; }
+        .item-14 { grid-column: span 1; grid-row: span 2; }
+        .item-15 { grid-column: span 1; grid-row: span 3; }
+        .item-16 { grid-column: span 1; grid-row: span 3; }
+        .item-17 { grid-column: span 3; grid-row: span 2; }
+        .item-18 { grid-column: span 6; grid-row: span 4; }
+        .item-19 { grid-column: span 2; grid-row: span 2; }
+
+        .calendar-header {
+            color: #C28E75;
+            font-weight: 700;
+            margin-bottom: 18px;
+            letter-spacing: 2px;
+            display: flex;
+            align-items: baseline;
+            justify-content: center;
+        }
+
+        .calendar-header .num-10 {
+            font-size: 33px;
+            line-height: 1;
+            margin-top: 25px; /* 💡 수치를 조절해서 위쪽과의 간격을 늘려주세요 */
+            display: inline-block;
+        }
+
+        .calendar-header .char-month {
+            font-size: 19.8px;
+            margin-left: 2px;
+        }
+
+        .calendar-table {
+            width: 100%;
+            max-width: 100%;
+            margin: 0 auto;
+            border-collapse: collapse;
+        }
+
+        .calendar-table th {
+            padding: 10px 0;
+            font-size: 14px;
+            color: #A39382;
+            font-weight: 400;
+        }
+
+        .calendar-table th.sun { color: #C86B6B; }
+
+        .calendar-table td {
+            padding: 12px 0;
+            font-size: 16px;
+            color: #555;
+            text-align: center;
+            font-weight: 400;
+            position: relative;
+            height: 50px;
+            vertical-align: middle;
+        }
+
+        .calendar-table td.sun { color: #C86B6B; }
+
+        .calendar-table td.target-day {
+            color: #FFF !important;
+            z-index: 1;
+            cursor: pointer;
+            transition: transform 0.15s ease;
+        }
+
+        .calendar-table td.target-day:active {
+            transform: scale(0.9);
+        }
+
+        .calendar-table td.target-day::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 36px;
+            height: 36px;
+            background-color: #B28F81;
+            border-radius: 50%;
+            z-index: -1;
+            box-shadow: 0 2px 8px rgba(178, 143, 129, 0.4);
+        }
+
+        .time-label {
+            position: absolute;
+    bottom: -16px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 13px;
+    color: #C28E75; /* 10월 제목과 동일한 화사한 로즈골드 톤 */
+    font-weight: 600;
+    white-space: nowrap;
+    letter-spacing: 0px;
+        }
+
+        .location-section {
+            margin: 50px auto 20px auto;
+            position: relative;
+            z-index: 2;
+            max-width: 450px;
+        }
+
+        .venue-name {
+            font-size: 20px;
+            color: #3D291F;
+            font-weight: 700;
+            margin-top: 10px;
+            margin-bottom: 6px;
+        }
+
+/* 전체 감싸는 부모 컨테이너 */
+.venue-container {
+    position: relative !important;
+    display: inline-block;
+    padding: 6px 24px; /* 수채화가 번질 텍스트 주변 여백 */
+    margin: 0 auto;
+    text-align: center;
+}
+
+/* 1. 글자 뒤 수채화 번짐 레이어 */
+.venue-watercolor-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 0%; /* 처음엔 안 보임 */
+    
+background: linear-gradient(90deg, 
+    rgba(255, 253, 248, 0.0) 0%, 
+    rgba(240, 220, 190, 0.85) 25%, 
+    rgba(225, 198, 153, 0.95) 50%, 
+    rgba(240, 220, 190, 0.85) 75%, 
+    rgba(255, 253, 248, 0.0) 100%
+);
+box-shadow: 0 0 12px rgba(225, 198, 153, 0.4);
+    z-index: 1 !important;
+    pointer-events: none;
+    will-change: width, opacity;
+    
+    /* 처음엔 정지 상태 */
+    animation-play-state: paused;
+}
+
+/* 스크롤 도착 시 active 붙으면서 번짐 시작 */
+.venue-watercolor-bg.active {
+    animation: spreadWatercolor 4.0s cubic-bezier(0.25, 1, 0.3, 1) forwards;
+}
+
+/* 좌->우 물감 퍼짐 키프레임 */
+@keyframes spreadWatercolor {
+    0% { 
+        width: 0%; 
+        opacity: 0; 
+    }
+    30% { 
+        opacity: 0.9; 
+    }
+    100% { 
+        width: 100%; 
+        opacity: 1; 
+    }
+}
+
+/* 2. 수채화 위에 얹어질 텍스트 */
+.venue-text {
+    position: relative;
+    z-index: 2; /* 수채화보다 위에 위치 */
+    font-size: 20px;
+    color: #3B2018;
+    letter-spacing: 1px;
+    font-weight: 700;
+    font-family: 'Gowun Batang', serif;
+}
+        .venue-address {
+            font-size: 18px;
+            color: #6E5A4C;
+            margin-bottom: 25px;
+            letter-spacing: -0.2px;
+            font-weight: 530;
+        }
+
+.nav-buttons-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;                  /* 버튼 사이 간격 */
+    width: 100%;
+    margin-bottom: 35px;
+    padding: 0 10px;
+    box-sizing: border-box;
+    flex-wrap: nowrap;          /* 줄바꿈 방지 */
+}
+
+.nav-btn {
+    /* 너비와 높이를 절대 고정 */
+    width: 72px !important;
+    height: 72px !important;
+    min-width: 72px !important;
+    min-height: 72px !important;
+    max-width: 72px !important;
+    max-height: 72px !important;
+    
+    border-radius: 50% !important; /* 완벽한 동그라미 강제 */
+    background-color: #FAF8F5;
+    border: 1px solid #D8C8BD;
+    
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    
+    text-decoration: none;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+    box-sizing: border-box;
+    
+    /* flex 안에서 늘어나거나 줄어드는 현상 완전 차단 */
+    flex-shrink: 0 !important;
+    flex-grow: 0 !important;
+}
+
+.nav-btn:hover {
+    background-color: #EFECE6;
+    border-color: #A39382;
+}
+
+/* 내부 아이콘 고정 */
+.nav-icon-svg, 
+.nav-btn img {
+    width: 24px !important;
+    height: 24px !important;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
+.nav-emoji {
+    font-size: 20px !important;
+    line-height: 24px !important;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.nav-btn span {
+    font-size: 11px;
+    color: #3D291F;
+    font-weight: 600;
+    letter-spacing: -0.5px;
+    white-space: nowrap;
+    line-height: 1.2;
+}
+
+.accordion-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    text-align: left;
+max-width: 26.25rem;
+    margin: 0 auto;
+}
+
+.accordion-item {
+    overflow: hidden;
+    transition: all 0.25s ease;
+}
+
+.accordion-header {
+    width: 100%;
+    padding: 16px 20px;
+    background: none;
+    border: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.accordion-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.35s cubic-bezier(0, 1, 0, 1);
+}
+
+  :root{
+    --bg:#f8f5ef; --ink:#3b2a20; --sub:#7a6455;
+    --gold1:#e9d3a8; --gold2:#c9a468; --gold3:#a8803f;
+    --gold-grad:linear-gradient(90deg,transparent,#c9a468 50%,transparent);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;padding:40px 20px 60px;background:var(--bg);color:var(--ink);
+       font-family:'Gowun Batang',serif;text-align:center;line-height:1.7}
+
+  /* 금색 P 원형 마크 */
+  .p-mark{display:inline-flex;align-items:center;justify-content:center;
+          width:30px;height:30px;border-radius:50%;
+          background:linear-gradient(135deg,var(--gold1),var(--gold3));
+          color:#fff;font-weight:600;font-size:15px;font-family:Georgia,serif}
+
+  /* 주차 티켓 */
+  .parking-ticket{
+    --r:0.625rem;
+    position: relative;
+    max-width: 20rem;
+    margin: 1.25rem auto 2.5rem; /* 티켓 상하 여백 */
+    padding: 1.25rem 1.75rem;
+    background:
+      radial-gradient(circle var(--r) at 0 50%,var(--bg) 98%,transparent) left/51% 100% no-repeat,
+      radial-gradient(circle var(--r) at 100% 50%,var(--bg) 98%,transparent) right/51% 100% no-repeat,
+      linear-gradient(135deg,#f3e6cb,#e6cfa0);
+    filter:drop-shadow(0 2px 4px rgba(120,90,40,.18));
+    /* 점선 구분선 */
+  }
+  .parking-ticket .inner{display:flex;align-items:center;gap:1rem;text-align:left}
+  .parking-ticket .stub{padding-right:1rem;border-right:2px dashed rgba(168,128,63,.55)}
+  .parking-ticket .stub .p-mark{background:var(--ink);color:#f3e6cb}
+  .parking-ticket h4{margin:0;font-size:1rem;font-weight:600}
+  .parking-ticket p{margin:0;font-size:0.8125rem;color:var(--sub)}
+
+
+
+        .transport-accordion {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    gap: 0.85rem;
+    max-width: 20rem;     /* ← 추가: 티켓과 같은 폭 */
+    margin: 0 auto;       /* ← 추가: 가운데 정렬 */
+}
+
+        .transport-accordion .accordion-item {
+            background-color: #FFFFFF;
+            border: 1px solid #EAE5DE;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+        }
+
+        .transport-accordion .accordion-item.active {
+            border-color: #CBB8A9;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .transport-accordion .accordion-header {
+            padding: 0.75rem 1rem;
+            font-size: 18px;
+            font-weight: 700;
+            color: #4A3B32;
+            white-space: nowrap;
+        }
+
+        .transport-badge-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 6px;
+            font-size: 16px;
+        }
+
+        .transport-accordion .accordion-header::after {
+            content: '';
+            display: inline-block;
+            width: 7px;
+            height: 7px;
+            border-right: 2px solid #99887B;
+            border-bottom: 2px solid #99887B;
+            transform: rotate(45deg);
+            transition: transform 0.3s ease;
+            margin-right: 2px;
+            flex-shrink: 0;
+        }
+
+        .transport-accordion .accordion-item.active .accordion-header::after {
+            transform: rotate(-135deg);
+            border-color: #725948;
+        }
+
+        .transport-info-body {
+            padding: 0 16px 16px 16px;
+            font-size: 16px;
+            color: #3D352E;
+            line-height: 1.65;
+        }
+
+        .transport-subtitle {
+            font-weight: 700;
+            color: #3D291F;
+            margin-top: 12px;
+            margin-bottom: 4px;
+            font-size: 16px;
+        }
+
+        .transport-desc {
+            margin: 0 0 8px 8px;
+            color: #4A443E;
+            word-break: keep-all;
+        }
+
+        .transport-desc:last-child {
+            margin-bottom: 0;
+        }
+
+        /* 파란색/하늘색 동그라미 (크기 50% 줄임) */
+        .blue-dot {
+            font-size: 0.5em;
+            vertical-align: middle;
+            display: inline-block;
+
+        }
+
+        /* 예식장 안내 드롭다운 스타일 */
+        .venue-info-accordion {
+            max-width: 26.25rem;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+margin-top: 0.75rem;
+        }
+
+        .venue-info-accordion .accordion-item {
+            background-color: #FFFFFF;
+            border: 1px solid #EAE5DE;
+            border-radius: 0.75rem;
+            box-shadow: inset 0 0 0 0.0625rem var(--border-color), var(--shadow-sm);
+        }
+
+        .venue-info-accordion .accordion-header {
+            padding: 0.75rem 1rem;
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: #4A3B32;
+        }
+
+        .venue-info-accordion .accordion-header::after {
+            content: '';
+            display: inline-block;
+            width: 0.45em;
+            height: 0.45em;
+            border-right: 2px solid #99887B;
+            border-bottom: 2px solid #99887B;
+            transform: rotate(45deg);
+            transition: transform 0.3s ease;
+        }
+
+        .venue-info-accordion .accordion-item.active .accordion-header::after {
+            transform: rotate(-135deg);
+            border-color: #725948;
+        }
+
+        .venue-img-wrapper {
+            padding: 10px 14px 16px 14px;
+            text-align: center;
+        }
+
+        .venue-img-wrapper img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            display: block;
+        }
+
+        /* 식사 안내 문구 및 분홍색 동그라미 스타일 */
+        .venue-meal-desc {
+            margin-top: 0.75rem;
+    font-size: 1.15rem;
+    color: #3D352E;
+    line-height: 1.6;
+    text-align: left;
+    word-break: keep-all;
+}
+
+        .pink-dot {
+            color: #FF85A2;
+    font-size: 1.5em;
+    vertical-align: middle;
+    display: inline-block;
+    transform: translateY(-4px);
+        }
+
+        /* 계좌번호용 아코디언 스타일 */
+.account-accordion .accordion-item {
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+    transition: all 0.3s ease;
+    margin-bottom: 10px;
+    overflow: hidden;
+}
+
+/* 신랑측 수채화 블루 */
+.account-accordion .accordion-item.groom {
+    background: linear-gradient(120deg, #E2ECF8 0%, #F5F8FC 50%, #EBF1F9 100%);
+    border: 1px solid #C4D7E9;
+}
+
+/* 신부측 수채화 핑크 */
+.account-accordion .accordion-item.bride {
+    background: linear-gradient(120deg, #FCE8EA 0%, #FAF2F3 50%, #F9ECEE 100%);
+    border: 1px solid #EACACF;
+}
+
+/* 1. 아코디언 열림(active) 상태 테두리 - 신랑/신부 각각 맞춤 적용 */
+.account-accordion .accordion-item.groom.active {
+    border-color: #B2C8DF !important; /* 신랑측 활성화 테두리 */
+}
+
+.account-accordion .accordion-item.bride.active {
+    border-color: #E9C4C7 !important; /* 신부측 활성화 테두리 */
+}
+
+/* 2. 헤더 기본 스타일 (글자 및 여백) */
+.account-accordion .accordion-header {
+    font-size: 18px;
+    font-weight: 700;
+    color: #3D291F;
+    
+    /* 텍스트와 화살표 정렬을 위해 flex 추천 */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+}
+
+/* 신랑/신부 헤더 글자색 은은하게 톤다운 (선택사항) */
+.account-accordion .accordion-item.groom .accordion-header {
+    color: #324B63;
+}
+.account-accordion .accordion-item.bride .accordion-header {
+    color: #5C3D42;
+}
+
+/* 3. 화살표 기본 스타일 및 색상 정밀화 */
+.account-accordion .accordion-header::after {
+    content: '▾';
+    font-size: 14px;
+    color: #8C7A6B; /* 화살표 선명도 살짝 강화 */
+    transition: transform 0.3s ease;
+}
+
+/* 4. 열렸을 때(active) 화살표 회전 */
+.account-accordion .accordion-item.active .accordion-header::after {
+    transform: rotate(180deg);
+}
+
+/* 5. 계좌 정보가 나오는 하단 영역 (열렸을 때 배경) */
+.account-accordion .accordion-content {
+    background-color: #FFFFFF;
+    border-top: 1px dashed rgba(0, 0, 0, 0.08); /* 구분선 살짝 추가 */
+}
+
+        /* 마음 전하실 곳 섹션 스타일 */
+        .account-section {
+            margin: 60px auto 0 auto;
+            padding-bottom: 120px;
+            position: relative;
+            z-index: 2;
+            max-width: 450px;
+            background: transparent;
+        }
+
+        .account-desc {
+            font-size: 14px;
+            color: #6E5A4C;
+            margin-bottom: 25px;
+            line-height: 1.6;
+            word-break: keep-all;
+letter-spacing: -0.4px; /* 자간을 미세하게 좁혀 한 줄에 들어가게 */
+    text-align: center;     /* 문구 중앙 정렬 */
+        }
+
+        .account-row {
+            padding: 16px 20px;
+            border-top: 1px solid #F4EDE4;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .account-holder {
+            font-size: 15px;
+            color: #826958;
+            font-weight: 700;
+        }
+
+        .account-number-wrap {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .account-number {
+            font-size: 16px;
+            font-weight: 700;
+            color: #3D352E;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-copy {
+            padding: 5px 12px;
+            font-size: 15px;
+            border: 1px solid #D6C7B8;
+            background-color: #FAF8F5;
+            border-radius: 6px;
+            cursor: pointer;
+            color: #4A3B32;
+            font-family: inherit;
+            font-weight: 700;
+            transition: background 0.2s;
+        }
+
+        .btn-copy:active {
+            background-color: #EFECE6;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.9);
+            z-index: 999999;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-img-container {
+            position: relative;
+            max-width: 90vw;
+            max-height: 80vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-img-container img {
+            max-width: 100%;
+            max-height: 80vh;
+            object-fit: contain;
+            border-radius: 8px;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            color: #fff;
+            font-size: 32px;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        .modal-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            border: none;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+
+        .modal-nav:hover { background: rgba(255, 255, 255, 0.4); }
+        .modal-prev { left: 15px; }
+        .modal-next { right: 15px; }
+
+        .modal-indicator {
+            color: rgba(255, 255, 255, 0.8);
+            margin-top: 15px;
+            font-size: 14px;
+            letter-spacing: 1px;
+        }
+
+
+
+.rsvp-shadow-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 280px;
+    margin: 0 auto;
+    border-radius: 50% 50% 0 0 / 40% 40% 0 0;
+    box-shadow: 0 14px 20px rgba(0, 0, 0, 0.25) !important;
+}
+
+/* 1. 이미지 컨테이너 (그림자 및 틀 고정) */
+.rsvp-image-container {
+    position: relative;
+    text-align: center;
+    width: 100%;
+    max-width: 280px;      /* 최대 너비 */
+    margin: 0 auto;
+    padding: 0;
+    box-sizing: border-box;
+
+    /* 💡 1) 아치 모양 곡률 지정 */
+    border-radius: 50% 50% 0 0 / 40% 40% 0 0;
+    
+    /* 💡 2) 핵심: 이미지가 밖으로 튀어나가지 않게 모서리를 오려냄 (직사각형 현상 해결) */
+    overflow: hidden !important; 
+    
+    /* 💡 3) overflow: hidden으로 잘리지 않는 입체 그림자 방식 적용 */
+    filter: drop-shadow(0px 10px 18px rgba(100, 70, 60, 0.22));
+}
+
+/* 2. 아치 이미지 (내부 채우기) */
+.arch-image {
+    width: 100%;
+    aspect-ratio: 280 / 360;  /* 가로세로 비율 유지 */
+    height: auto;
+    object-fit: cover;
+    display: block;
+    margin: 0;
+}
+
+/* 3. 하단 문구 */
+.rsvp-subtext {
+    position: absolute;
+    bottom: 5%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    margin: 0;
+    font-size: 14px;
+    color: #ffffff;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+    z-index: 2;
+    pointer-events: none;
+}
+
+/* ✨ 별가루 레이어 */
+.sparkle-layer {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;   /* 사진(0) 위, 문구(2) 아래 */
+}
+
+/* 별 한 개 (JS가 생성) */
+.sparkle {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background: #fff;
+    /* 4갈래 별 모양 */
+    clip-path: polygon(50% 0%, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0% 50%, 39% 39%);
+    filter: drop-shadow(0 0 3px rgba(255, 240, 200, 0.9));
+    opacity: 0;
+    animation: twinkle 2.4s ease-in-out infinite;
+}
+
+@keyframes twinkle {
+    0%, 100% { opacity: 0; transform: scale(0.3) rotate(0deg); }
+    50%      { opacity: 1; transform: scale(1)   rotate(45deg); }
+}
+
+/* 4. 아래 버튼 영역 여백 정리 */
+.rsvp-section {
+    text-align: center;
+    margin: 20px 0 30px 0; /* 글자가 이미지 안으로 들어갔으므로 상단 여백 적절히 유지 */
+    padding: 0 20px;
+}
+
+.rsvp-open-btn {
+    display: inline-block;
+    padding: 12px 32px;
+    background-color: #e8c3b9; /* 청첩장 메인 톤에 맞춰 조정 가능 */
+    color: #ffffff;
+    border: none;
+    border-radius: 25px;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+.rsvp-open-btn:active {
+    transform: scale(0.98);
+}
+
+/* 모달 오버레이 배경 */
+.rsvp-modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    z-index: 99999;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(2px);
+}
+
+/* 모달 컨테이너 창 */
+.rsvp-modal-content {
+    position: relative;
+    width: 90%;
+    max-width: 440px;
+    height: 80vh;
+    max-height: 700px;
+    background: #ffffff;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    animation: modalUp 0.3s ease-out;
+}
+
+/* 닫기 버튼 */
+.rsvp-close-btn {
+    position: absolute;
+    top: 10px;
+    right: 14px;
+    width: 32px;
+    height: 32px;
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    border-radius: 50%;
+    font-size: 24px;
+    line-height: 1;
+    color: #333;
+    cursor: pointer;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+/* iframe 서식 */
+.rsvp-modal-content iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+/* 팝업 등장 애니메이션 */
+@keyframes modalUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+
+:root{
+  /* 청첩장 톤에 맞게 이 값만 바꾸면 전체 색이 바뀝니다 */
+  --cm-paper:#fbf8f3;
+  --cm-ink:#3a332d;
+  --cm-sub:#7d7368;
+  --cm-accent:#a8856a;
+  --cm-line:#e6dccf;
+  --cm-font:"Nanum Myeongjo","Noto Serif KR",serif;
+}
+
+/* ---- 하단 트리거 영역 ---- */
+.cm-section{padding:48px 20px;text-align:center}
+.cm-trigger{
+  display:block;margin:0 auto 14px;padding:0;border:0;background:none;cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+}
+.cm-trigger img{display:block;width:min(260px,70vw);height:auto;margin:0 auto}
+.cm-trigger:focus-visible{outline:2px solid var(--cm-accent);outline-offset:6px;border-radius:4px}
+.cm-trigger:active img{opacity:.7}
+
+.cm-on-image .cm-trigger{display:block;width:100%}
+
+.cm-trigger .cm-cap{
+  display:block;width:auto;max-width:290px;margin:0 auto;
+  text-align:center;
+  font-family:'Cormorant Garamond','Playfair Display',serif;
+  font-style:italic;font-weight:500;font-size:14px;line-height:1.3;
+  text-wrap:balance;
+  color:#fff6e0;
+  text-shadow:0 1px 3px rgba(0,0,0,.7),0 0 12px rgba(0,0,0,.35);
+  animation:cmCapGlow 5.5s ease-in-out 2;
+}
+
+.cm-trigger .cm-cap small{
+  display:block;margin-top:8px;
+  font-style:normal;font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;opacity:.9;
+}
+
+.cm-trigger .cm-cap small .cm-tap{
+  width:13px;height:13px;margin-left:1px;vertical-align:-2px;
+  fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;
+}
+
+/* ---- 모달 ---- */
+.cm-modal{
+  position:fixed;top:0;right:0;bottom:0;left:0;inset:0;z-index:10000000;display:none;
+  align-items:center;justify-content:center;
+  background:rgba(30,24,20,.62);
+  padding:max(16px,env(safe-area-inset-top)) 16px max(16px,env(safe-area-inset-bottom));
+}
+.cm-modal.is-open{display:flex;animation:cmFade .2s ease}
+@keyframes cmFade{from{opacity:0}to{opacity:1}}
+
+.cm-dialog{
+  position:relative;width:100%;max-width:400px;
+  display:flex;flex-direction:column;
+  background:var(--cm-paper);border-radius:10px;overflow:hidden;
+  opacity:1;isolation:isolate;
+  box-shadow:0 20px 50px rgba(0,0,0,.3);
+  font-family:var(--cm-font);color:var(--cm-ink);
+}
+.cm-head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 16px 12px 20px;border-bottom:1px solid var(--cm-line);
+}
+.cm-head h2{margin:0;font-family:"Noto Serif KR","Nanum Myeongjo",serif;font-size:16px;font-weight:900;letter-spacing:.02em}
+.cm-close{
+  width:36px;height:36px;border:0;background:none;cursor:pointer;
+  font-size:26px;line-height:1;color:var(--cm-sub);border-radius:50%;
+}
+.cm-close:focus-visible,.cm-nav:focus-visible{outline:2px solid var(--cm-accent)}
+
+/* 카드 슬라이드 (좌우 스와이프) */
+.cm-track{
+  display:flex;overflow-x:auto;scroll-snap-type:x mandatory;
+  scrollbar-width:none;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;
+}
+.cm-track::-webkit-scrollbar{display:none}
+.cm-slide{
+  flex:0 0 100%;scroll-snap-align:center;
+  height:min(520px,calc(100vh - 190px));height:min(520px,calc(100dvh - 190px));min-height:200px;
+  padding:28px 28px 20px;box-sizing:border-box;overflow-y:auto;
+  display:flex;flex-direction:column;justify-content:flex-start;text-align:center;
+}
+/* 카드 속 사진 (구분선 아래) */
+.cm-slide > :first-child{margin-top:auto}      /* 내용이 짧으면 세로 가운데, 길면 위부터 스크롤 */
+.cm-slide > :last-child{margin-bottom:auto}
+.cm-photo{
+  display:block;width:90%;height:104px;margin:0 auto 16px;
+  object-fit:cover;object-position:center;border-radius:10px;
+  box-shadow:0 4px 12px rgba(120,86,52,.18);
+}
+/* 윤슬 글씨: 금빛 그라데이션이 물결처럼 흐릅니다 */
+.cm-slide .cm-no,
+.cm-slide h3,
+.cm-slide .cm-verse{
+  background:linear-gradient(105deg,#8a5f36 0%,#b98a52 25%,#f4d99a 42%,#fff4d2 50%,#f4d99a 58%,#b98a52 75%,#8a5f36 100%);
+  background-size:260% 100%;
+  -webkit-background-clip:text;background-clip:text;
+  -webkit-text-fill-color:transparent;color:transparent;
+  animation:cmGlint 4.5s ease-in-out 2;
+}
+.cm-slide .cm-no{font-size:13px;font-weight:800;margin-bottom:10px}
+.cm-slide h3{margin:0 0 8px;font-family:"Noto Serif KR","Nanum Myeongjo",serif;font-size:24px;font-weight:900;line-height:1.4;letter-spacing:-.01em;
+  filter:drop-shadow(0 1px 0 rgba(120,80,30,.25))}
+.cm-slide .cm-verse{
+  margin:0 auto 18px;padding-bottom:16px;max-width:90%;
+  font-size:13.5px;font-weight:700;line-height:1.6;
+  border-bottom:1px solid var(--cm-line);
+}
+/* 본문은 읽기 편하게 굵게 + 은은한 빛결만 */
+.cm-slide p{
+    white-space:pre-line;margin:0;font-size:15px;font-weight:700;line-height:1.65;word-break:keep-all;
+  background:linear-gradient(105deg,#3a2c20 0%,#3a2c20 38%,#8a6a45 50%,#3a2c20 62%,#3a2c20 100%);
+  background-size:300% 100%;
+  -webkit-background-clip:text;background-clip:text;
+  -webkit-text-fill-color:transparent;color:transparent;
+  animation:cmGlint 6s ease-in-out 2;
+}
+@keyframes cmGlint{from{background-position:130% 0}to{background-position:-130% 0}}
+@keyframes cmGlintOnce{from{background-position:100% 0}to{background-position:0% 0}}
+
+/* 반짝이는 물결빛 점들 */
+.cm-dialog::before,.cm-dialog::after{
+  content:"";position:absolute;inset:0;z-index:2;pointer-events:none;
+  background-repeat:no-repeat;
+  animation:cmTwinkle 3.2s ease-in-out 2 forwards;
+}
+.cm-dialog::before{
+  background-image:
+    radial-gradient(circle,rgba(255,236,176,.95) 0 1.6px,transparent 2.4px),
+    radial-gradient(circle,rgba(255,236,176,.9) 0 1.2px,transparent 2px),
+    radial-gradient(circle,rgba(255,236,176,.95) 0 2px,transparent 3px);
+  background-size:12px 12px,10px 10px,14px 14px;
+  background-position:12% 22%,84% 38%,22% 78%;
+}
+.cm-dialog::after{
+  background-image:
+    radial-gradient(circle,rgba(255,236,176,.95) 0 1.4px,transparent 2.2px),
+    radial-gradient(circle,rgba(255,236,176,.9) 0 2px,transparent 3px),
+    radial-gradient(circle,rgba(255,236,176,.9) 0 1.2px,transparent 2px);
+  background-size:10px 10px,14px 14px,10px 10px;
+  background-position:78% 16%,10% 52%,88% 82%;
+  animation-delay:-1.6s;
+}
+@keyframes cmTwinkle{0%,100%{opacity:.1}50%{opacity:1}}
+
+/* 트리거 글자 이미지도 은은하게 반짝 */
+.cm-trigger img{animation:cmGlow 3.6s ease-in-out infinite}
+@keyframes cmGlow{
+  0%,100%{filter:brightness(1) drop-shadow(0 0 0 rgba(244,217,154,0))}
+  50%{filter:brightness(1.12) drop-shadow(0 0 6px rgba(244,217,154,.9))}
+}
+
+/* 하단 컨트롤 */
+.cm-foot{display:flex;align-items:center;justify-content:space-between;padding:8px 10px 14px}
+.cm-nav{
+  width:40px;height:40px;border:0;background:none;cursor:pointer;
+  font-size:20px;color:var(--cm-sub);border-radius:50%;
+}
+.cm-nav[disabled]{opacity:.25;cursor:default}
+.cm-dots{display:flex}
+.cm-dot{margin:0 3.5px}
+.cm-dot{width:7px;height:7px;border-radius:50%;background:var(--cm-line);transition:background .2s,transform .2s}
+.cm-dot.is-on{background:var(--cm-accent);transform:scale(1.25)}
+
+@media (max-width:359px){
+  .cm-slide{padding:22px 18px 16px}
+  .cm-slide h3{font-size:21px}
+  .cm-slide p{font-size:14px}
+}
+@media (prefers-reduced-motion:reduce){
+  .cm-modal.is-open,.cm-slide .cm-no,.cm-slide h3,.cm-slide .cm-verse,.cm-slide p,
+  .cm-dialog::before,.cm-dialog::after,.cm-trigger img{animation:none}
+  .cm-dialog::before,.cm-dialog::after{opacity:.5}
+  .cm-track{scroll-behavior:auto}
+}
+
+/* ---- 이미지 위에 올라가는 트리거 (RSVP 사진 위) ---- */
+.cm-on-image{z-index:5;pointer-events:auto;text-align:center}
+.cm-on-image .cm-trigger{margin:0 auto 6px}
+.cm-on-image .cm-trigger:last-child{margin-bottom:0}
+.cm-on-image .cm-trigger img{width:min(230px,62vw)}
+.sparkle-layer{pointer-events:none}   /* 반짝이 레이어가 터치를 가로채지 않도록 */
+/* ---- 사진 위(밖) 하트 말풍선 (기도 요청) : 오른쪽, 살짝 기울임 ---- */
+.cm-bubble-wrap{position:relative;z-index:6;max-width:280px;margin:0 auto -6px;padding:0 8% 0 0;text-align:right}
+
+.cm-bubble{
+  position:relative; left:70px; display:inline-block;width:98px;height:118px;
+  padding:0;border:0;background:none;cursor:pointer;
+  filter:drop-shadow(0 3px 6px rgba(185,138,82,.35));   /* RSVP 버튼과 같은 은은한 그림자 톤 */
+  -webkit-tap-highlight-color:transparent;
+  animation:cmBubbleFloat 3.4s ease-in-out infinite;
+}
+
+.cm-bubble svg{position:absolute;top:0;left:0;width:100%;height:100%;overflow:visible}
+.cm-bubble svg .cm-heart{fill:url(#cmHeartGrad)}
+.cm-bubble svg circle{fill:#dcc08a}
+.cm-bubble svg .cm-shine{fill:#fff;opacity:.22}
+.cm-bubble span{
+  position:absolute;left:6%;right:6%;top:28%;
+  font-family:var(--cm-font);font-size:10.5px;font-weight:800;line-height:1.45;
+  letter-spacing:-.03em;white-space:nowrap;text-align:center;
+  color:#fff;text-shadow:0 1px 2px rgba(120,80,30,.6);  /* 흰 글씨가 연한 분홍 위에서도 읽히도록 */
+}
+.cm-bubble:active{filter:brightness(.97) drop-shadow(0 3px 6px rgba(190,130,118,.30))}
+.cm-bubble:focus-visible{outline:2px solid var(--cm-accent);outline-offset:4px;border-radius:12px}
+@keyframes cmBubbleFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+@media (max-width:359px){.cm-bubble{width:86px;height:103px}.cm-bubble span{font-size:9.5px}}
+@media (prefers-reduced-motion:reduce){.cm-bubble{animation:none}}
+/* 사진 위에서는 어두운 그림자 + 밝은 빛으로 글씨가 또렷하게 */
+.cm-on-image .cm-trigger img{animation:cmGlowOn 3.6s ease-in-out infinite}
+@keyframes cmGlowOn{
+  0%,100%{filter:brightness(1.05) drop-shadow(0 1px 3px rgba(0,0,0,.65)) drop-shadow(0 0 0 rgba(255,236,176,0))}
+  50%{filter:brightness(1.2) drop-shadow(0 1px 3px rgba(0,0,0,.65)) drop-shadow(0 0 8px rgba(255,236,176,.95))}
+}
+
+
+
+
+/* ==========================================
+   하단 전용 효과 (아래가 짙고 위로 연해지는 버전)
+   ========================================== */
+
+.card-footer {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    min-height: 530px;
+    background: linear-gradient(
+        to top,
+        #8C4F2B 0%,     /* 깊은 앰버 브라운 */
+        #B86B35 10%,    /* 웜 브라운 */
+        #D9945B 25%,    /* 중간 톤 앰버 */
+        #E8B89B 45%,    /* 웜 샌드 베이지 */
+        #F2D7C4 65%,    /* 연한 크림 피치 */
+        #F8F6F0 88%,    /* 완만한 상아색 전환 */
+        #F8F6F0 100%    /* 맨 위: 계좌 섹션과 완벽 연결 */
+    );
+    margin-top: 0px;
+    padding: 60px 20px 80px 20px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+/* 푸터 파티클 컨테이너 */
+.footer-particles-container {
+    position: absolute;
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%;
+    pointer-events: none;
+    z-index: 2;
+}
+
+/* 푸터 별가루 효과 */
+.footer-particles-container .stardust {
+    position: absolute;
+    width: 2.5px; 
+    height: 2.5px;
+    background-color: #FFE4C4;
+    border-radius: 50%;
+    box-shadow: 0 0 6px 2px rgba(255, 218, 185, 0.9);
+    animation: sparkleDust ease-in-out infinite alternate;
+}
+
+@keyframes sparkleDust {
+    0% { opacity: 0.15; transform: scale(0.5); }
+    50% { opacity: 1; transform: scale(1.5); }
+    100% { opacity: 0.2; transform: scale(0.7); }
+}
+
+/* 감사 메시지 컨테이너 */
+.thank-you-section {
+    width: 100% !important;
+    max-width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background: transparent;
+    box-sizing: border-box;
+    position: relative;
+    z-index: 2;
+    padding: 0 16px;
+}
+
+/* 상단 구분선 */
+.thank-you-divider {
+    width: 32px;
+    height: 1px;
+    background-color: #6E432A;
+    opacity: 0.35;
+    margin: 5px auto 24px auto;
+}
+
+/* 텍스트 스타일 지정 */
+.thank-you-en {
+color: #8C5B4C;
+    font-size: 16px;  
+    font-weight: 500;
+    letter-spacing: 5px;       /* 자간 넉넉히 */
+    margin-bottom: 40px;
+}
+
+.thank-you-kr {
+    color: #4A2E1B;
+    font-size: 26px;        
+    font-weight: 700;
+    margin-bottom: 10px;
+    letter-spacing: -0.5px;
+}
+
+.thank-you-sub {
+    color: #FFF8F2;
+    font-size: 18px; 
+    font-weight: 530;
+    line-height: 1.6;
+    word-break: keep-all;     /* 단어 단위 줄바꿈 유지 */
+    text-shadow: 0 1px 4px rgba(74, 46, 27, 0.35); /* 글자 또렷 */
+}
+
+.footer-leaf-icon {
+    margin-top: 40px;
+    width: 32px;
+    height: 32px;
+    opacity: 0.9;
+}
+
+/* LP 아이콘 회전 애니메이션 */
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.lp-icon.playing,
+.bgm-btn.active .lp-icon {
+    animation: spin 3s linear infinite;
+    transform-origin: center;
+}
+
+/* 🎈 말풍선 전체 스타일 */
+.speech-bubble {
+    position: absolute;
+    top: -175px;
+    left: 67%;
+    transform: translateX(-50%);
+    z-index: 9999 !important;
+
+    /* 💡 절대 단위로 고정 */
+    width: 230px;
+    max-width: 230px;            /* 80vw → 230px (vw 제거) */
+    box-sizing: border-box;      /* padding 포함해서 너비 계산 */
+    white-space: normal;
+    word-break: keep-all;
+    overflow-wrap: break-word;   /* 긴 단어 안전장치 */
+
+    background: rgba(255, 255, 255, 0.95);
+    color: #555555;
+    border-radius: 16px;
+    padding: 16px 18px;
+    text-align: center;
+    font-size: 14px;             /* 0.92rem → 14px (사용자 폰트 설정 영향 제거) */
+    line-height: 21px;           /* 1.5 → 21px (14px × 1.5) */
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+    pointer-events: none;
+    display: block;
+    transition: opacity 0.4s ease, transform 0.4s ease;
+
+    /* 둥둥 애니메이션 */
+    animation: floatBubble 2.2s ease-in-out infinite;
+}
+
+/* 🎈 부드럽게 위아래로 움직이는 효과 */
+@keyframes floatBubble {
+    0%, 100% {
+        transform: translate(-50%, 0);
+    }
+    50% {
+        transform: translate(-50%, -6px);
+    }
+}
+
+/* 말풍선 꼬리 */
+.speech-bubble::after {
+    content: '';
+    position: absolute;
+    bottom: 40px;
+    left: -1%;
+    transform: translateX(-50%);
+    border-width: 7px 8px 7px 0;
+    border-style: solid;
+    border-color: transparent rgba(255, 255, 255, 0.95) transparent transparent;
+}
+
+/* 강조 색상 */
+.speech-bubble .highlight-bold {
+    color: #000000;
+    font-weight: 650;
+}
+.speech-bubble .highlight-pink {
+    color: #D9534F;
+    font-weight: 600;
+}
+
+.speech-bubble .highlight-navy {
+    color: #1A365D;
+    font-weight: 600;
+}
+
+.speech-bubble.fade-out {
+    opacity: 0;
+    transform: translate(-50%, -10px);
+}
+
+
+
+    </style>
+</head>
+
+
+<body>
+
+<div class="envelope-main-outer">
+
+<!-- 1. 봉투 오버레이 화면 -->
+    <div id="envelopeOverlay">
+        <div class="envelope-box">
+            <div class="envelope-inside"></div>
+
+
+    <div class="speech-bubble">
+    환경과 실용을 위해<br>
+    <span class="highlight-bold">종이 청첩장은 제작하지 않고,</span><br>
+    저희가 직접<span class="highlight-navy"> 모바일 청첩장을 정성껏 만들었습니다.</span><br>
+    <span class="highlight-pink">따뜻한 마음으로 봐주십시오♥</span>
+</div>
+
+
+<div class="front-img-wrapper">
+                <img src="훈은미.png" alt="훈&은미" loading="lazy">
+            </div>
+
+            <!-- 2. 씰링왁스 버튼 (독립된 도장 형태) -->
+<button class="open-envelope-btn" id="openBtn">
+    <div class="wax-seal">
+        <div class="wax-inner">
+
+        <div class="wax-monogram">H<span class="ampersand">&</span>M</div>
+        <div class="wax-text">
+            <span class="btn-subtext">Save the date</span>
+            <span class="btn-text">31 OCTOBER</span>
+
+<div class="wax-leaf-icon">
+                <svg viewBox="0 0 100 30" xmlns="http://www.w3.org/2000/svg">
+                    <!-- 중앙 줄기 -->
+                    <path d="M10,22 Q50,30 90,22" stroke="#f2d7a6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+                    <!-- 잎사귀들 -->
+                    <path d="M15,21 Q18,13 25,18 Q18,22 15,21 Z" fill="#f2d7a6"/>
+                    <path d="M28,23 Q32,15 38,20 Q32,24 28,23 Z" fill="#f2d7a6"/>
+                    <path d="M42,24 Q48,16 53,21 Q47,25 42,24 Z" fill="#f2d7a6"/>
+                    <path d="M58,24 Q63,16 69,21 Q63,25 58,24 Z" fill="#f2d7a6"/>
+                    <path d="M73,23 Q78,15 84,20 Q78,24 73,23 Z" fill="#f2d7a6"/>
+                    <!-- 아래로 늘어진 잎사귀들 -->
+                    <path d="M20,22 Q24,28 30,25 Q25,23 20,22 Z" fill="#f2d7a6"/>
+                    <path d="M35,23 Q40,29 46,26 Q41,24 35,23 Z" fill="#f2d7a6"/>
+                    <path d="M50,24 Q55,30 61,27 Q56,25 50,24 Z" fill="#f2d7a6"/>
+                    <path d="M65,23 Q70,29 76,26 Q71,24 65,23 Z" fill="#f2d7a6"/>
+                </svg>
+            </div>
+       </div>
+      </div>
+     </div>
+</button>
+
+
+            <!-- 콘페티 레이어 -->
+            <div class="envelope-flowers">
+                <div class="sparkle heart"></div>
+                <div class="sparkle star"></div>
+                <div class="sparkle twinkle"></div>
+                <div class="sparkle star"></div>
+                <div class="sparkle rect"></div>
+                <div class="sparkle twinkle"></div>
+                <div class="sparkle dot"></div>
+                <div class="sparkle dot"></div>
+                <div class="sparkle heart"></div>
+                <div class="sparkle star"></div>
+                <div class="sparkle twinkle"></div>
+                <div class="sparkle dot"></div>
+                <div class="sparkle heart"></div>
+                <div class="sparkle rect"></div>
+                <div class="sparkle star"></div>
+                <div class="sparkle dot"></div>
+                <div class="sparkle heart"></div>
+                <div class="sparkle dot"></div>
+                <div class="sparkle rect"></div>
+                <div class="sparkle twinkle"></div>
+                <div class="sparkle rect"></div>
+                <div class="sparkle star"></div>
+            </div>
+
+            <!-- 봉투 덮개 및 포켓 -->
+            <div class="envelope-flap"></div>
+
+
+            <!-- 카드 래퍼 영역 -->
+            <div class="envelope-card-wrapper">
+                <div class="card-ambient-layer">
+                    <div class="ambient-bokeh b1"></div>
+                    <div class="ambient-bokeh b2"></div>
+                    <div class="ambient-bokeh b3"></div>
+                    <div class="ambient-bokeh b4"></div>
+
+                    <div class="ambient-star s1"></div>
+                    <div class="ambient-star s2"></div>
+                    <div class="ambient-star s3"></div>
+                    <div class="ambient-star s4"></div>
+
+                    <div class="ambient-glitter g1"></div>
+                    <div class="ambient-glitter g2"></div>
+                    <div class="ambient-glitter g3"></div>
+                    <div class="ambient-glitter g4"></div>
+                </div>
+
+                <!-- 미니 카드 본체 -->
+                <div class="envelope-card">
+                    <div class="mini-card-sub">Autumn Wedding</div>
+                    <div class="mini-card-names">훈 & 은미</div>
+                    <div class="mini-card-date">26. 10. 31. SAT</div>
+                    <div class="mini-card-title">Two Become One.<br>We Are One!</div>
+                </div>
+            </div>
+
+            <div class="envelope-pocket"></div>
+        </div>
+    </div>
+
+
+<!-- 🎵 오디오 태그 -->
+<audio id="bgm" src="bgm.m4a" preload="auto" loop></audio>
+
+<button class="bgm-btn" id="bgmBtn" onclick="toggleBGM(event)">
+    <!-- 꺼져있을 때: 재생(▶) 아이콘 -->
+    <svg class="lp-icon icon-play" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+        <path d="M6 4l14 8-14 8V4z"/>
+    </svg>
+    <!-- 켜져있을 때: LP판 회전 아이콘 -->
+    <svg class="lp-icon icon-lp" width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:none;">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.8"/>
+        <circle cx="12" cy="12" r="7" stroke="currentColor" stroke-width="1" stroke-dasharray="1.5 1.5"/>
+        <circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1"/>
+        <circle cx="12" cy="12" r="2" fill="currentColor"/>
+    </svg>
+    <span id="bgmText">BGM OFF</span>
+</button>
+
+
+    <div class="card-container">
+
+        <div class="main-header">
+            <div class="watercolor-overlay"></div>
+            <div class="sunbeam-overlay"></div>
+
+            <div class="starlight-layer"></div>
+
+            <div class="header-particles-container">
+                <div class="soft-bokeh"></div>
+                <div class="soft-bokeh"></div>
+                <div class="soft-bokeh"></div>
+                <div class="soft-bokeh"></div>
+                <div class="soft-bokeh"></div>
+                <div class="stardust"></div><div class="stardust"></div><div class="stardust"></div><div class="stardust"></div><div class="stardust"></div><div class="stardust"></div><div class="stardust"></div><div class="stardust"></div><div class="stardust"></div><div class="stardust"></div>
+                <div class="stardust"></div><div class="stardust"></div><div class="stardust"></div><div class="stardust"></div><div class="stardust"></div><div class="stardust"></div><div class="stardust"></div><div class="stardust"></div><div class="stardust"></div><div class="stardust"></div>
+              <div class="stardust"></div><div class="stardust"></div><div class="stardust"></div><div class="stardust"></div><div class="stardust"></div><div class="stardust"></div><div class="stardust"></div><div class="stardust"></div><div class="stardust"></div><div class="stardust"></div>
+              <div class="stardust"></div><div class="stardust"></div><div class="stardust"></div><div class="stardust"></div><div class="stardust"></div> 
+            </div>
+
+            <div class="header-content">
+                <div id="typewriterText">Autumn<br>Wedding</div>
+                
+                <h1 class="header-title">
+                    <span class="big-first">아</span><span class="small">름다운 계절을 닮아,</span><br>
+서로에게 물<span class="grow-1">드</span><span class="grow-2">는</span> <span class="grow-3">날</span> <span class="dot">...</span>
+</h1>
+
+<div class="leaf-symbol">🍂</div>
+
+<div class="header-date-wrapper">
+    <div class="header-date-watercolor"></div>
+    <div class="header-date">
+        <span class="date-year">26</span>. 
+        <span class="date-num">10</span>. 
+        <span class="date-num">31</span>. 
+        <span class="date-day">토</span>. 
+        <span class="date-time">3시</span>
+    </div>
+</div>
+
+                <div class="dday-timer" id="ddayTimer">D-DAY 계산 중...</div>
+
+
+                <div class="header-main-image">
+                    <img src="head.png" alt="메인 웨딩 사진" fetchpriority="high">
+                </div>
+
+                <div class="heart-bokeh-container layer-front">
+    <!-- 15개 하트 (layer-front) -->
+    <span class="bokeh-heart layer-front"><svg viewBox="0 0 32 32"><path fill="#D9724F" d="M23.6,0c-3.4,0-6.3,2.7-7.6,5.6C14.7,2.7,11.8,0,8.4,0C3.8,0,0,3.8,0,8.4c0,9.4,16,21.6,16,21.6s16-12.2,16-21.6C32,3.8,28.2,0,23.6,0z"/></svg></span>
+    <span class="bokeh-heart layer-front"><svg viewBox="0 0 32 32"><path fill="#D9724F" d="M23.6,0c-3.4,0-6.3,2.7-7.6,5.6C14.7,2.7,11.8,0,8.4,0C3.8,0,0,3.8,0,8.4c0,9.4,16,21.6,16,21.6s16-12.2,16-21.6C32,3.8,28.2,0,23.6,0z"/></svg></span>
+    <span class="bokeh-heart layer-front"><svg viewBox="0 0 32 32"><path fill="#D9724F" d="M23.6,0c-3.4,0-6.3,2.7-7.6,5.6C14.7,2.7,11.8,0,8.4,0C3.8,0,0,3.8,0,8.4c0,9.4,16,21.6,16,21.6s16-12.2,16-21.6C32,3.8,28.2,0,23.6,0z"/></svg></span>
+    <span class="bokeh-heart layer-front"><svg viewBox="0 0 32 32"><path fill="#D9724F" d="M23.6,0c-3.4,0-6.3,2.7-7.6,5.6C14.7,2.7,11.8,0,8.4,0C3.8,0,0,3.8,0,8.4c0,9.4,16,21.6,16,21.6s16-12.2,16-21.6C32,3.8,28.2,0,23.6,0z"/></svg></span>
+    <span class="bokeh-heart layer-front"><svg viewBox="0 0 32 32"><path fill="#D9724F" d="M23.6,0c-3.4,0-6.3,2.7-7.6,5.6C14.7,2.7,11.8,0,8.4,0C3.8,0,0,3.8,0,8.4c0,9.4,16,21.6,16,21.6s16-12.2,16-21.6C32,3.8,28.2,0,23.6,0z"/></svg></span>
+    <span class="bokeh-heart layer-front"><svg viewBox="0 0 32 32"><path fill="#D9724F" d="M23.6,0c-3.4,0-6.3,2.7-7.6,5.6C14.7,2.7,11.8,0,8.4,0C3.8,0,0,3.8,0,8.4c0,9.4,16,21.6,16,21.6s16-12.2,16-21.6C32,3.8,28.2,0,23.6,0z"/></svg></span>
+    <span class="bokeh-heart layer-front"><svg viewBox="0 0 32 32"><path fill="#D9724F" d="M23.6,0c-3.4,0-6.3,2.7-7.6,5.6C14.7,2.7,11.8,0,8.4,0C3.8,0,0,3.8,0,8.4c0,9.4,16,21.6,16,21.6s16-12.2,16-21.6C32,3.8,28.2,0,23.6,0z"/></svg></span>
+    <span class="bokeh-heart layer-front"><svg viewBox="0 0 32 32"><path fill="#D9724F" d="M23.6,0c-3.4,0-6.3,2.7-7.6,5.6C14.7,2.7,11.8,0,8.4,0C3.8,0,0,3.8,0,8.4c0,9.4,16,21.6,16,21.6s16-12.2,16-21.6C32,3.8,28.2,0,23.6,0z"/></svg></span>
+    <span class="bokeh-heart layer-front"><svg viewBox="0 0 32 32"><path fill="#D9724F" d="M23.6,0c-3.4,0-6.3,2.7-7.6,5.6C14.7,2.7,11.8,0,8.4,0C3.8,0,0,3.8,0,8.4c0,9.4,16,21.6,16,21.6s16-12.2,16-21.6C32,3.8,28.2,0,23.6,0z"/></svg></span>
+    <span class="bokeh-heart layer-front"><svg viewBox="0 0 32 32"><path fill="#D9724F" d="M23.6,0c-3.4,0-6.3,2.7-7.6,5.6C14.7,2.7,11.8,0,8.4,0C3.8,0,0,3.8,0,8.4c0,9.4,16,21.6,16,21.6s16-12.2,16-21.6C32,3.8,28.2,0,23.6,0z"/></svg></span>
+    <span class="bokeh-heart layer-front"><svg viewBox="0 0 32 32"><path fill="#D9724F" d="M23.6,0c-3.4,0-6.3,2.7-7.6,5.6C14.7,2.7,11.8,0,8.4,0C3.8,0,0,3.8,0,8.4c0,9.4,16,21.6,16,21.6s16-12.2,16-21.6C32,3.8,28.2,0,23.6,0z"/></svg></span>
+    <span class="bokeh-heart layer-front"><svg viewBox="0 0 32 32"><path fill="#D9724F" d="M23.6,0c-3.4,0-6.3,2.7-7.6,5.6C14.7,2.7,11.8,0,8.4,0C3.8,0,0,3.8,0,8.4c0,9.4,16,21.6,16,21.6s16-12.2,16-21.6C32,3.8,28.2,0,23.6,0z"/></svg></span>
+    <span class="bokeh-heart layer-front"><svg viewBox="0 0 32 32"><path fill="#D9724F" d="M23.6,0c-3.4,0-6.3,2.7-7.6,5.6C14.7,2.7,11.8,0,8.4,0C3.8,0,0,3.8,0,8.4c0,9.4,16,21.6,16,21.6s16-12.2,16-21.6C32,3.8,28.2,0,23.6,0z"/></svg></span>
+    <span class="bokeh-heart layer-front"><svg viewBox="0 0 32 32"><path fill="#D9724F" d="M23.6,0c-3.4,0-6.3,2.7-7.6,5.6C14.7,2.7,11.8,0,8.4,0C3.8,0,0,3.8,0,8.4c0,9.4,16,21.6,16,21.6s16-12.2,16-21.6C32,3.8,28.2,0,23.6,0z"/></svg></span>
+    <span class="bokeh-heart layer-front"><svg viewBox="0 0 32 32"><path fill="#D9724F" d="M23.6,0c-3.4,0-6.3,2.7-7.6,5.6C14.7,2.7,11.8,0,8.4,0C3.8,0,0,3.8,0,8.4c0,9.4,16,21.6,16,21.6s16-12.2,16-21.6C32,3.8,28.2,0,23.6,0z"/></svg></span>
+</div>
+
+
+            </div> <!-- header-content 닫힘 -->
+        </div> <!-- main-header 닫힘 -->
+
+
+
+
+
+
+
+
+        <div class="content-body">
+            
+            <section class="greeting-section">
+               
+                <div class="subtitle">INVITATION</div>
+                <div class="title">모시는 글</div>
+
+                <div class="divider-decoration">
+                    <div class="divider-line"></div>
+                    <div class="divider-icon">🌿</div>
+                    <div class="divider-line"></div>
+                </div>
+
+                <div class="content">
+                    안녕하세요.<br>가을빛 고운 결실의 계절에<br>귀한 소식을 전합니다.<br><br>
+                    <span class="highlight-red">각자의 삶을 살아가던 두 사람</span>이<br>
+                    <span class="highlight-blue">이제 같은 곳을 바라보며 함께</span><br>
+                    나아가려 합니다.<br><br>
+                    두 개의 물줄기가 만나<br>
+                    하나의 넓은 바다로 흘러가듯,<br>
+                    하나의 더 큰 가족이 되는<br>
+                    뜻깊은 시작의 자리에<br>
+                    소중한 분들을 모시고 싶습니다.<br><br>
+                    직접 소식을 전하지 못하고<br>글로써 청함을 너그러운 마음으로<br>
+                    헤아려 주시기 바라며,<br>
+                    이 작은 청첩장에<br>저희의 온 진심을 담아 보냅니다.<br><br>
+
+                    <span class="highlight-green">두 사람의 약속이 빈말이 되지 않도록</span><br>
+                    가장 가까운 곳에서<br><span class="highlight-green">증인이 되어주시길 소망합니다.</span><br>감사합니다.<br><br>
+                </div>
+
+                <div class="parents-info">
+    <div class="parent-row">
+        <span class="parents-name">양순철 · 연용숙</span>
+        <span class="relation">의 &nbsp;&nbsp;<span class="son">아들</span></span>
+        <span class="child-name">훈</span>
+    </div>
+    <div class="parent-row">
+        <span class="parents-name">장윤동 · 강애숙</span>
+        <span class="relation">의 &nbsp;&nbsp;<span class="daughter">딸</span></span>
+        <span class="child-name">은미</span>
+    </div>
+</div>
+
+            </section>
+
+
+                <div class="gallery-notice-wrapper">
+    <img src="arrow.png" alt="화살표" class="gallery-arrow-img">
+    <span class="gallery-notice-text">
+        <span class="highlight-underline">사진을 누르면 더 크게 보실 수 있습니다.</span>
+    </span>
+</div>
+
+            <div class="calendar-section">
+                <div class="mosaic-gallery-grid" id="galleryGrid">
+<div class="gallery-item item-0" onclick="openModal(0)"><img src="0.webp" alt="0"></div>
+<div class="gallery-item item-1" onclick="openModal(1)"><img src="1.webp" alt="1"></div>
+<div class="gallery-item item-2" onclick="openModal(2)"><img src="2.webp" alt="2"></div>
+<div class="gallery-item item-3" onclick="openModal(3)"><img src="3.webp" alt="3"></div>
+<div class="gallery-item item-4" onclick="openModal(4)"><img src="4.webp" alt="4"></div>
+<div class="gallery-item item-5" onclick="openModal(5)"><img src="5.webp" alt="5" loading="lazy"></div>
+<div class="gallery-item item-6" onclick="openModal(6)"><img src="6.webp" alt="6" loading="lazy"></div>
+<div class="gallery-item item-7" onclick="openModal(7)"><img src="7.webp" alt="7" loading="lazy"></div>
+<div class="gallery-item item-16" onclick="openModal(8)"><img src="16.webp" alt="16" loading="lazy"></div>
+<div class="gallery-item item-8" onclick="openModal(9)"><img src="8.webp" alt="8" loading="lazy"></div>
+<div class="gallery-item item-9" onclick="openModal(10)"><img src="9.webp" alt="9" loading="lazy"></div>
+<div class="gallery-item item-10" onclick="openModal(11)"><img src="10.webp" alt="10" loading="lazy"></div>
+<div class="gallery-item item-15" onclick="openModal(12)"><img src="15.webp" alt="15" loading="lazy"></div>
+<div class="gallery-item item-11" onclick="openModal(13)"><img src="11.webp" alt="11" loading="lazy"></div>
+<div class="gallery-item item-13" onclick="openModal(14)"><img src="13.webp" alt="13" loading="lazy"></div>
+<div class="gallery-item item-12" onclick="openModal(15)"><img src="12.webp" alt="12" loading="lazy"></div>
+<div class="gallery-item item-14" onclick="openModal(16)"><img src="14.webp" alt="14" loading="lazy"></div>
+<div class="gallery-item item-17" onclick="openModal(17)"><img src="17.jpg" alt="17" loading="lazy"></div>
+<div class="gallery-item item-19" onclick="openModal(18)"><img src="19.webp" alt="19" loading="lazy"></div>
+<div class="gallery-item item-18" onclick="openModal(19)"><img src="18.webp" alt="18" loading="lazy"></div>
+                </div>
+
+                <div class="calendar-header">
+                    <span class="num-10">10</span><span class="char-month">月</span>
+                </div>
+
+                <table class="calendar-table">
+                    <thead>
+                        <tr>
+                            <th class="sun">S</th>
+                            <th>M</th>
+                            <th>T</th>
+                            <th>W</th>
+                            <th>T</th>
+                            <th>F</th>
+                            <th>S</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td>1</td>
+                            <td>2</td>
+                            <td>3</td>
+                        </tr>
+                        <tr>
+                            <td class="sun">4</td>
+                            <td>5</td>
+                            <td>6</td>
+                            <td>7</td>
+                            <td>8</td>
+                            <td>9</td>
+                            <td>10</td>
+                        </tr>
+                        <tr>
+                            <td class="sun">11</td>
+                            <td>12</td>
+                            <td>13</td>
+                            <td>14</td>
+                            <td>15</td>
+                            <td>16</td>
+                            <td>17</td>
+                        </tr>
+                        <tr>
+                            <td class="sun">18</td>
+                            <td>19</td>
+                            <td>20</td>
+                            <td>21</td>
+                            <td>22</td>
+                            <td>23</td>
+                            <td>24</td>
+                        </tr>
+                        <tr>
+                            <td class="sun">25</td>
+                            <td>26</td>
+                            <td>27</td>
+                            <td>28</td>
+                            <td>29</td>
+                            <td>30</td>
+                            <td class="target-day" id="weddingDay" onclick="fireConfetti(event)">
+                                31
+                                <span class="time-label">pm 3:00</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+<br>
+            <section class="location-section">
+                <div class="subtitle">LOCATION</div>
+                <div class="title">오시는 길</div>
+
+                <div class="divider-decoration">
+                    <div class="divider-line"></div>
+                    <div class="divider-icon">📍</div>
+                    <div class="divider-line"></div>
+                </div>
+
+                <div class="venue-container">
+    <!-- 1. 글자 뒤에서 번지는 수채화 막 -->
+    <div class="venue-watercolor-bg"></div>
+    
+    <!-- 2. 맨 위에 올릴 글자 -->
+    <span class="venue-text">호텔리베라 3층 베르사이유홀</span>
+</div><br><br>
+                <div class="venue-address">서울 강남구 영동대로 737</div><br>
+
+<div class="nav-buttons-container">
+    <a href="https://tmap.co.kr/tmap2/mobile/route.jsp?name=호텔리베라" target="_blank" class="nav-btn">
+        <svg class="nav-icon-svg" viewBox="0 0 24 24" width="22" height="22" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="24" height="24" rx="4" fill="#0066FF"/>
+            <path d="M5 7H19V10H14V18H10V10H5V7Z" fill="white"/>
+        </svg>
+        <span>티맵</span>
+    </a>
+
+    <a href="https://map.naver.com/v5/search/호텔리베라" target="_blank" class="nav-btn">
+        <span class="nav-emoji">🇳</span>
+        <span>네이버지도</span>
+    </a>
+
+    <a href="https://map.kakao.com/link/search/호텔리베라" target="_blank" class="nav-btn">
+        <span class="nav-emoji">🟡</span>
+        <span>카카오내비</span>
+    </a>
+
+    <a href="https://maps.google.com/?q=호텔리베라" target="_blank" class="nav-btn">
+        <span class="nav-emoji">🗺️</span>
+        <span>구글지도</span>
+    </a>
+</div>
+
+<!-- ============ 3. 티켓 ============ -->
+<section class="parking-ticket">
+  <div class="inner">
+    <div class="stub"><span class="p-mark">P</span></div>
+    <div>
+      <h4>무료 주차 가능</h4>
+      <p>호텔 뒷편 야외 주차장과<br>호텔 지하 주차장 이용 가능합니다.</p>
+    </div>
+  </div>
+</section>
+
+
+                    <div class="accordion-wrapper transport-accordion">
+                        <div class="accordion-item">
+                            <button class="accordion-header" onclick="toggleAccordion(this)">
+                                <span><span class="transport-badge-icon">🚌</span>대중교통 안내</span>
+                            </button>
+                            <div class="accordion-content">
+                                <div class="transport-info-body">
+                                    <div class="transport-subtitle">🚃 지하철 이용 시</div>
+                                    <p class="transport-desc">
+                                        <span class="blue-dot">🔵</span> 7호선 청담역 13번 출구 (도보 약 5분)<br>
+                                        영동대교 남단 방면으로 직진
+                                    </p>
+
+                                    <div class="transport-subtitle">✈️ 김포공항에서 오시는 길</div>
+                                    <p class="transport-desc">
+                                        <span class="blue-dot">🔵</span> 지하철 (약 50분)<br>[김포공항역] 9호선 급행 탑승 ➔ [고속터미널역] 7호선 환승 ➔ [청담역] 13번 출구 (도보 5분)<br><br>
+                                        <span class="blue-dot">🔵</span> 택시 (약 40분)<br>국내선 도착층 승강장 탑승 ➔ '청담동 리베라호텔' 하차
+                                    </p>
+
+                                    <div class="transport-subtitle">🚆 KTX/SRT에서 오시는 길</div>
+                                    <p class="transport-desc">
+                                        <span class="blue-dot">🔵</span> KTX 서울역 (약 35분)<br>
+                                        [서울역] 4호선 탑승 ➔ [총신대입구(이수)역] 7호선 환승 ➔ [청담역] 13번 출구<br><br>
+                                        <span class="blue-dot">🔵</span> SRT 수서역 (약 20분)<br>
+                                        [수서역] 수인분당선 탑승 ➔ [강남구청역] 7호선 환승 ➔ [청담역] 13번 출구
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+            </section>
+
+<section class="info-section location-section" style="margin-top:180px;">
+    <div class="subtitle">INFORMATION</div>
+    <div class="title">안내</div>
+
+    <div class="divider-decoration">
+        <div class="divider-line"></div>
+        <div class="divider-icon" style="font-family:'Cormorant Garamond','Playfair Display',serif;font-style:italic;font-size:22px;color:#b98a52;line-height:1;">i</div>
+        <div class="divider-line"></div>
+    </div>
+
+    <div class="info-card" style="background:#fff;border:1px solid #EAE5DE;border-radius:0.75rem;padding:14px 0 6px;margin-top:8px;">
+        <div class="venue-img-wrapper">
+            <img src="venue.jpg" alt="예식장 사진" loading="lazy">
+        </div>
+
+
+        <div class="venue-meal-desc" style="display:flex;gap:8px;align-items:flex-start;padding:0 10%;margin:0 0 8px;">
+            <span class="pink-dot" style="flex:none;">🪑</span>
+            <span>좌석 : 원탁 테이블, 버진로드 양옆 일자테이블</span>
+        </div>
+        <div class="venue-meal-desc" style="display:flex;gap:8px;align-items:flex-start;padding:0 10% 14px;margin:0;">
+            <span class="pink-dot" style="flex:none;">🍴</span>
+            <span>식사 : 한식 코스<br>식사는 예식이 진행된 자리에서 바로 마련될 예정입니다.</span>
+        </div>
+    </div>
+
+
+
+    <div class="info-card" style="background:#fff;border:1px solid #EAE5DE;border-radius:0.75rem;padding:18px 10%;margin-top:12px;">
+        <div class="venue-meal-desc" style="display:flex;gap:8px;align-items:flex-start;margin:0;">
+            <span class="pink-dot" style="flex:none;">🌸</span>
+            <span>축하해 주시는 마음만 감사히 받으며, 화환은 정중히 사양하오니 양해 부탁드립니다. 보내주시고자 하는 따뜻한 마음만으로도 충분히 감사드립니다.</span>
+        </div>
+    </div>
+</section>
+
+<br><br>
+            <section class="account-section">
+                <div class="subtitle">ACCOUNT</div>
+                <div class="title">마음 전하실 곳</div>
+
+                <div class="divider-decoration">
+                    <div class="divider-line"></div>
+                    <div class="divider-icon">💌</div>
+                    <div class="divider-line"></div>
+                </div>
+
+                <div class="account-desc">
+                    함께하지 못하는 아쉬운 마음을 전하고자 하는 분들을&nbsp;위해<br>축하의 마음 전달하실 곳 안내해 드립니다.<br>너그러운 마음으로 양해 부탁드립니다.🙏🏻
+                </div>
+
+                <div class="accordion-wrapper account-accordion">
+                    <div class="accordion-item groom"  style="width: 77%; margin: 0 auto 0 auto;">
+    <button class="accordion-header" style="width: 100%; display: flex; justify-content: space-between; align-items: center;" onclick="toggleAccordion(this)">신랑측 계좌 번호</button>
+                        <div class="accordion-content">
+                            <div class="account-row">
+                                <span class="account-holder">신랑 양훈 [기업]</span>
+                                <div class="account-number-wrap">
+                                    <span class="account-number">20410895401012</span>
+                                    <button class="btn-copy" onclick="copyText('20410895401012')">복사</button>
+                                </div>
+                            </div>
+                            <div class="account-row">
+                                <span class="account-holder">아버지 양순철 [농협]</span>
+                                <div class="account-number-wrap">
+                                    <span class="account-number">17212952059379</span>
+                                    <button class="btn-copy" onclick="copyText('17212952059379')">복사</button>
+                                </div>
+                            </div>
+                            <div class="account-row">
+                                <span class="account-holder">어머니 연용숙 [기업]</span>
+                                <div class="account-number-wrap">
+                                    <span class="account-number">600-016080-01-011</span>
+                                    <button class="btn-copy" onclick="copyText('600-016080-01-011')">복사</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item bride"  style="width: 77%; margin: 0 auto 0 auto;">
+    <button class="accordion-header" style="width: 100%; display: flex; justify-content: space-between; align-items: center;" onclick="toggleAccordion(this)">신부측 계좌 번호</button>
+                        <div class="accordion-content">
+                            <div class="account-row">
+                                <span class="account-holder">신부 장은미 [기업]</span>
+                                <div class="account-number-wrap">
+                                    <span class="account-number">010-7939-6462</span>
+                                    <button class="btn-copy" onclick="copyText('010-7939-6462')">복사</button>
+                                </div>
+                            </div>
+                            <div class="account-row">
+                                <span class="account-holder">아버지 장윤동 [농협]</span>
+                                <div class="account-number-wrap">
+                                    <span class="account-number">382-02-019267</span>
+                                    <button class="btn-copy" onclick="copyText('382-02-019267')">복사</button>
+                                </div>
+                            </div>
+                            <div class="account-row">
+                                <span class="account-holder">어머니 강애숙 [농협]</span>
+                                <div class="account-number-wrap">
+                                    <span class="account-number">382-02-063057</span>
+                                    <button class="btn-copy" onclick="copyText('382-02-063057')">복사</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+ </section>
+        </div>
+
+
+
+<!-- 1) RSVP 이미지 영역 (문구 → 모달 트리거로 교체) -->
+<!-- ★ 기도 요청: 사진 밖(위) 하트 말풍선 (오른쪽, 살짝 기울임) -->
+<div class="cm-bubble-wrap">
+  <button type="button" class="cm-bubble" data-open="prayer" aria-haspopup="dialog" aria-label="기도해 주세요! 기도 제목 보기">
+    <svg viewBox="0 0 200 240" aria-hidden="true">
+      <defs><linearGradient id="cmHeartGrad" x1="0" y1="0" x2="0.6" y2="1">
+        <stop offset="0" stop-color="#f3e4c3"/><stop offset="0.55" stop-color="#e3c88f"/><stop offset="1" stop-color="#c9a468"/>
+      </linearGradient></defs>
+      <g transform="rotate(11 100 95)"><path class="cm-heart" d="M100 58C100 30 80 14 56 14C28 14 8 36 8 66C8 106 52 136 100 178C148 136 192 106 192 66C192 36 172 14 144 14C120 14 100 30 100 58Z"/>
+        <ellipse class="cm-shine" cx="52" cy="48" rx="20" ry="11" transform="rotate(-32 52 48)"/></g>
+      <circle cx="64" cy="199" r="11"/><circle cx="43" cy="226" r="6.5"/>
+    </svg>
+    <span>기도해<br>주세요!</span>
+  </button>
+</div>
+
+<div class="rsvp-shadow-wrapper">
+  <div class="rsvp-image-container">
+    <img src="RSVP.webp" alt="사진" class="arch-image">
+    <div class="sparkle-layer"></div>
+<!-- ★ 기존 문구 대신: 모달 여는 글자 이미지 (위치는 기존 rsvp-subtext 스타일을 그대로 사용) -->
+    <div class="rsvp-subtext cm-on-image">
+  <button type="button" class="cm-trigger" data-open="order" aria-haspopup="dialog">
+     <span class="cm-cap">
+  As each step of our ceremony reflects a biblical foundation,
+  we invite you to discover the sacred meaning behind our wedding.
+  <small>View the meaning
+  <svg class="cm-tap" viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M22 14a8 8 0 0 1-8 8"/>
+    <path d="M18 11v-1a2 2 0 0 0-2-2a2 2 0 0 0-2 2"/>
+    <path d="M14 10V9a2 2 0 0 0-2-2a2 2 0 0 0-2 2v1"/>
+    <path d="M10 9.5V4a2 2 0 0 0-2-2a2 2 0 0 0-2 2v10"/>
+    <path d="M18 11a2 2 0 1 1 4 0v3a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/>
+  </svg>
+</small>
+</span>
+</button>
+</div>
+  </div>
+</div>
+
+<!-- 2) 참석 여부 (RSVP) 버튼 섹션 (기존 그대로) -->
+<div class="rsvp-section">
+  <button type="button" class="rsvp-open-btn" onclick="openRsvpModal()">참석 여부 전달하기</button>
+</div>
+
+<!-- 3) RSVP 모달 팝업 (기존 그대로) -->
+<div id="rsvpModal" class="rsvp-modal-overlay" onclick="closeRsvpModal(event)">
+  <div class="rsvp-modal-content">
+    <button type="button" class="rsvp-close-btn" onclick="closeRsvpModal(event)">&times;</button>
+    <iframe id="rsvpFrame" src="https://docs.google.com/forms/d/e/1FAIpQLSdM7eRVMWElgc-EMzrsXinUX-QJj4OTqObrXM-Qh5cwGqsLlQ/viewform?embedded=true" title="참석 여부 제출 폼"></iframe>
+  </div>
+</div>
+
+<!-- 4) ★ 신규: 카드뉴스 모달 (공용 1개) -->
+<div class="cm-modal" id="cmModal" aria-hidden="true">
+  <div class="cm-dialog" role="dialog" aria-modal="true" aria-labelledby="cmTitle">
+    <div class="cm-head">
+      <h2 id="cmTitle"></h2>
+      <button type="button" class="cm-close" aria-label="닫기">&times;</button>
+    </div>
+    <div class="cm-track" id="cmTrack"></div>
+    <div class="cm-foot">
+      <button type="button" class="cm-nav" id="cmPrev" aria-label="이전 카드">‹</button>
+      <div class="cm-dots" id="cmDots" aria-hidden="true"></div>
+      <button type="button" class="cm-nav" id="cmNext" aria-label="다음 카드">›</button>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+<!-- 반짝이는 하단 푸터 영역 -->
+<div class="card-footer">
+        <div class="footer-particles-container"></div>
+
+    <!-- 4. 감사 메시지 영역 -->
+    <div class="thank-you-section">
+        <div class="thank-you-divider"></div>
+        <div class="thank-you-en">THANK YOU</div>
+        <div class="thank-you-kr">감사합니다</div>
+        <div class="thank-you-sub">따뜻한 축복 속에 예쁘게 잘 살겠습니다.</div>
+        
+        <!-- 가을 나뭇잎 아이콘 -->
+        <svg class="footer-leaf-icon" viewBox="0 0 24 24" fill="none" stroke="#6E5A4C" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.4 19 2c1 2 2 4.1 1.4 9-1.3 11-10 10-10 10z"></path>
+            <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"></path>
+        </svg>
+    </div>
+</div>
+            </section>
+
+    </div>
+
+    <div class="modal" id="imageModal">
+        <span class="modal-close" onclick="closeModal()">×</span>
+        <div class="modal-img-container">
+            <img id="modalImg" src="" alt="확대 사진">
+        </div>
+        <button class="modal-nav modal-prev" onclick="changeModalImage(-1)">❮</button>
+        <button class="modal-nav modal-next" onclick="changeModalImage(1)">❯</button>
+        <div class="modal-indicator" id="modalIndicator">1 / 18</div>
+    </div>
+
+
+
+
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    (function () {
+        const layer = document.querySelector('.starlight-layer');
+        if (!layer) return;
+
+        const TOTAL_COUNT = 20; // 전체 별 개수
+        const CROSS_RATIO = 0.55; // 십자성 생성 비율
+
+        for (let i = 0; i < TOTAL_COUNT; i++) {
+            const s = document.createElement('span');
+            const isCross = Math.random() < CROSS_RATIO;
+            
+            s.className = isCross ? 'starlight cross' : 'starlight';
+
+            const size = isCross ? (12 + Math.random() * 4) : (2 + Math.random() * 1);
+            
+            s.style.width = size + 'px';
+            s.style.height = size + 'px';
+
+            // 위치 및 애니메이션 속도 설정
+            s.style.left = Math.random() * 95 + '%';
+            s.style.top = Math.random() * 83 + '%';
+            s.style.animationDelay = (Math.random() * 3.5) + 's';
+            s.style.animationDuration = (2 + Math.random() * 2) + 's';
+
+            layer.appendChild(s);
+        }
+    })();
+});
+
+
+let sparkleAudioCtx = null;
+// 🎵 BGM 토글 함수 (버튼 클릭 시 재생/일시정지 전환)
+function toggleBGM(e) {
+    if (e) e.stopPropagation(); // 이벤트 버블링 방지
+
+    const bgm = document.getElementById('bgm');
+    if (!bgm) return;
+
+    if (bgm.paused) {
+        // 음악이 꺼져있을 때 -> 재생 + UI를 ON으로 변경
+        bgm.play().then(() => {
+            updateBgmUI(true);
+        }).catch(err => {
+            console.log("BGM 재생 실패:", err);
+        });
+    } else {
+        // 음악이 켜져있을 때 -> 일시정지 + UI를 OFF로 변경
+        bgm.pause();
+        updateBgmUI(false);
+    }
+}
+
+
+// 1. 이미지 리스트 (HTML 배치 순서대로)
+const photoList = [
+    "0.webp", "1.webp", "2.webp", "3.webp", "4.webp", 
+    "5.webp", "6.webp", "7.webp", "16.webp", "8.webp", 
+    "9.webp", "10.webp", "15.webp", "11.webp", "13.webp", "12.webp", 
+    "14.webp", "17.jpg", "19.webp", "18.webp"
+];
+
+let currentModalIndex = 0;
+
+// 2. 모달 관련 전역 함수들
+function openModal(index) {
+    currentModalIndex = index;
+    updateModalImage();
+    
+    const modal = document.getElementById("imageModal");
+    if (modal) {
+        modal.style.display = "flex";
+        modal.classList.add("active");
+    }
+}
+
+function closeModal() {
+    const modal = document.getElementById("imageModal");
+    if (modal) {
+        modal.style.display = "none";
+        modal.classList.remove("active");
+    }
+}
+
+function changeModalImage(direction) {
+    currentModalIndex += direction;
+
+    if (currentModalIndex < 0) {
+        currentModalIndex = photoList.length - 1;
+    } else if (currentModalIndex >= photoList.length) {
+        currentModalIndex = 0;
+    }
+
+    updateModalImage();
+}
+
+function updateModalImage() {
+    const modalImg = document.getElementById("modalImg");
+    const modalIndicator = document.getElementById("modalIndicator");
+
+    if (modalImg) {
+        modalImg.src = photoList[currentModalIndex];
+    }
+    if (modalIndicator) {
+        modalIndicator.innerText = `${currentModalIndex + 1} / ${photoList.length}`;
+    }
+} 
+
+// 3. D-Day 타이머
+function startDdayTimer() {
+    const targetDate = new Date("2026-10-31T15:00:00").getTime();
+
+    function updateTimer() {
+        const now = new Date().getTime();
+        const difference = targetDate - now;
+        const timerEl = document.getElementById("ddayTimer");
+
+        if (!timerEl) return;
+
+        if (difference <= 0) {
+            timerEl.innerText = "WEDDING DAY!";
+            return;
+        }
+
+        const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+
+        timerEl.innerText = `D-${days} ${hours}:${minutes}:${seconds}`;
+    }
+
+    updateTimer();
+    setInterval(updateTimer, 1000);
+}
+
+// 4. 스크롤 감지 시 자동 폭죽 (지날 때마다 터짐, 최대 3회)
+document.addEventListener('DOMContentLoaded', () => {
+    // 감지는 달력 전체, 발사 기준점은 31일(#weddingDay)로 지정
+    const calendarSection = document.querySelector('.calendar-table') || document.querySelector('.calendar-section');
+    const weddingDay = document.querySelector('#weddingDay');
+
+    if (!calendarSection || !weddingDay) return;
+
+    let fireCount = 0;
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting && fireCount < 3) {
+                fireCount++;
+                
+                // 31일 요철의 화면 내 좌표 구하기
+                const rect = weddingDay.getBoundingClientRect();
+                const viewportWidth = window.innerWidth || document.documentElement.clientWidth;
+                const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+
+                const x = (rect.left + rect.width / 2) / viewportWidth;
+                const y = (rect.top + rect.height / 2) / viewportHeight;
+
+                const pastelColors = [
+                    '#FFC0CB', '#FFD1DC', '#E6E6FA', '#FFF0F5', 
+                    '#F5E6CC', '#D8BFD8', '#FFE4E1', '#F0E68C'
+                ];
+
+                if (typeof confetti === 'function') {
+                    // 31일(오른쪽 아래)에서 달력 중앙(왼쪽 위 135도 방향)으로 발사
+                    confetti({
+                        particleCount: 45,
+                        angle: 135,          // 대각선 왼쪽 위(달력 중앙) 방향
+                        spread: 75,          // 흩어지는 퍼짐 정도
+                        startVelocity: 37,   // 뿜어져 나가는 힘
+                        origin: { x: x, y: y }, // 31일 위치에서 시작
+                        colors: pastelColors,
+                        scalar: 0.95
+                    });
+
+                    confetti({
+                        particleCount: 70,
+                        angle: 135,
+                        spread: 75,
+                        startVelocity: 42,
+                        origin: { x: x, y: y },
+                        colors: pastelColors,
+                        shapes: ['heart', 'star'],
+                        scalar: 1.25
+                    });
+                }
+
+                if (fireCount >= 3) {
+                    observer.unobserve(entry.target);
+                }
+            }
+        });
+    }, {
+        threshold: 0.55
+    });
+
+    observer.observe(calendarSection);
+});
+
+
+// BGM 버튼
+function updateBgmUI(isPlaying) {
+    const bgmBtn = document.getElementById('bgmBtn');
+    const bgmText = document.getElementById('bgmText');
+    const iconPlay = bgmBtn ? bgmBtn.querySelector('.icon-play') : null;
+    const iconLp = bgmBtn ? bgmBtn.querySelector('.icon-lp') : null;
+
+    if (isPlaying) {
+        if (bgmText) bgmText.innerText = "BGM ON";
+        if (bgmBtn) bgmBtn.classList.add('playing');
+        if (iconPlay) iconPlay.style.display = 'block';   // 재생 중 → 재생(▶) 아이콘
+        if (iconLp) iconLp.style.display = 'none';
+    } else {
+        if (bgmText) bgmText.innerText = "BGM OFF";
+        if (bgmBtn) bgmBtn.classList.remove('playing');
+        if (iconPlay) iconPlay.style.display = 'none';
+        if (iconLp) iconLp.style.display = 'block';        // 정지 → LP 아이콘
+    }
+}
+
+
+
+// 💌 초대장 열기 버튼 클릭 함수
+function openWeddingInvitation() {
+    const overlay = document.getElementById('envelopeOverlay');
+    const btn = document.querySelector('.open-envelope-btn');
+    const speechBubble = document.querySelector('.speech-bubble');
+    const bgm = document.getElementById('bgm');
+    const mainContainer = document.querySelector('.card-container');
+    const frontImg = document.querySelector('.front-img-wrapper');
+
+    // 1) Web Audio 잠금 해제
+    try {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (AudioContext && !sparkleAudioCtx) {
+            sparkleAudioCtx = new AudioContext();
+        }
+        if (sparkleAudioCtx && sparkleAudioCtx.state === 'suspended') {
+            sparkleAudioCtx.resume();
+        }
+    } catch (e) {
+        console.log("AudioContext 초기화 에러 무시:", e);
+    }
+
+    // 2) BGM 재생 (재생 실패해도 초대장은 열리도록 처리)
+    if (bgm && bgm.paused) {
+        bgm.play().then(() => {
+            if (typeof updateBgmUI === 'function') updateBgmUI(true);
+        }).catch(err => {
+            console.log("BGM 자동재생이 차단됨:", err);
+        });
+    }
+
+    // 3) 초대장 열림 애니메이션 실행
+    if (btn) btn.classList.add('is-hiding');
+    if (speechBubble) speechBubble.classList.add('fade-out');
+
+  const envelopeVenueImg = document.querySelector('.envelope-wrapper');
+if (envelopeVenueImg) envelopeVenueImg.style.display = 'none';
+
+if (overlay) overlay.classList.add('is-open');
+
+const headerWatercolor = document.querySelector('.header-date-watercolor');
+if (headerWatercolor) headerWatercolor.classList.add('active');
+
+    // 4) 메인 화면 전환 (2.3초 후) & 인트로 완전 제거
+    setTimeout(() => {
+        if (overlay) {
+            overlay.classList.add('fade-out');
+            
+            setTimeout(() => {
+                overlay.style.display = 'none';
+                overlay.style.pointerEvents = 'none';
+            }, 1000); 
+        }
+        if (mainContainer) mainContainer.classList.add('show');
+        const bgmBtnEl = document.getElementById('bgmBtn');
+        if (bgmBtnEl) bgmBtnEl.classList.add('is-ready');
+    }, 2300);
+}
+
+// 전역 바인딩 유지
+window.openWeddingInvitation = openWeddingInvitation;
+
+
+// 기타 기능 및 이벤트 리스너
+function toggleAccordion(header) {
+    const item = header.parentElement;
+    const content = header.nextElementSibling;
+    const isOpen = item.classList.contains('active');
+
+    if (isOpen) {
+        item.classList.remove('active');
+        content.style.maxHeight = null;
+    } else {
+        item.classList.add('active');
+        content.style.maxHeight = content.scrollHeight + "px";
+    }
+}
+
+function copyText(text) {
+    navigator.clipboard.writeText(text).then(() => {
+        alert('계좌번호가 복사되었습니다: ' + text);
+    }).catch(() => {
+        alert('계좌번호 복사에 실패했습니다.');
+    });
+}
+
+// DOM 준비 완료 시 실행
+document.addEventListener("DOMContentLoaded", () => {
+    // 💡 1. 열기 버튼 클릭 이벤트 직접 연결 (ReferenceError 해결)
+    const openBtn = document.querySelector('.open-envelope-btn');
+    if (openBtn) {
+        openBtn.addEventListener('click', openWeddingInvitation);
+    }
+
+    // 2. 타자기 애니메이션 (기존 코드)
+    const el = document.getElementById("typewriterText");
+    if (el) {
+        const content = el.innerHTML.replace(/<br\s*\/?>/gi, " <br> ");
+        el.innerHTML = "";
+
+        let charIndex = 0;
+        const words = content.split(" ");
+
+        words.forEach((word) => {
+            if (word === "<br>") {
+                el.appendChild(document.createElement("br"));
+            } else {
+                [...word].forEach((char) => {
+                    const span = document.createElement("span");
+                    span.innerHTML = char;
+
+                    // 딜레이 설정
+                    span.style.animationDelay = `${3.1 + charIndex * 0.15}s`;
+                    
+                    el.appendChild(span);
+                    charIndex++;
+                });
+            }
+        });
+    }
+});
+
+
+    // D-day 타이머 실행
+if (typeof startDdayTimer === 'function') startDdayTimer();
+
+    // 모달 배경 클릭 이벤트
+    const modal = document.getElementById("imageModal");
+    if (modal) {
+        modal.addEventListener("click", (e) => {
+            if (e.target === modal) {
+                closeModal();
+            }
+        });
+    }
+
+
+// 예식장 수채화 효과 Observer
+document.addEventListener("DOMContentLoaded", () => {
+    const targets = document.querySelectorAll('.venue-container');
+    
+    if (targets.length > 0) {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                const watercolor = entry.target.querySelector('.venue-watercolor-bg');
+                
+                if (watercolor) {
+                    if (entry.isIntersecting) {
+                        // 화면 안쪽으로 충분히 들어오면 효과 실행
+                        watercolor.classList.add('active');
+                    } else {
+                        // 화면 밖으로 나가면 클래스 제거 (스크롤 올렸다 내릴 때 계속 재실행)
+                        watercolor.classList.remove('active');
+                    }
+                }
+            });
+        }, { 
+            root: null,
+            // 하단에서 -150px 안쪽으로 들어와야 감지 (너무 빨리 실행되는 것 방지)
+            rootMargin: '0px 0px -150px 0px'
+        });
+
+        targets.forEach(target => observer.observe(target));
+    }
+});
+
+// 키보드 제어
+document.addEventListener('keydown', (e) => {
+    const modal = document.getElementById('imageModal');
+    if (modal && modal.classList.contains('active')) {
+        if (e.key === 'Escape') closeModal();
+        if (e.key === 'ArrowLeft') changeModalImage(-1);
+        if (e.key === 'ArrowRight') changeModalImage(1);
+    }
+});
+
+(function () {
+    const layer = document.querySelector('.sparkle-layer');
+    if (!layer) return;
+    const COUNT = 25;   // 별 개수 (많으면 화려, 적으면 은은)
+
+    for (let i = 0; i < COUNT; i++) {
+        const s = document.createElement('span');
+        s.className = 'sparkle';
+        const size = 5 + Math.random() * 9;              // 5~14px
+        s.style.width = s.style.height = size + 'px';
+        s.style.left = Math.random() * 96 + '%';
+        s.style.top  = Math.random() * 83 + '%';         // 하단 문구 영역은 살짝 피함
+        s.style.animationDelay    = (Math.random() * 3) + 's';
+        s.style.animationDuration = (1.8 + Math.random() * 2) + 's';
+        layer.appendChild(s);
+    }
+})();
+
+
+
+
+
+(function(){
+  /* ★ 문구는 여기서 자유롭게 수정하세요. 카드 수도 늘리고 줄일 수 있습니다. */
+  var DATA = {
+    order: {
+      title: '결혼식 순서에 담긴 의미',
+      cards: [
+        { no:'1', img:'card1.jpg', title:`왜 신랑신부는 '갈라진 길' 사이로 걸어갈까요?`,
+  verse:`"…횃불이 쪼갠 고기 사이로 지나더라" (창 15:17)`,
+  body:`창세기 15장에서 아브라함이 제물을 반으로 쪼개 놓았던 현장을 상징합니다. '약속을 어기면 이 제물처럼 쪼개지겠다'는 목숨을 건 다짐이에요. 버진로드는 하나님 앞에서 걷는 생명을 건 '약속의 통로'입니다.` },
+{ no:'2', img:'card2.webp', title:`신랑이 왜 먼저 입장할까요?`,
+  verse:`"…신랑이 신부를 기뻐함 같이 네 하나님이 너를 기뻐하시리라" (사 62:5)`,
+  body:`단순히 오늘의 주인공이라서가 아닙니다. 성경적 관점에서 신랑은 사랑을 먼저 시작하고 제안한 언약의 주도자인데요. 하나님이 우리를 먼저 사랑하셔서 찾아오셨듯, 신랑은 가정을 책임질 리더이자 제사장으로서 먼저 제단 앞에 서서 신부를 기다리는 것을 의미합니다.` },
+        { no:'3', img:'card3.webp', title:'신부가 쓰는 베일의 의미',
+          verse:`"…리브가가 면박을 취하여 스스로 가리우더라" (창 24:65)`,
+          body:`유대교와 고대 기독교 문화에서 베일은 순결, 겸손, 하나님에 대한 순종을 상징했습니다. 성경 구절이나 유대교 전통(신랑이 신부의 베일을 올려 얼굴을 확인하는 '베데켄' 의식 등)에서도 신부의 외모가 아닌 내면을 사랑한다는 의미로 베일을 중요하게 여겼습니다.
+
+창세기에서 리브가가 이삭을 만날 때 자신을 베일로 가렸듯, 신부는 오직 한 사람인 신랑에게만 허락된 거룩한 존재임을 의미합니다. 베일은 겉모습 너머의 내면과 영혼까지 사랑하고 책임지겠다는 약속이며, 베일이 걷히는 순간은 서로에게 숨김없는 온전한 연합의 시작을 뜻합니다. 신랑이 베일을 올려 신부의 얼굴을 드러내는 행위는 두 사람 사이의 깊은 신뢰와 솔직함, 그리고 비로소 한 몸을 이룬 부부가 되었음을 선언하는 거룩한 상징입니다.` },
+        { no:'4', img:'card4.webp', title:'성혼 선언',
+          verse:'"하나님이 짝지어 주신 것을 사람이 나누지 못할지니라" (마 19:6)',
+          body:'"남자가 부모를 떠나 그의 아내와 합하여 둘이 한 몸을 이룰지로다."라는 말씀처럼, 성혼 선언은 부모의 그늘에서 벗어나 새로운 가정이 탄생했음을 알리는 것입니다. 이는 단순한 사회적 결합을 넘어, 영적으로 거룩한 한 몸이자 완전한 부부로서 새 출발을 하게 되었음을 공식적으로 선언하는 순간입니다.' },
+        { no:'5', img:'card5.jpg', title:`하객은 관객이 아니라 증인이자 수호자`,
+          verse:`"성문에 있는 모든 백성과 장로들이 가로되 우리가 증인이 되노니…" (룻 4:11)`,
+          body:`하객은 단순한 축하객이 아니라, 부부의 언약을 곁에서 지키는 ‘성혼의 증인이이자 파수꾼’입니다. 룻기 4장에서 보아스와 룻의 결합에 마을 장로들이 증인이 되었듯, 하객은 하나님과 사람 앞에서의 서약을 목격하고, 훗날 부부가 위기를 만났을 때 그 서약을 기억하며 가정을 온전히 지켜주도록 돕는 공적·영적 파수꾼입니다.` },
+        { no:'6', img:'card6.jpg', title:`결혼`,
+          verse:`"너희는 세상의 빛이라" (마 5:14)`,
+          body:`성경에서 결혼(Marriage)은 단순한 사회적 관혼상제 중 하나가 아니라, 하나님의 구원 역사를 보여주는 가장 거룩한 비유입니다. 하나님께서는 인간과의 깊은 언약 관계를 설명하실 때 '왕과 신하'나 '주인과 종'을 넘어 '남편과 아내'라는 가장 친밀한 사랑의 관계를 택하셨습니다. 구약에서 하나님은 친히 스스로를 이스라엘의 '남편'이라 부르셨습니다. 이스라엘이 우상을 숭배할 때 이를 단순한 죄가 아닌 '간음'으로 여겨 아파하신 까닭은, 백성을 향한 그분의 사랑이 그만큼 깊고 신실했기 때문입니다.
+예수님 역시 자신을 '신랑'이라 칭하셨고(마 9:15), 사도 바울은 교회를 '그리스도의 정결한 신부'라 정의했습니다(고후 11:2, 엡 5:31-32). 따라서 남편은 교회를 위해 십자가에서 피 흘리신 예수님처럼 아내를 사랑하고, 아내는 그리스도를 따르는 교회처럼 남편을 신뢰하고 존중해야 합니다. 부부는 이 아름다운 연합을 통해 하나님의 사랑을 세상에 시각적으로 증언하는 거룩한 통로가 됩니다. 이처럼 성경적 결혼은 상황이나 조건에 따라 해지될 수 있는 세상의 '계약(Contract)'과 달리, 하나님을 보증인 삼아 생명이 다할 때까지 지켜내는 거룩한 '언약(Covenant)'입니다.` },
+        { no:'7', img:'card7.webp', title:`훈련의 터`,
+          verse:`"철이 철을 날카롭게 하는 것 같이 사람이 그 친구의 얼굴을 빛나게 하느니라" (잠 27:17)`,
+          body:`저희는 결혼식을 올리기 전 법적으로 먼저 부부의 연을 맺고, 지난 9개월의 시간을 함께 보냈습니다. 그 시간 동안 함께하는 기쁨도 컸지만, 서로의 미성숙함이 부딪히며 때로는 어려움을 겪기도 했습니다. 그러나 그 다듬어짐의 시간을 거치며 저희는 서로와 우리의 관계를 바라보는 시각을 새롭게 갖게 되었습니다. 원석과 같던 두 사람이 만나 부딪히고 깨어지는 이 모든 순간은, 서로를 아름다운 보석으로 다듬어가시는 거룩한 훈련이라는 것임을 믿고 그 과정을 하나님께 맡기며 나아가려 합니다.
+
+이제 하나님과 여러 증인들 앞에서 성스러운 언약을 맺으며, 참된 사랑과 하나 됨, 그리고 깊은 신뢰가 무엇인지 끊임없이 배워가고자 합니다. 날마다 자라고 해마다 성숙해져, 먼 훗날 하나님과 예수님 앞에 서는 그날에 흠 없고 순전한 모습으로 발견되기를 간절히 소망합니다.` }
+      ]
+    },
+    prayer: {
+      title: '저희를 위해 기도해주세요🙏🏻',
+      cards: [
+        { no:'1', img:'IMG/prayer-1.jpg', title:'이러한 가정이 되기를...',
+          verse:'"아내들아 남편에게 복종하라 이는 주 안에서 마땅하니라 남편들아 아내를 사랑하며 괴롭게 하지 말라" (골 3:18-19)',
+          body:`1. 함께 말씀을 읽고 기도하며 모든 결정의 중심에 하나님을 모시는 가정, 하나님이 기뻐하시는 믿음의 가정이 되게 해주세요.<br>
+                    2. 영과 육이 건강하게 해주세요.<br>
+                    3. 다른 환경에서 다른 성향을 가지고 살아온 서로를 이해하고, 다툼 속에서도 온유함으로 지혜롭게 해결해 나가게 해주세요.<br>
+                    4. 신실하신 하나님을 닮아 서로를 향한 신뢰와 사랑이 불변하도록 해주세요.` },
+        { no:'2', img:'IMG/prayer-2.jpg', title:'훈이의 기도 제목',
+          verse:'"오히려 하나님의 말씀을 듣고 지키는 자가 복이 있느니라" (눅 11:28)',
+          body:`1. 성장하는 신앙인이 되게 해주세요.<br>
+                    2. 하나님 말씀 잘 깨닫고, 지혜로운 사람이 되게 해주세요.<br>
+                    3. 양가 부모님께 건강 허락해 주시고 오래도록 함께할 수 있게 해주세요. ` },
+        { no:'3', img:'IMG/prayer-3.jpg', title:'은미의 기도 제목',
+          verse:'"사람이 마음으로 자기의 길을 계획할지라도 그 걸음을 인도하는 자는 여호와시니라" (잠 16:9)',
+          body:`1. 하나님과 예수님의 사랑을 실천하여 한 해 한 해 결실을 맺는 참 신앙인이 되게 해주세요.<br>
+                    2. 건강한 모습으로 주님 주시는 능력 안에서 사명 완수하게 해주세요.<br>
+                    3. 주 안에서 남편을 존경하고 나보다 낫게 여기며 함께 성장하게 해주세요.` },
+      ]
+    }
+  };
+
+  var modal = document.getElementById('cmModal');
+/* 어떤 부모 안에 붙여도 항상 최상단에 뜨도록 body 직속으로 이동 */
+if (modal.parentNode !== document.body) document.body.appendChild(modal);
+  var track = document.getElementById('cmTrack');
+  var dots  = document.getElementById('cmDots');
+  var title = document.getElementById('cmTitle');
+  var prev  = document.getElementById('cmPrev');
+  var next  = document.getElementById('cmNext');
+  var closeBtn = modal.querySelector('.cm-close');
+  var lastFocus = null, count = 0;
+
+  function esc(s){ return String(s).replace(/[&<>"]/g, function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+
+  function render(key){
+    var set = DATA[key]; count = set.cards.length;
+    title.textContent = set.title;
+    track.innerHTML = set.cards.map(function(c){
+      return '<article class="cm-slide">' +
+        '<div class="cm-no">' + esc(c.no) + ' / ' + count + '</div>' +
+        '<h3>' + esc(c.title) + '</h3>' +
+        '<div class="cm-verse">' + esc(c.verse) + '</div>' +
+        (c.img ? '<img class="cm-photo" src="' + esc(c.img) + '" alt="' + esc(c.title) + '" loading="lazy" decoding="async" onerror="this.remove()">' : '') +
+        '<p>' + esc(c.body).replace(/&lt;br\s*\/?&gt;/gi, '<br>') + '</p></article>';
+    }).join('');
+    dots.innerHTML = set.cards.map(function(){ return '<span class="cm-dot"></span>'; }).join('');
+    track.scrollLeft = 0;
+    update();
+  }
+
+  function index(){ return Math.round(track.scrollLeft / track.clientWidth) || 0; }
+
+  function update(){
+    var i = index();
+    var d = dots.children;
+    for (var k = 0; k < d.length; k++) d[k].classList.toggle('is-on', k === i);
+    prev.disabled = i <= 0;
+    next.disabled = i >= count - 1;
+  }
+
+  function go(n){
+    n = Math.max(0, Math.min(count - 1, n));
+    if (track.scrollTo) { track.scrollTo({ left: n * track.clientWidth, behavior: 'smooth' }); } else { track.scrollLeft = n * track.clientWidth; }
+  }
+
+  function open(key, trigger){
+    lastFocus = trigger;
+    render(key);
+    modal.classList.add('is-open');
+    modal.setAttribute('aria-hidden', 'false');
+    document.documentElement.style.overflow = 'hidden'; document.body.style.overflow = 'hidden';   /* 뒤 페이지 스크롤 잠금 */
+    closeBtn.focus();
+  }
+
+  function close(){
+    modal.classList.remove('is-open');
+    modal.setAttribute('aria-hidden', 'true');
+    document.documentElement.style.overflow = ''; document.body.style.overflow = '';
+    if (lastFocus) lastFocus.focus();
+  }
+
+  /* 트리거 클릭 */
+  document.querySelectorAll('[data-open]').forEach(function(el){
+    el.addEventListener('click', function(){ open(el.getAttribute('data-open'), el); });
+  });
+
+  track.addEventListener('scroll', function(){ requestAnimationFrame(update); }, { passive: true });
+  prev.addEventListener('click', function(){ go(index() - 1); });
+  next.addEventListener('click', function(){ go(index() + 1); });
+  closeBtn.addEventListener('click', close);
+  modal.addEventListener('click', function(e){ if (e.target === modal) close(); });  /* 바깥 클릭 */
+
+  document.addEventListener('keydown', function(e){
+    if (!modal.classList.contains('is-open')) return;
+    if (e.key === 'Escape') close();
+    if (e.key === 'ArrowLeft') go(index() - 1);
+    if (e.key === 'ArrowRight') go(index() + 1);
+  });
+
+  window.addEventListener('resize', function(){ go(index()); });
+})();
+
+
+
+
+// 💡 보내주신 구글 폼 임베드 주소 적용 완료
+const GOOGLE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSdM7eRVMWElgc-EMzrsXinUX-QJj4OTqObrXM-Qh5cwGqsLlQ/viewform?embedded=true";
+
+function openRsvpModal() {
+    const modal = document.getElementById('rsvpModal');
+    const iframe = document.getElementById('rsvpFrame');
+    
+    // 모달을 열 때 구글 폼 주소 할당 (지연 로딩)
+    if (iframe && !iframe.src) {
+        iframe.src = GOOGLE_FORM_URL;
+    }
+    
+    if (modal) {
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden'; // 뒷배경 스크롤 방지
+    }
+}
+
+function closeRsvpModal(e) {
+    if (!e || e.target.id === 'rsvpModal' || e.target.classList.contains('rsvp-close-btn')) {
+        const modal = document.getElementById('rsvpModal');
+        if (modal) {
+            modal.style.display = 'none';
+            document.body.style.overflow = ''; // 뒷배경 스크롤 복원
+        }
+    }
+}
+
+// 전역 바인딩
+window.openRsvpModal = openRsvpModal;
+window.closeRsvpModal = closeRsvpModal;
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    (function () {
+        const footerContainer = document.querySelector('.footer-particles-container');
+        if (!footerContainer) return;
+
+        const STARDUST_COUNT = 33; // 별가루 수량
+
+        for (let i = 0; i < STARDUST_COUNT; i++) {
+            const star = document.createElement('div');
+            star.className = 'stardust';
+
+            // 1. THANK YOU 구분선 아래 영역으로만 위치 제한 (28% ~ 95%)
+            star.style.top = (28 + Math.random() * 67).toFixed(1) + '%';
+            star.style.left = (5 + Math.random() * 90).toFixed(1) + '%';
+
+            // 2. 모바일용 크기 미세 변주 (1.5px ~ 2.8px)
+            const size = (1.5 + Math.random() * 1.3).toFixed(1);
+            star.style.width = size + 'px';
+            star.style.height = size + 'px';
+
+            // 3. 반짝임 타이밍 랜덤화
+            const duration = (1.8 + Math.random() * 1.5).toFixed(2);
+            const delay = (Math.random() * 1.5).toFixed(2);
+
+            star.style.animationDuration = `${duration}s`;
+            star.style.animationDelay = `${delay}s`;
+
+            footerContainer.appendChild(star);
+        }
+    })();
+});
+
+
+</script>
+
+</body>
+</html>
