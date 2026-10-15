@@ -2868,7 +2868,100 @@ color: #8C5B4C;
 
 
 
-    </style>
+    
+/* ==================================================
+   역할 소개 (친구 3명 + 모달)  prefix: rl-
+   ================================================== */
+.rl-wrap{width:100%;max-width:360px;margin:-20px auto 60px;padding:0 16px;box-sizing:border-box;position:relative;z-index:3}
+.rl-grid{display:flex;justify-content:center;gap:clamp(14px,5vw,26px)}
+.rl-card{
+  flex:1 1 0;max-width:96px;display:flex;flex-direction:column;align-items:center;
+  background:none;border:0;padding:0;cursor:pointer;font-family:inherit;color:#3D291F;
+  -webkit-tap-highlight-color:transparent;
+  opacity:0;transform:translateY(14px);
+  animation:rlRise .7s cubic-bezier(.2,.8,.2,1) forwards;
+}
+.rl-card:nth-child(1){animation-delay:.05s}
+.rl-card:nth-child(2){animation-delay:.18s}
+.rl-card:nth-child(3){animation-delay:.31s}
+@keyframes rlRise{to{opacity:1;transform:none}}
+.rl-ring{
+  position:relative;width:84px;height:84px;border-radius:50%;padding:3px;
+  background:linear-gradient(145deg,#f4d99a,#b98a52 55%,#8a5f36);
+  box-shadow:0 6px 14px rgba(120,86,52,.25);
+  transition:transform .25s ease,box-shadow .25s ease;
+}
+.rl-card:hover .rl-ring,.rl-card:focus-visible .rl-ring{transform:translateY(-3px) scale(1.04);box-shadow:0 10px 20px rgba(120,86,52,.32)}
+.rl-card:active .rl-ring{transform:scale(.96)}
+.rl-card:focus-visible{outline:none}
+.rl-card:focus-visible .rl-ring{outline:2px solid #b98a52;outline-offset:3px}
+.rl-ph{
+  width:100%;height:100%;border-radius:50%;overflow:hidden;border:2px solid #F8F6F0;box-sizing:border-box;
+  background:linear-gradient(145deg,#efe3d2,#dcc8b5);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Gowun Batang',serif;font-size:28px;font-weight:700;color:#8a5f36;
+}
+.rl-ph img{width:100%;height:100%;object-fit:cover;display:block}
+.rl-tag{
+  margin-top:12px;font-size:11px;letter-spacing:.14em;color:#A39382;
+  font-family:'Cormorant Garamond','Gowun Batang',serif;font-style:italic;
+}
+.rl-nm{margin-top:3px;font-size:15px;font-weight:700;letter-spacing:.02em;word-break:keep-all}
+.rl-more{margin-top:5px;font-size:10px;color:#b98a52;letter-spacing:.12em;opacity:.85}
+
+/* 모달 */
+.rl-modal{
+  position:fixed;inset:0;z-index:10000001;display:none;align-items:center;justify-content:center;
+  padding:max(16px,env(safe-area-inset-top)) 16px max(16px,env(safe-area-inset-bottom));
+  background:rgba(30,24,20,.55);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
+}
+.rl-modal.is-open{display:flex;animation:rlFade .25s ease}
+@keyframes rlFade{from{opacity:0}to{opacity:1}}
+.rl-dialog{
+  position:relative;width:100%;max-width:340px;max-height:calc(100dvh - 40px);overflow-y:auto;
+  background:linear-gradient(180deg,#FDFBF6 0%,#F6EEE2 100%);
+  border-radius:22px;padding:0 26px 28px;text-align:center;box-sizing:border-box;
+  box-shadow:0 24px 60px rgba(0,0,0,.32),inset 0 0 0 1px rgba(255,255,255,.7);
+  animation:rlPop .38s cubic-bezier(.2,.9,.25,1.15);
+  overscroll-behavior:contain;
+}
+@keyframes rlPop{from{opacity:0;transform:translateY(22px) scale(.94)}to{opacity:1;transform:none}}
+.rl-dialog::before{ /* 상단 금빛 라인 */
+  content:"";position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,transparent,#d9ac5c,#fff0b8,#d9ac5c,transparent);
+}
+.rl-close{
+  position:absolute;top:10px;right:10px;width:36px;height:36px;border:0;border-radius:50%;
+  background:rgba(255,255,255,.7);color:#8c7a68;font-size:22px;line-height:1;cursor:pointer;z-index:2;
+}
+.rl-close:focus-visible,.rl-nav:focus-visible{outline:2px solid #b98a52}
+.rl-hero{
+  width:124px;height:124px;margin:34px auto 0;border-radius:50%;padding:4px;
+  background:linear-gradient(145deg,#f4d99a,#b98a52 55%,#8a5f36);
+  box-shadow:0 10px 24px rgba(120,86,52,.3);
+}
+.rl-hero .rl-ph{font-size:44px;border-width:3px}
+.rl-role{
+  display:inline-block;margin-top:20px;padding:5px 16px;border-radius:999px;
+  font-size:12px;font-weight:700;letter-spacing:.12em;color:#8a5f36;
+  background:rgba(185,138,82,.14);border:1px solid rgba(185,138,82,.35);
+}
+.rl-name{margin:12px 0 0;font-size:23px;font-weight:700;color:#3D291F;letter-spacing:.02em}
+.rl-sep{width:56px;height:1px;margin:16px auto;background:linear-gradient(90deg,transparent,#c9a46a,transparent)}
+.rl-desc{margin:0;font-size:14.5px;line-height:1.85;color:#5a4636;white-space:pre-line;word-break:keep-all}
+.rl-foot{display:flex;align-items:center;justify-content:center;gap:14px;margin-top:22px}
+.rl-nav{width:36px;height:36px;border:0;border-radius:50%;background:rgba(185,138,82,.12);color:#8a5f36;font-size:18px;cursor:pointer}
+.rl-nav:hover{background:rgba(185,138,82,.22)}
+.rl-dots{display:flex;gap:7px}
+.rl-dot{width:7px;height:7px;border-radius:50%;background:#e3d6c4;transition:background .2s,transform .2s}
+.rl-dot.is-on{background:#b98a52;transform:scale(1.3)}
+.rl-swap{animation:rlSwap .32s ease}
+@keyframes rlSwap{from{opacity:0;transform:translateX(var(--rl-dir,12px))}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){
+  .rl-card{animation:none;opacity:1;transform:none}
+  .rl-modal.is-open,.rl-dialog,.rl-swap{animation:none}
+}
+</style>
 </head>
 
 
@@ -3103,20 +3196,35 @@ color: #8C5B4C;
                 <div class="content">
                     안녕하세요.<br>가을빛 고운 결실의 계절에<br>귀한 소식을 전합니다.<br><br>
                     <span class="highlight-red">각자의 삶을 살아가던 두 사람</span>이<br>
-                    <span class="highlight-blue">이제 같은 곳을 바라보며 함께</span><br>
-                    나아가려 합니다.<br><br>
-                    두 개의 물줄기가 만나<br>
-                    하나의 넓은 바다로 흘러가듯,<br>
-                    하나의 더 큰 가족이 되는<br>
-                    뜻깊은 시작의 자리에<br>
-                    소중한 분들을 모시고 싶습니다.<br><br>
-                    직접 소식을 전하지 못하고<br>글로써 청함을 너그러운 마음으로<br>
+                    <span class="highlight-blue">이제 같은 곳을 바라보ㅁ ㅋㅋㅋㅋㅋㅋ어이<br>
+강퍅짱췌<br>역사완성의 그날까지 함께 총력을 다하여 나아가자꾸나!!!ㅋㅋㅋㅋㅋㅋㅋ</span><br>
+<img src="ㅋㅋ.jpg" style="width: 1200px; max-width: 100%; height: auto;"><br>
+                    결혼이라는 것이..<br>
+                    하나님 역사 완성을 더 앞당기는 데<br>
+                    소용이 되길 바란다네...<br><br>
+<img src="BS.jpg" style="width: 350px; max-width: 100%; height: auto;"><br><br>
+
+                    함께해주어서 고맙구려<br>
+                    참 든든하고 힘이 된다오.<br>
+                    소중한 우리 동지들!!!<br>
+<img src="ㅋ.jpg" style="width: 350px; max-width: 100%; height: auto;"><br><br>
+
+                    엔화 약세 계속되고 있는데...<br>
+                    다같이 니뽄 나들이나 다녀오면 조켔ㄸr-☆<br>
+<img src="니뽄.jpg" style="width: 350px; max-width: 100%; height: auto;"><br>
+                    는 즐거운 인간적 생각이 드는구만?ㅋㅋ<br><br>
+
+                    암튼 해마다 즐겁게 멋지게 성장하구!<br>
+                    재미나게 삽시dar 재미나🐶!!<br>
+<img src="캉.jpg" style="width: 350px; max-width: 100%; height: auto;"><br>
+<img src="캉캉.jpg" style="width: 350px; max-width: 100%; height: auto;"><br>
+                    으캬야야야야야야컁컁캬얔야야야얔ㅋㅋㅋㅋ컁<br><br>
+
                     헤아려 주시기 바라며,<br>
                     이 작은 청첩장에<br>저희의 온 진심을 담아 보냅니다.<br><br>
 
                     <span class="highlight-green">두 사람의 약속이 빈말이 되지 않도록</span><br>
-                    가장 가까운 곳에서<br><span class="highlight-green">증인이 되어주시길 소망합니다.</span><br>감사합니다.<br><br>
-                </div>
+                    가장 가까운 곳에서<br><span class="highlight-green">증인이 되어주시길 소망합니다.</span><br>감사합니다.<br><br>                </div>
 
                 <div class="parents-info">
     <div class="parent-row">
@@ -3137,7 +3245,7 @@ color: #8C5B4C;
                 <div class="gallery-notice-wrapper">
     <img src="arrow.png" alt="화살표" class="gallery-arrow-img">
     <span class="gallery-notice-text">
-        <span class="highlight-underline">사진을 누르면 더 크게 보실 수 있습니다.</span>
+        <span class="highlight-underline">사진을 누르면 더 크게 보실 수 있떠염</span>
     </span>
 </div>
 
@@ -3508,6 +3616,21 @@ color: #8C5B4C;
 </div>
 
 
+                <div class="subtitle">ROAL</div>
+                <div class="title">역할</div>
+
+                <div class="divider-decoration">
+                    <div class="divider-line"></div>
+                    <div class="divider-icon">📋</div>
+                    <div class="divider-line"></div>
+
+
+                </div>
+                <!-- 역할 소개: 친구 3명 -->
+                <div class="rl-wrap">
+                    <div class="rl-grid" id="rlGrid"></div>
+                </div>
+
 
 
 
@@ -3546,6 +3669,26 @@ color: #8C5B4C;
 
 
 
+
+
+<!-- 역할 소개 모달 -->
+<div class="rl-modal" id="rlModal" aria-hidden="true">
+  <div class="rl-dialog" role="dialog" aria-modal="true" aria-labelledby="rlName">
+    <button type="button" class="rl-close" id="rlClose" aria-label="닫기">&times;</button>
+    <div id="rlBody">
+      <div class="rl-hero"><div class="rl-ph" id="rlHero"></div></div>
+      <span class="rl-role" id="rlRole"></span>
+      <h3 class="rl-name" id="rlName"></h3>
+      <div class="rl-sep"></div>
+      <p class="rl-desc" id="rlDesc"></p>
+    </div>
+    <div class="rl-foot">
+      <button type="button" class="rl-nav" id="rlPrev" aria-label="이전 친구">‹</button>
+      <div class="rl-dots" id="rlDots" aria-hidden="true"></div>
+      <button type="button" class="rl-nav" id="rlNext" aria-label="다음 친구">›</button>
+    </div>
+  </div>
+</div>
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
@@ -4177,6 +4320,96 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
+
+/* ==================================================
+   역할 소개 (친구 3명 + 모달)
+   ▼ 여기만 수정하면 됩니다 (사진 파일명 / 이름 / 역할 / 소개글)
+   ================================================== */
+(function(){
+  var FRIENDS = [
+    { photo:'빡.jpg', name:'추수박', role:'가방순자',
+      desc:'알잘딱깔센\nOk?\n땡큐!' },
+    { photo:'깡.jpg', name:'깡심방', role:'젤중요한자',
+      desc:'원탁 테이블 자리 안내 플리즈♥\n그리고,   전복갈비탕1그릇=1인식대\n호텔 동시예식은 그릇 수 세는 게 생명!!!' },
+    { photo:'초이.jpg', name:'임원초이', role:'전대맡은자',
+      desc:'엑셀 양식 준비 됐누?\n틀리면\n1원에 1대....' }
+  ];
+
+  var grid=document.getElementById('rlGrid'), modal=document.getElementById('rlModal');
+  if(!grid||!modal) return;
+  var dialog=modal.querySelector('.rl-dialog'), body=document.getElementById('rlBody');
+  var hero=document.getElementById('rlHero'), roleEl=document.getElementById('rlRole'),
+      nameEl=document.getElementById('rlName'), descEl=document.getElementById('rlDesc'),
+      dotsEl=document.getElementById('rlDots'),
+      prevBtn=document.getElementById('rlPrev'), nextBtn=document.getElementById('rlNext');
+  var cur=0, lastFocus=null;
+
+  function photoHTML(f){
+    var first=(f.name||'?').charAt(0);
+    return '<img src="'+f.photo+'" alt="'+f.name+'" loading="lazy" onerror="this.remove()">'
+         + '<span style="position:absolute;z-index:-1">'+first+'</span>';
+  }
+  function setPhoto(el,f){
+    el.innerHTML='';
+    var img=new Image(); img.alt=f.name; img.src=f.photo;
+    img.onerror=function(){ el.textContent=(f.name||'?').charAt(0); };
+    el.appendChild(img);
+  }
+
+  FRIENDS.forEach(function(f,i){
+    var b=document.createElement('button');
+    b.type='button'; b.className='rl-card'; b.setAttribute('aria-haspopup','dialog');
+    b.innerHTML='<span class="rl-ring"><span class="rl-ph"></span></span>'
+      +'<span class="rl-tag">'+f.role+'</span>'
+      +'<span class="rl-nm">'+f.name+'</span>'
+      +'<span class="rl-more">자세히 ›</span>';
+    setPhoto(b.querySelector('.rl-ph'),f);
+    b.addEventListener('click',function(){ open(i,b); });
+    grid.appendChild(b);
+    var d=document.createElement('span'); d.className='rl-dot'; dotsEl.appendChild(d);
+  });
+
+  function render(i,dir){
+    cur=(i+FRIENDS.length)%FRIENDS.length;
+    var f=FRIENDS[cur];
+    setPhoto(hero,f);
+    roleEl.textContent=f.role; nameEl.textContent=f.name; descEl.textContent=f.desc;
+    Array.prototype.forEach.call(dotsEl.children,function(d,k){ d.classList.toggle('is-on',k===cur); });
+    if(dir){
+      body.style.setProperty('--rl-dir',(dir>0?'14px':'-14px'));
+      body.classList.remove('rl-swap'); void body.offsetWidth; body.classList.add('rl-swap');
+    }
+  }
+  function open(i,trigger){
+    lastFocus=trigger||document.activeElement;
+    render(i,0);
+    modal.classList.add('is-open'); modal.setAttribute('aria-hidden','false');
+    document.documentElement.style.overflow='hidden'; document.body.style.overflow='hidden';
+    dialog.scrollTop=0; document.getElementById('rlClose').focus();
+  }
+  function close(){
+    modal.classList.remove('is-open'); modal.setAttribute('aria-hidden','true');
+    document.documentElement.style.overflow=''; document.body.style.overflow='';
+    if(lastFocus&&lastFocus.focus) lastFocus.focus();
+  }
+  document.getElementById('rlClose').addEventListener('click',close);
+  modal.addEventListener('click',function(e){ if(e.target===modal) close(); });
+  prevBtn.addEventListener('click',function(){ render(cur-1,-1); });
+  nextBtn.addEventListener('click',function(){ render(cur+1,1); });
+  document.addEventListener('keydown',function(e){
+    if(!modal.classList.contains('is-open')) return;
+    if(e.key==='Escape') close();
+    if(e.key==='ArrowLeft') render(cur-1,-1);
+    if(e.key==='ArrowRight') render(cur+1,1);
+  });
+  /* 좌우 스와이프 */
+  var sx=null;
+  dialog.addEventListener('touchstart',function(e){ sx=e.touches[0].clientX; },{passive:true});
+  dialog.addEventListener('touchend',function(e){
+    if(sx===null) return; var dx=e.changedTouches[0].clientX-sx; sx=null;
+    if(Math.abs(dx)>50) render(cur+(dx<0?1:-1),dx<0?1:-1);
+  });
+})();
 </script>
 
 </body>
