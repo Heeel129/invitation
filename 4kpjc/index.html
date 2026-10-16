@@ -1781,8 +1781,9 @@ box-shadow: 0 0 12px rgba(225, 198, 153, 0.4);
     max-height: 72px !important;
     
     border-radius: 50% !important; /* 완벽한 동그라미 강제 */
-    background-color: #FAF8F5;
-    border: 1px solid #D8C8BD;
+    /* 주차 티켓·배너와 같은 골드 톤으로 통일 */
+    background: linear-gradient(145deg, #fffdf8 0%, #f6ecd7 100%);
+    border: 1px solid rgba(201, 164, 104, 0.45);
     
     display: flex;
     flex-direction: column;
@@ -1791,7 +1792,8 @@ box-shadow: 0 0 12px rgba(225, 198, 153, 0.4);
     gap: 3px;
     
     text-decoration: none;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+    box-shadow: 0 2px 5px rgba(120, 90, 40, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
     box-sizing: border-box;
     
     /* flex 안에서 늘어나거나 줄어드는 현상 완전 차단 */
@@ -1800,8 +1802,10 @@ box-shadow: 0 0 12px rgba(225, 198, 153, 0.4);
 }
 
 .nav-btn:hover {
-    background-color: #EFECE6;
-    border-color: #A39382;
+    background: linear-gradient(145deg, #fbf3e1 0%, #efdcb4 100%);
+    border-color: #c9a468;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 10px rgba(120, 90, 40, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.8);
 }
 
 /* 내부 아이콘 고정 */
@@ -1865,6 +1869,53 @@ max-width: 26.25rem;
     transition: max-height 0.35s cubic-bezier(0, 1, 0, 1);
 }
 
+/* ✨ 아코디언 클릭 반짝임 효과 (진주빛 톤) */
+.accordion-item { position: relative; }
+.accordion-item::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -60%;
+    width: 45%; height: 100%;
+    background: linear-gradient(105deg, transparent 0%, var(--shine-edge, rgba(240, 226, 214, 0)) 15%, var(--shine-mid, rgba(240, 226, 214, 0.85)) 50%, var(--shine-edge, rgba(240, 226, 214, 0)) 85%, transparent 100%);
+    transform: skewX(-20deg);
+    opacity: 0;
+    pointer-events: none;
+    z-index: 2;
+}
+.accordion-item.shine::before { animation: acc-shine 0.85s ease-out; }
+@keyframes acc-shine {
+    0%   { left: -60%; opacity: 1; }
+    100% { left: 125%; opacity: 1; }
+}
+.acc-sparkle {
+    position: absolute;
+    pointer-events: none;
+    z-index: 3;
+    background: radial-gradient(circle, var(--star-core, #ffffff) 0%, var(--star-mid, #f3e6da) 45%, var(--star-edge, #d2b9a3) 100%);
+    clip-path: polygon(50% 0, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0 50%, 39% 39%);
+    opacity: 0;
+    animation: acc-twinkle 0.9s ease-out forwards;
+}
+@keyframes acc-twinkle {
+    0%   { transform: scale(0) rotate(0deg);   opacity: 0; }
+    35%  { transform: scale(1) rotate(45deg);  opacity: 1; }
+    100% { transform: scale(0) rotate(120deg); opacity: 0; }
+}
+/* 계좌 아코디언: 배경 파스텔 톤에 맞춘 반짝임 */
+.account-accordion .accordion-item.groom {
+    --shine-edge: rgba(190, 215, 245, 0);
+    --shine-mid: rgba(255, 255, 255, 0.9);
+    --star-core: #ffffff; --star-mid: #cfe2f6; --star-edge: #8fb6e0;
+}
+.account-accordion .accordion-item.bride {
+    --shine-edge: rgba(248, 200, 212, 0);
+    --shine-mid: rgba(255, 255, 255, 0.9);
+    --star-core: #ffffff; --star-mid: #fad3dd; --star-edge: #ee9db6;
+}
+@media (prefers-reduced-motion: reduce) {
+    .accordion-item.shine::before, .acc-sparkle { animation: none; }
+}
+
   :root{
     --bg:#f8f5ef; --ink:#3b2a20; --sub:#7a6455;
     --gold1:#e9d3a8; --gold2:#c9a468; --gold3:#a8803f;
@@ -1914,14 +1965,14 @@ max-width: 26.25rem;
 
         .transport-accordion .accordion-item {
             background-color: #FFFFFF;
-            border: 1px solid #EAE5DE;
+            border: 1px solid rgba(201, 164, 104, 0.32);
             border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+            box-shadow: 0 2px 8px rgba(120, 90, 40, 0.08);
         }
 
         .transport-accordion .accordion-item.active {
-            border-color: #CBB8A9;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            border-color: rgba(201, 164, 104, 0.6);
+            box-shadow: 0 4px 12px rgba(120, 90, 40, 0.14);
         }
 
         .transport-accordion .accordion-header {
@@ -2003,9 +2054,9 @@ margin-top: 0.75rem;
 
         .venue-info-accordion .accordion-item {
             background-color: #FFFFFF;
-            border: 1px solid #EAE5DE;
+            border: 1px solid rgba(201, 164, 104, 0.32);
             border-radius: 0.75rem;
-            box-shadow: inset 0 0 0 0.0625rem var(--border-color), var(--shadow-sm);
+            box-shadow: 0 2px 8px rgba(120, 90, 40, 0.08);
         }
 
         .venue-info-accordion .accordion-header {
@@ -2453,7 +2504,7 @@ letter-spacing: -0.4px; /* 자간을 미세하게 좁혀 한 줄에 들어가게
   --cm-sub:#7d7368;
   --cm-accent:#a8856a;
   --cm-line:#e6dccf;
-  --cm-font:"Nanum Myeongjo","Noto Serif KR",serif;
+  --cm-font:'Gowun Batang',serif;
 }
 
 /* ---- 하단 트리거 영역 ---- */
@@ -2511,7 +2562,7 @@ letter-spacing: -0.4px; /* 자간을 미세하게 좁혀 한 줄에 들어가게
   display:flex;align-items:center;justify-content:space-between;
   padding:14px 16px 12px 20px;border-bottom:1px solid var(--cm-line);
 }
-.cm-head h2{margin:0;font-family:"Noto Serif KR","Nanum Myeongjo",serif;font-size:16px;font-weight:900;letter-spacing:.02em}
+.cm-head h2{margin:0;font-family:'Gowun Batang',serif;font-size:16px;font-weight:700;letter-spacing:.02em}
 .cm-close{
   width:36px;height:36px;border:0;background:none;cursor:pointer;
   font-size:26px;line-height:1;color:var(--cm-sub);border-radius:50%;
@@ -2548,8 +2599,8 @@ letter-spacing: -0.4px; /* 자간을 미세하게 좁혀 한 줄에 들어가게
   -webkit-text-fill-color:transparent;color:transparent;
   animation:cmGlint 4.5s ease-in-out 2;
 }
-.cm-slide .cm-no{font-size:13px;font-weight:800;margin-bottom:10px}
-.cm-slide h3{margin:0 0 8px;font-family:"Noto Serif KR","Nanum Myeongjo",serif;font-size:24px;font-weight:900;line-height:1.4;letter-spacing:-.01em;
+.cm-slide .cm-no{font-size:13px;font-weight:700;margin-bottom:10px}
+.cm-slide h3{margin:0 0 8px;font-family:'Gowun Batang',serif;font-size:24px;font-weight:700;line-height:1.4;letter-spacing:-.01em;
   filter:drop-shadow(0 1px 0 rgba(120,80,30,.25))}
 .cm-slide .cm-verse{
   margin:0 auto 18px;padding-bottom:16px;max-width:90%;
@@ -2642,19 +2693,19 @@ letter-spacing: -0.4px; /* 자간을 미세하게 좁혀 한 줄에 들어가게
 }
 
 .cm-bubble svg{position:absolute;top:0;left:0;width:100%;height:100%;overflow:visible}
-.cm-bubble svg .cm-heart{fill:url(#cmHeartGrad)}
+.cm-bubble svg .cm-heart{fill:url(#cmHeartGrad);stroke:rgba(168,128,63,.45);stroke-width:1.5}
 .cm-bubble svg circle{fill:#dcc08a}
 .cm-bubble svg .cm-shine{fill:#fff;opacity:.22}
 .cm-bubble span{
-  position:absolute;left:6%;right:6%;top:28%;
-  font-family:var(--cm-font);font-size:10.5px;font-weight:800;line-height:1.45;
-  letter-spacing:-.03em;white-space:nowrap;text-align:center;
-  color:#fff;text-shadow:0 1px 2px rgba(120,80,30,.6);  /* 흰 글씨가 연한 분홍 위에서도 읽히도록 */
+  position:absolute;left:6%;right:6%;top:26%;
+  font-family:'Gowun Batang',serif;font-size:13px;font-weight:700;line-height:1.35;
+  letter-spacing:-.02em;white-space:nowrap;text-align:center;
+  color:#4a2f1d;text-shadow:0 1px 0 rgba(255,248,230,.65);  /* 연한 골드 위에서 또렷한 진갈색 (사이트 본문 글꼴과 통일) */
 }
 .cm-bubble:active{filter:brightness(.97) drop-shadow(0 3px 6px rgba(190,130,118,.30))}
 .cm-bubble:focus-visible{outline:2px solid var(--cm-accent);outline-offset:4px;border-radius:12px}
 @keyframes cmBubbleFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
-@media (max-width:359px){.cm-bubble{width:86px;height:103px}.cm-bubble span{font-size:9.5px}}
+@media (max-width:359px){.cm-bubble{width:86px;height:103px}.cm-bubble span{font-size:11.5px}}
 @media (prefers-reduced-motion:reduce){.cm-bubble{animation:none}}
 /* 사진 위에서는 어두운 그림자 + 밝은 빛으로 글씨가 또렷하게 */
 .cm-on-image .cm-trigger img{animation:cmGlowOn 3.6s ease-in-out infinite}
@@ -3443,30 +3494,29 @@ color: #8C5B4C;
         <div class="divider-line"></div>
     </div>
 
-    <div class="info-card" style="background:#fff;border:1px solid #EAE5DE;border-radius:0.75rem;padding:14px 0 6px;margin-top:8px;">
+    <div class="info-card" style="background:#fff;border:1px solid rgba(201,164,104,.32);border-radius:0.75rem;box-shadow:0 2px 8px rgba(120,90,40,.08);padding:14px 0 6px;margin-top:8px;">
         <div class="venue-img-wrapper">
             <img src="venue.jpg" alt="예식장 사진" loading="lazy">
         </div>
 
 
-        <div class="venue-meal-desc" style="display:flex;gap:8px;align-items:flex-start;padding:0 10%;margin:0 0 8px;">
-            <span class="pink-dot" style="flex:none;">🪑</span>
-            <span>좌석 : 원탁 테이블, 버진로드 양옆 일자테이블</span>
-        </div>
-        <div class="venue-meal-desc" style="display:flex;gap:8px;align-items:flex-start;padding:0 10% 14px;margin:0;">
-            <span class="pink-dot" style="flex:none;">🍴</span>
-            <span>식사 : 한식 코스<br>식사는 예식이 진행된 자리에서 바로 마련될 예정입니다.</span>
-        </div>
+<div class="venue-meal-desc" style="display:flex;gap:8px;align-items:flex-start;padding:0 10%;margin:0;">
+    <span class="pink-dot" style="flex:none;">🪑</span>
+    <span style="display:flex;gap:0.35em;"><b style="flex:none;font-weight:700;">좌석 :</b><span>원탁 테이블, 버진로드 양옆 일자테이블</span></span>
+</div>
+<div class="venue-meal-desc" style="display:flex;gap:8px;align-items:flex-start;padding:0 10% 14px;margin:0;">
+    <span class="pink-dot" style="flex:none;">🍴</span>
+    <span style="display:flex;gap:0.35em;"><b style="flex:none;font-weight:700;">식사 :</b><span>한식 코스<br>식사는 예식이 진행된 자리에서 바로 마련될 예정입니다.</span></span>
+</div>
+</div>
+
+<div class="info-card" style="background:#fff;border:1px solid rgba(201,164,104,.32);border-radius:0.75rem;box-shadow:0 2px 8px rgba(120,90,40,.08);padding:18px 10%;margin-top:12px;">
+    <div class="venue-meal-desc" style="display:flex;gap:8px;align-items:flex-start;margin:0;">
+        <span class="pink-dot" style="flex:none;">🌸</span>
+        <span><b style="font-weight:700;">화환은 정중히 사양하오니 양해 부탁드립니다.</b><br>축하해 주시는 마음만 감사히 받으며, 보내주시고자 하는 따뜻한 마음만으로도 충분히 감사드립니다!</span>
     </div>
+</div>
 
-
-
-    <div class="info-card" style="background:#fff;border:1px solid #EAE5DE;border-radius:0.75rem;padding:18px 10%;margin-top:12px;">
-        <div class="venue-meal-desc" style="display:flex;gap:8px;align-items:flex-start;margin:0;">
-            <span class="pink-dot" style="flex:none;">🌸</span>
-            <span>축하해 주시는 마음만 감사히 받으며, 화환은 정중히 사양하오니 양해 부탁드립니다. 보내주시고자 하는 따뜻한 마음만으로도 충분히 감사드립니다.</span>
-        </div>
-    </div>
 </section>
 
 <br><br>
@@ -3989,6 +4039,32 @@ function toggleAccordion(header) {
     } else {
         item.classList.add('active');
         content.style.maxHeight = content.scrollHeight + "px";
+    }
+    accordionSparkle(item, !isOpen);
+}
+
+// ✨ 아코디언 반짝임 (빛 스윕 + 별가루)
+function accordionSparkle(item, withStars) {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    item.classList.remove('shine');
+    void item.offsetWidth; // 애니메이션 재시작
+    item.classList.add('shine');
+    setTimeout(() => item.classList.remove('shine'), 900);
+
+    if (!withStars) return;
+    const header = item.querySelector('.accordion-header');
+    const h = header ? header.offsetHeight : 48;
+    for (let i = 0; i < 7; i++) {
+        const star = document.createElement('span');
+        const size = 8 + Math.random() * 8;
+        star.className = 'acc-sparkle';
+        star.style.width = star.style.height = size + 'px';
+        star.style.left = (6 + Math.random() * 88) + '%';
+        star.style.top = (4 + Math.random() * Math.max(h - 8 - size, 4)) + 'px';
+        star.style.animationDelay = (Math.random() * 0.35) + 's';
+        item.appendChild(star);
+        setTimeout(() => star.remove(), 1400);
     }
 }
 

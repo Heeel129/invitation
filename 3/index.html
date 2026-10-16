@@ -1875,14 +1875,14 @@ max-width: 26.25rem;
     transition: max-height 0.35s cubic-bezier(0, 1, 0, 1);
 }
 
-/* ✨ 아코디언 클릭 반짝임 효과 */
+/* ✨ 아코디언 클릭 반짝임 효과 (진주빛 톤) */
 .accordion-item { position: relative; }
 .accordion-item::before {
     content: '';
     position: absolute;
     top: 0; left: -60%;
     width: 45%; height: 100%;
-    background: linear-gradient(105deg, transparent 0%, var(--shine-edge, rgba(255, 236, 176, 0)) 15%, var(--shine-mid, rgba(255, 244, 205, 0.85)) 50%, var(--shine-edge, rgba(255, 236, 176, 0)) 85%, transparent 100%);
+    background: linear-gradient(105deg, transparent 0%, var(--shine-edge, rgba(240, 226, 214, 0)) 15%, var(--shine-mid, rgba(240, 226, 214, 0.85)) 50%, var(--shine-edge, rgba(240, 226, 214, 0)) 85%, transparent 100%);
     transform: skewX(-20deg);
     opacity: 0;
     pointer-events: none;
@@ -1897,7 +1897,7 @@ max-width: 26.25rem;
     position: absolute;
     pointer-events: none;
     z-index: 3;
-    background: radial-gradient(circle, var(--star-core, #fffdf2) 0%, var(--star-mid, #f6dd95) 45%, var(--star-edge, #d9b25f) 100%);
+    background: radial-gradient(circle, var(--star-core, #ffffff) 0%, var(--star-mid, #f3e6da) 45%, var(--star-edge, #d2b9a3) 100%);
     clip-path: polygon(50% 0, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0 50%, 39% 39%);
     opacity: 0;
     animation: acc-twinkle 0.9s ease-out forwards;
@@ -2511,7 +2511,7 @@ letter-spacing: -0.4px; /* 자간을 미세하게 좁혀 한 줄에 들어가게
   --cm-sub:#7d7368;
   --cm-accent:#a8856a;
   --cm-line:#e6dccf;
-  --cm-font:"Nanum Myeongjo","Noto Serif KR",serif;
+  --cm-font:'Gowun Batang',serif;
 }
 
 /* ---- 하단 트리거 영역 ---- */
@@ -2569,7 +2569,7 @@ letter-spacing: -0.4px; /* 자간을 미세하게 좁혀 한 줄에 들어가게
   display:flex;align-items:center;justify-content:space-between;
   padding:14px 16px 12px 20px;border-bottom:1px solid var(--cm-line);
 }
-.cm-head h2{margin:0;font-family:"Noto Serif KR","Nanum Myeongjo",serif;font-size:16px;font-weight:900;letter-spacing:.02em}
+.cm-head h2{margin:0;font-family:'Gowun Batang',serif;font-size:16px;font-weight:700;letter-spacing:.02em}
 .cm-close{
   width:36px;height:36px;border:0;background:none;cursor:pointer;
   font-size:26px;line-height:1;color:var(--cm-sub);border-radius:50%;
@@ -2606,8 +2606,8 @@ letter-spacing: -0.4px; /* 자간을 미세하게 좁혀 한 줄에 들어가게
   -webkit-text-fill-color:transparent;color:transparent;
   animation:cmGlint 4.5s ease-in-out 2;
 }
-.cm-slide .cm-no{font-size:13px;font-weight:800;margin-bottom:10px}
-.cm-slide h3{margin:0 0 8px;font-family:"Noto Serif KR","Nanum Myeongjo",serif;font-size:24px;font-weight:900;line-height:1.4;letter-spacing:-.01em;
+.cm-slide .cm-no{font-size:13px;font-weight:700;margin-bottom:10px}
+.cm-slide h3{margin:0 0 8px;font-family:'Gowun Batang',serif;font-size:24px;font-weight:700;line-height:1.4;letter-spacing:-.01em;
   filter:drop-shadow(0 1px 0 rgba(120,80,30,.25))}
 .cm-slide .cm-verse{
   margin:0 auto 18px;padding-bottom:16px;max-width:90%;
@@ -3159,20 +3159,20 @@ color: #8C5B4C;
                 </div>
 
                 <div class="content">
-<span class="highlight-blue">사랑하는 구리교회 성도님 안녕하세요!</span><br>
-<span class="highlight-red">가을빛 고운 결실의 계절에<br>귀한 소식을 전합니다.</span><br><br>
+<span class="highlight-blue">구리교회 믿음의 가족 여러분,</span><br>안녕하세요!<br>출판부와 정보통신부를 맡고 있는<br>장은미입니다.<br>
+<span class="highlight-red">사랑하는 가족 여러분들께<br>이 가을빛 고운 귀한 결실의 계절에<br>제게 있는 소식을 전하고자 합니다.</span><br><br>
 
                     스무 살,<br>
-하나님의 인도하심을 따라 시온성산에 첫발을 내딛은 후 오늘에 이르기까지 구리교회와 함께 울고 웃으며 귀한 사명을 감당해온 시간들을 되돌아보니 감회가 새롭습니다.<br><br>
+하나님의 인도하심을 따라 시온성산에 첫발을 내딛은 이후 오늘에 이르기까지 구리교회와 함께 울고 웃으며 귀한 사명을 감당해온 시간들을 되돌아보니 감회가 새롭습니다.<br><br>
 
-                    ​개인적으로는..<br>
-가장 빛나는 청년의 때를 하나님 앞에 드린 것은 제 일생 최고의 자랑이며 기쁨입니다. 쉽지만은 않은 이 신앙의 길을 꾸준히 걸어올 수 있었던 것은 하나님과 예수님의 은혜이며, 또한 주 안에서 한 가족으로서 부족한 저를 사랑으로 품어주신 동료 사명자 여러분과 성도님들이 계셨기 때문입니다.<br><br>
+                    ​개인적으로..<br>
+가장 빛나는 청년의 때를 하나님 앞에 드린 것이, 저는 제 일생 최고의 자랑이며 기쁨으로 여깁니다. 쉽지만은 않은 이 신앙의 길을 꾸준히 걸어올 수 있었던 것은 하나님과 예수님의 은혜이며, 또한 주 안에서 한 가족으로서 부족한 저를 사랑으로 품어주신 동료 사명자 여러분과 성도님들이 계셨기 때문입니다.<br><br>
 
 모두의 사랑과 기도가 있었기에 지금의 제가 존재함을 압니다. 이 기회를 빌려 마음 깊이 감사의 말씀을 전합니다.<br><br>
 
-"두 사람이 한 사람보다 낫다" 하신 말씀처럼, 하나님께서 귀한 배필을 만나게 해 주셔서 은혜와 사랑 가운데 믿음의 가정을 이루게 되었습니다. 주 안에서 받은 사랑을 기억하며, 이 가정을 통해 그 사랑을 세상에 더 풍성히 나누며 살겠습니다.<br><br>
+"두 사람이 한 사람보다 낫다" 하신 말씀처럼, 하나님께서 귀한 배필을 만나게 해 주셔서 은혜와 사랑 가운데 믿음의 가정을 이루게 되었습니다. 주 안에서 받은 사랑을 기억하며, 이 가정을 통해 그 사랑을 주위에 더 풍성히 나누며 살겠습니다.<br><br>
                     ​
-                    <span class="highlight-green">저희의 새로운 출발을 위해 기도로 축복해 주시면 더없는 기쁨과 격려가 되겠습니다. 우리를 향하신 하나님의 사랑이 불변하듯 서로를 향한 신뢰와 사랑이 불변하고, 더욱 더 하나님의 일에 헌신하는 부부가 되도록 기도해 주십시오🙏🏻</span><br><br>
+                    <span class="highlight-green">저희의 새로운 출발을 위해 기도로 축복해 주시면 더없는 기쁨과 큰 힘이 될 것입니다. 우리를 향하신 하나님의 사랑이 불변하듯 서로를 향한 신뢰와 사랑이 불변하고, 더욱 더 하나님의 일에 헌신하는 부부가 되도록 기도해 주십시오🙏🏻</span><br><br>
 감사합니다🩷<br><br>
                 </div>
 
@@ -3394,24 +3394,21 @@ color: #8C5B4C;
             <img src="venue.jpg" alt="예식장 사진" loading="lazy">
         </div>
 
+<div class="venue-meal-desc" style="display:flex;gap:8px;align-items:flex-start;padding:0 10%;margin:0;">
+    <span class="pink-dot" style="flex:none;">🪑</span>
+    <span style="display:flex;gap:0.35em;"><b style="flex:none;font-weight:700;">좌석 :</b><span>원탁 테이블, 버진로드 양옆 일자테이블</span></span>
+</div>
+<div class="venue-meal-desc" style="display:flex;gap:8px;align-items:flex-start;padding:0 10% 14px;margin:0;">
+    <span class="pink-dot" style="flex:none;">🍴</span>
+    <span style="display:flex;gap:0.35em;"><b style="flex:none;font-weight:700;">식사 :</b><span>한식 코스<br>식사는 예식이 진행된 자리에서 바로 마련될 예정입니다.</span></span>
+</div>
+</div>
 
-        <div class="venue-meal-desc" style="display:flex;gap:8px;align-items:flex-start;padding:0 10%;margin:0;">
-            <span class="pink-dot" style="flex:none;">🪑</span>
-            <span style="display:flex;gap:0.35em;"><span style="flex:none;">좌석 :</span><span>원탁 테이블, 버진로드 양옆 일자테이블</span></span>
-        </div>
-        <div class="venue-meal-desc" style="display:flex;gap:8px;align-items:flex-start;padding:0 10% 14px;margin:0;">
-            <span class="pink-dot" style="flex:none;">🍴</span>
-            <span style="display:flex;gap:0.35em;"><span style="flex:none;">식사 :</span><span>한식 코스<br>식사는 예식이 진행된 자리에서 바로 마련될 예정입니다.</span></span>
-        </div>
+<div class="info-card" style="background:#fff;border:1px solid rgba(201,164,104,.32);border-radius:0.75rem;box-shadow:0 2px 8px rgba(120,90,40,.08);padding:18px 10%;margin-top:12px;">
+    <div class="venue-meal-desc" style="display:flex;gap:8px;align-items:flex-start;margin:0;">
+        <span class="pink-dot" style="flex:none;">🌸</span>
+        <span><b style="font-weight:700;">화환은 정중히 사양하오니 양해 부탁드립니다.</b><br>축하해 주시는 마음만 감사히 받으며, 보내주시고자 하는 따뜻한 마음만으로도 충분히 감사드립니다!</span>
     </div>
-
-
-
-    <div class="info-card" style="background:#fff;border:1px solid rgba(201,164,104,.32);border-radius:0.75rem;box-shadow:0 2px 8px rgba(120,90,40,.08);padding:18px 10%;margin-top:12px;">
-        <div class="venue-meal-desc" style="display:flex;gap:8px;align-items:flex-start;margin:0;">
-            <span class="pink-dot" style="flex:none;">🌸</span>
-            <span>화환은 정중히 사양하오니 양해 부탁드립니다. 축하해 주시는 마음만 감사히 받으며, 보내주시고자 하는 따뜻한 마음만으로도 충분히 감사드립니다.</span>
-        </div>
     </div>
 </section>
 
